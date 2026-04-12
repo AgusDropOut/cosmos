@@ -1,4 +1,4 @@
-export type NodeType = 'OUTPUT_FRAG' | 'COLOR' | 'NOISE' | 'MULTIPLY';
+export type NodeType = 'OUTPUT_FRAG' | 'COLOR' | 'NOISE' | 'MULTIPLY' | 'TIME';
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4';
 

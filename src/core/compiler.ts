@@ -2,7 +2,12 @@ import type { ShaderGraph, GLSLType } from '../types/ast';
 import { NodeRegistry } from './registry';
 
 function serializeValue(value: any, type: GLSLType): string {
-    if (value === undefined) return '0.0';
+    if (value === undefined) {
+        if (type === 'vec3') return 'vec3(0.0)';
+        if (type === 'vec2') return 'vec2(0.0)';
+        return '0.0';
+    }
+    
     switch (type) {
         case 'float': return Number.isInteger(value) ? `${value}.0` : `${value}`;
         case 'vec3': return `vec3(${value.r.toFixed(1)}, ${value.g.toFixed(1)}, ${value.b.toFixed(1)})`;
@@ -24,14 +29,29 @@ export function compileShader(graph: ShaderGraph): { vertexShader: string, fragm
             c => c.targetNodeId === nodeId && c.targetPortId === portId
         );
 
+        
+        const targetNode = graph.nodes.find(n => n.id === nodeId);
+        const targetInput = targetNode?.inputs.find(i => i.id === portId);
+        const expectedType = targetInput?.type || 'float';
+
         if (connection) {
             generateNodeCode(connection.sourceNodeId);
-            return getVarName(connection.sourceNodeId);
+            const sourceVarName = getVarName(connection.sourceNodeId);
+
+           
+            const sourceNode = graph.nodes.find(n => n.id === connection.sourceNodeId);
+            const sourceOutput = sourceNode?.outputs.find(o => o.id === connection.sourcePortId);
+            const actualType = sourceOutput?.type || 'float';
+
+           
+            if (expectedType === 'vec3' && actualType === 'float') {
+                return `vec3(${sourceVarName})`;
+            }
+
+            return sourceVarName;
         }
 
-        const node = graph.nodes.find(n => n.id === nodeId);
-        const input = node?.inputs.find(i => i.id === portId);
-        return serializeValue(input?.value, input?.type as GLSLType);
+        return serializeValue(targetInput?.value, expectedType as GLSLType);
     }
 
     function generateNodeCode(nodeId: string) {

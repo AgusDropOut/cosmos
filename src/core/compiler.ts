@@ -2,7 +2,7 @@ import type { ShaderGraph, GLSLType } from '../types/ast';
 import { NodeRegistry } from './registry';
 
 function serializeValue(value: any, type: GLSLType): string {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
         if (type === 'vec3') return 'vec3(0.0)';
         if (type === 'vec2') return 'vec2(0.0)';
         return '0.0';
@@ -10,7 +10,12 @@ function serializeValue(value: any, type: GLSLType): string {
     
     switch (type) {
         case 'float': return Number.isInteger(value) ? `${value}.0` : `${value}`;
-        case 'vec3': return `vec3(${value.r.toFixed(1)}, ${value.g.toFixed(1)}, ${value.b.toFixed(1)})`;
+        case 'vec3': 
+        
+            if (typeof value === 'object') {
+                return `vec3(${value.r.toFixed(1)}, ${value.g.toFixed(1)}, ${value.b.toFixed(1)})`;
+            }
+            return `vec3(${value})`;
         default: return '0.0';
     }
 }

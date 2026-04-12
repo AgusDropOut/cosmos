@@ -19,12 +19,16 @@ interface NodeEditorProps {
 }
 
 const initialNodes: Node[] = [
-  { id: 'color-1', type: 'COLOR', position: { x: 100, y: 150 }, data: { astType: 'COLOR', inputs: [{ id: 'rgb', type: 'vec3', value: { r: 0.0, g: 0.8, b: 0.2 } }], outputs: [{ id: 'out', type: 'vec3' }] } },
-  { id: 'out-1', type: 'OUTPUT_FRAG', position: { x: 400, y: 150 }, data: { astType: 'OUTPUT_FRAG', inputs: [{ id: 'color', type: 'vec3' }], outputs: [] } },
+  { id: 'color-1', type: 'COLOR', position: { x: 50, y: 100 }, data: { astType: 'COLOR', inputs: [{ id: 'rgb', type: 'vec3', value: { r: 0.8, g: 0.2, b: 0.1 } }], outputs: [{ id: 'out', type: 'vec3' }] } },
+  { id: 'noise-1', type: 'NOISE', position: { x: 50, y: 250 }, data: { astType: 'NOISE', inputs: [{ id: 'scale', type: 'float', value: 10.0 }], outputs: [{ id: 'out', type: 'float' }] } },
+  { id: 'mult-1', type: 'MULTIPLY', position: { x: 300, y: 150 }, data: { astType: 'MULTIPLY', inputs: [{ id: 'a', type: 'vec3' }, { id: 'b', type: 'float' }], outputs: [{ id: 'out', type: 'vec3' }] } },
+  { id: 'out-1', type: 'OUTPUT_FRAG', position: { x: 550, y: 150 }, data: { astType: 'OUTPUT_FRAG', inputs: [{ id: 'color', type: 'vec3' }], outputs: [] } },
 ];
 
 const initialEdges: Edge[] = [
-  { id: 'e1', source: 'color-1', sourceHandle: 'out', target: 'out-1', targetHandle: 'color' }
+  { id: 'e1', source: 'color-1', sourceHandle: 'out', target: 'mult-1', targetHandle: 'a' },
+  { id: 'e2', source: 'noise-1', sourceHandle: 'out', target: 'mult-1', targetHandle: 'b' },
+  { id: 'e3', source: 'mult-1', sourceHandle: 'out', target: 'out-1', targetHandle: 'color' }
 ];
 
 export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
@@ -63,11 +67,13 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
 
     const fullGraph = { nodes: astNodes, connections: astConnections };
     
-    // Debug: Check if the graph is actually populated before sending
+
     console.log("Bridge sending graph to App:", fullGraph);
+    
     
     onGraphChange(fullGraph);
   }, [nodes, edges, onGraphChange]);
+
   return (
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
       <ReactFlow 
@@ -84,4 +90,5 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
       </ReactFlow>
     </div>
   );
+
 }

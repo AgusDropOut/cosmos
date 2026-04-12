@@ -7,10 +7,8 @@ export const NodeRegistry: Record<NodeType, NodeStrategy> = {
             `    vec3 ${varName} = ${resolveInput('rgb')};`
     },
     OUTPUT_FRAG: {
-        generateCode: ({ resolveInput }) => {
-            
-            return `    gl_FragColor = vec4(vec3(${resolveInput('color')}), 1.0);`;
-        }
+    generateCode: ({ resolveInput }) => 
+         `    gl_FragColor = vec4(vec3(${resolveInput('color')}), 1.0);`
     },
     NOISE: {
         globalFunctions: `float random(vec2 st) {\n    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);\n}`,

@@ -11,32 +11,32 @@ interface Canvas3DProps {
 export default function Canvas3D({ graph }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const requestRef = useRef<number>(0); // To stop the ghost loops
 
-  // EFFECT 1: Setup Scene (Runs Once)
+  // etup Scene
   useEffect(() => {
     if (!mountRef.current) return;
 
+    
+    mountRef.current.innerHTML = '';
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#1e1e1e');
-    sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
     camera.position.z = 2;
-    cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.debug.checkShaderErrors = true;
     mountRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
 
     const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+    
+   
     const material = new THREE.ShaderMaterial({
       vertexShader: `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `void main() { gl_FragColor = vec4(0.5, 0.5, 0.5, 1.0); }`
+      fragmentShader: `void main() { gl_FragColor = vec4(0.5, 0.0, 0.5, 1.0); }`
     });
     
     const cube = new THREE.Mesh(geometry, material);
@@ -44,34 +44,45 @@ export default function Canvas3D({ graph }: Canvas3DProps) {
     scene.add(cube);
 
     const animate = (time: number) => {
-      requestAnimationFrame(animate);
-      if (meshRef.current) {
-        meshRef.current.rotation.x += 0.005;
-        meshRef.current.rotation.y += 0.005;
+      
+      requestRef.current = requestAnimationFrame(animate);
+      
+      if (cube) {
+        cube.rotation.x += 0.005;
+        cube.rotation.y += 0.005;
         
-        // Update time if material supports it
-        const mat = meshRef.current.material as THREE.ShaderMaterial;
-        if (mat.uniforms && mat.uniforms.u_time) {
-          mat.uniforms.u_time.value = time * 0.001;
+       
+        if (cube.material instanceof THREE.ShaderMaterial && cube.material.uniforms.u_time) {
+          cube.material.uniforms.u_time.value = time * 0.001;
         }
       }
       renderer.render(scene, camera);
     };
-    animate(0);
+    
+    requestRef.current = requestAnimationFrame(animate);
+
+    const handleResize = () => {
+      if (!mountRef.current) return;
+      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
+      //  Kill the loop and the DOM
+      cancelAnimationFrame(requestRef.current);
+      window.removeEventListener('resize', handleResize);
       renderer.dispose();
-      if (mountRef.current) mountRef.current.removeChild(renderer.domElement);
+      geometry.dispose();
+      material.dispose();
+      if (mountRef.current) mountRef.current.innerHTML = '';
     };
-  }, []);
+  }, []); 
 
-  // EFFECT 2: The Material Injector (Runs every graph change)
+  // Material Injector
   useEffect(() => {
-    // Check if everything is ready
-    if (!meshRef.current || !graph.nodes || graph.nodes.length === 0) {
-        console.log("Canvas3D: Waiting for valid graph data...");
-        return;
-    }
+    if (!meshRef.current || !graph.nodes || graph.nodes.length === 0) return;
 
     try {
       const { vertexShader, fragmentShader } = compileShader(graph);
@@ -83,11 +94,14 @@ export default function Canvas3D({ graph }: Canvas3DProps) {
         fragmentShader
       });
 
-      // Swap
+    
       const oldMaterial = meshRef.current.material as THREE.Material;
       meshRef.current.material = newMaterial;
-      oldMaterial.dispose();
       
+      
+      meshRef.current.material.needsUpdate = true;
+      
+      oldMaterial.dispose();
       console.log("Cosmos: Material swap successful.");
     } catch (e) {
       console.error("Cosmos: Shader injection failed", e);

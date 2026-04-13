@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge} from 'reactflow';
+import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel} from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge , Connection  } from 'reactflow';
 import 'reactflow/dist/style.css';
 import type { ShaderGraph, ShaderNode, ShaderConnection, NodeType } from './types/ast';
@@ -13,6 +13,43 @@ const nodeTypes = {
   OUTPUT_FRAG: OutputNode,
   TIME: TimeNode,
 };
+
+const NODE_TEMPLATES: Record<string, any> = {
+  COLOR: {
+    type: 'COLOR',
+    data: { 
+      astType: 'COLOR', 
+      inputs: [{ id: 'rgb', type: 'vec3', value: { r: 0.5, g: 0.5, b: 0.5 } }], 
+      outputs: [{ id: 'out', type: 'vec3' }] 
+    }
+  },
+  NOISE: {
+    type: 'NOISE',
+    data: { 
+      astType: 'NOISE', 
+      inputs: [{ id: 'scale', type: 'float', value: 10.0 }], 
+      outputs: [{ id: 'out', type: 'float' }] 
+    }
+  },
+  MULTIPLY: {
+    type: 'MULTIPLY',
+    data: { 
+      astType: 'MULTIPLY', 
+      inputs: [{ id: 'a', type: 'vec3' }, { id: 'b', type: 'float' }], 
+      outputs: [{ id: 'out', type: 'vec3' }] 
+    }
+  },
+  TIME: {
+    type: 'TIME',
+    data: { 
+      astType: 'TIME', 
+      inputs: [{ id: 'speed', type: 'float', value: 1.0 }], 
+      outputs: [{ id: 'out', type: 'float' }] 
+    }
+  }
+};
+
+
 
 interface NodeEditorProps {
   onGraphChange: (graph: ShaderGraph) => void;
@@ -46,9 +83,49 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     });
   }, []);
 
-  // THE BRIDGE: This MUST transform React Flow state into our AST format
+
+  const updateNodeValue = useCallback((nodeId: string, inputId: string, newValue: any) => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.id === nodeId) {
+         
+          const newInputs = node.data.inputs.map((inp: any) =>
+            inp.id === inputId ? { ...inp, value: newValue } : inp
+          );
+          
+          return { ...node, data: { ...node.data, inputs: newInputs } };
+        }
+        return node;
+      })
+    );
+  }, []);
+
+ 
+  const displayNodes = nodes.map(node => ({
+    ...node,
+    data: { ...node.data, updateNodeValue }
+  }));
+
+   const addNode = (type: string) => {
+    const template = NODE_TEMPLATES[type];
+    if (!template) return;
+
+    const newNode: Node = {
+      id: `${type.toLowerCase()}-${Date.now()}`, // Unique ID
+      type: template.type,
+      position: { x: 100, y: 100 }, // Default spawn position
+      data: { ...template.data }
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+  };
+
+  
   useEffect(() => {
-    // 1. Map React Flow nodes to our ShaderNodes
+
+   
+
+    
     const astNodes: ShaderNode[] = nodes.map(n => ({
       id: n.id,
       type: n.data.astType as NodeType,
@@ -56,7 +133,7 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
       outputs: n.data.outputs || []
     }));
 
-    // 2. Map React Flow edges to our ShaderConnections
+    
     const astConnections: ShaderConnection[] = edges.map(e => ({
       id: e.id,
       sourceNodeId: e.source,
@@ -77,7 +154,7 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
   return (
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
       <ReactFlow 
-        nodes={nodes} 
+        nodes={displayNodes} 
         edges={edges} 
         onNodesChange={onNodesChange} 
         onEdgesChange={onEdgesChange} 
@@ -85,10 +162,32 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
         nodeTypes={nodeTypes} 
         fitView
       >
+        <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div style={{ color: 'white', fontSize: '12px', marginBottom: '4px', fontWeight: 'bold' }}>ADD NODE</div>
+          {Object.keys(NODE_TEMPLATES).map(type => (
+            <button 
+              key={type} 
+              onClick={() => addNode(type)}
+              style={{
+                background: '#1e1e1e',
+                color: 'white',
+                border: '1px solid #4a4a4a',
+                padding: '6px 12px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '11px',
+                textAlign: 'left'
+              }}
+            >
+              + {type}
+            </button>
+          ))}
+        </Panel>
+
         <Background color="#333" gap={16} />
         <Controls />
       </ReactFlow>
     </div>
   );
-
 }
+

@@ -4,18 +4,23 @@ import * as THREE from 'three';
 import { compileShader } from './core/compiler';
 import type { ShaderGraph } from './types/ast';
 import { ShapeRegistry } from './core/shapes/ShapeRegistry';
+import type { IProjectContext } from './types/context'; 
+
 
 interface Canvas3DProps {
   graph: ShaderGraph;
-  shape: string; 
+  contextSettings: Record<string, any>;
+  activeContext: IProjectContext;
 }
 
 
-
-export default function Canvas3D({ graph, shape }: Canvas3DProps) {
+export default function Canvas3D({ graph, contextSettings, activeContext }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
   const requestRef = useRef<number>(0);
+
+  
+  const currentShape = contextSettings.shape || 'CUBE';
 
   // EFFECT 1: Setup Scene
   useEffect(() => {
@@ -36,7 +41,7 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
 
     
   
-    const generator = ShapeRegistry[shape] || ShapeRegistry['CUBE'];
+    const generator = ShapeRegistry[currentShape] || ShapeRegistry['CUBE'];
     const geometry = generator.generate();
     
     const material = new THREE.ShaderMaterial({
@@ -112,7 +117,7 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
 
 
     const oldGeometry = meshRef.current.geometry;
-    const generator = ShapeRegistry[shape] || ShapeRegistry['CUBE'];
+    const generator = ShapeRegistry[currentShape] || ShapeRegistry['CUBE'];
     meshRef.current.geometry = generator.generate();
 
     
@@ -120,7 +125,7 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
     
     // Dispose the old geometry to prevent memory leaks in the GPU
     oldGeometry.dispose();
-  }, [shape]);
+  }, [currentShape]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

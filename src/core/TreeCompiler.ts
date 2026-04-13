@@ -50,13 +50,13 @@ class TreeCompiler {
         const mainString = this.mainBodyCode.join('\n');
 
         return `
-varying vec2 vUv;
-${globalsString}
+    varying vec2 vUv;
+    ${globalsString}
 
-void main() {
-${isVertex ? '    vUv = uv;' : ''}
-${mainString}
-}
+    void main() {
+            ${isVertex ? '    vUv = uv;' : ''}
+            ${mainString}
+        }
         `.trim();
     }
 

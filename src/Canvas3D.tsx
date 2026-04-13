@@ -10,20 +10,7 @@ interface Canvas3DProps {
   shape: string; 
 }
 
-// Helper function to generate Three.js geometries based on a string key
-const getGeometry = (shapeType: string): THREE.BufferGeometry => {
-  switch (shapeType) {
-    case 'SPHERE':
-      return new THREE.SphereGeometry(0.6, 32, 32);
-    case 'ICOSAHEDRON':
-      return new THREE.IcosahedronGeometry(0.6, 0);
-    case 'CYLINDER':
-      return new THREE.CylinderGeometry(0.5, 0.5, 1.0, 32);
-    case 'CUBE':
-    default:
-      return new THREE.BoxGeometry(0.8, 0.8, 0.8);
-  }
-};
+
 
 export default function Canvas3D({ graph, shape }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -65,8 +52,7 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
       requestRef.current = requestAnimationFrame(animate);
       
       if (meshRef.current) {
-        meshRef.current.rotation.x += 0.005;
-        meshRef.current.rotation.y += 0.005;
+        
         
         if (meshRef.current.material instanceof THREE.ShaderMaterial && meshRef.current.material.uniforms.u_time) {
           meshRef.current.material.uniforms.u_time.value = time * 0.001;

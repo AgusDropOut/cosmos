@@ -6,18 +6,33 @@ import type { ShaderGraph } from './types/ast';
 
 interface Canvas3DProps {
   graph: ShaderGraph;
+  shape: string; 
 }
 
-export default function Canvas3D({ graph }: Canvas3DProps) {
+// Helper function to generate Three.js geometries based on a string key
+const getGeometry = (shapeType: string): THREE.BufferGeometry => {
+  switch (shapeType) {
+    case 'SPHERE':
+      return new THREE.SphereGeometry(0.6, 32, 32);
+    case 'ICOSAHEDRON':
+      return new THREE.IcosahedronGeometry(0.6, 0);
+    case 'CYLINDER':
+      return new THREE.CylinderGeometry(0.5, 0.5, 1.0, 32);
+    case 'CUBE':
+    default:
+      return new THREE.BoxGeometry(0.8, 0.8, 0.8);
+  }
+};
+
+export default function Canvas3D({ graph, shape }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const meshRef = useRef<THREE.Mesh | null>(null);
-  const requestRef = useRef<number>(0); // To stop the ghost loops
+  const requestRef = useRef<number>(0);
 
-  // etup Scene
+  // EFFECT 1: Setup Scene
   useEffect(() => {
     if (!mountRef.current) return;
 
-    
     mountRef.current.innerHTML = '';
 
     const scene = new THREE.Scene();
@@ -31,29 +46,27 @@ export default function Canvas3D({ graph }: Canvas3DProps) {
     renderer.debug.checkShaderErrors = true;
     mountRef.current.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
     
-   
+    const geometry = getGeometry(shape);
+    
     const material = new THREE.ShaderMaterial({
       vertexShader: `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
       fragmentShader: `void main() { gl_FragColor = vec4(0.5, 0.0, 0.5, 1.0); }`
     });
     
-    const cube = new THREE.Mesh(geometry, material);
-    meshRef.current = cube; 
-    scene.add(cube);
+    const mesh = new THREE.Mesh(geometry, material);
+    meshRef.current = mesh; 
+    scene.add(mesh);
 
     const animate = (time: number) => {
-      
       requestRef.current = requestAnimationFrame(animate);
       
-      if (cube) {
-        cube.rotation.x += 0.005;
-        cube.rotation.y += 0.005;
+      if (meshRef.current) {
+        meshRef.current.rotation.x += 0.005;
+        meshRef.current.rotation.y += 0.005;
         
-       
-        if (cube.material instanceof THREE.ShaderMaterial && cube.material.uniforms.u_time) {
-          cube.material.uniforms.u_time.value = time * 0.001;
+        if (meshRef.current.material instanceof THREE.ShaderMaterial && meshRef.current.material.uniforms.u_time) {
+          meshRef.current.material.uniforms.u_time.value = time * 0.001;
         }
       }
       renderer.render(scene, camera);
@@ -70,23 +83,23 @@ export default function Canvas3D({ graph }: Canvas3DProps) {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      //  Kill the loop and the DOM
       cancelAnimationFrame(requestRef.current);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
-      geometry.dispose();
-      material.dispose();
+      if (meshRef.current) {
+        meshRef.current.geometry.dispose();
+        (meshRef.current.material as THREE.Material).dispose();
+      }
       if (mountRef.current) mountRef.current.innerHTML = '';
     };
   }, []); 
 
-  // Material Injector
+  // EFFECT 2: Material Injector (Runs on graph change)
   useEffect(() => {
     if (!meshRef.current || !graph.nodes || graph.nodes.length === 0) return;
 
     try {
       const { vertexShader, fragmentShader } = compileShader(graph);
-      console.log("Cosmos: Injecting new shader...");
 
       const newMaterial = new THREE.ShaderMaterial({
         uniforms: { u_time: { value: 0 } },
@@ -94,19 +107,26 @@ export default function Canvas3D({ graph }: Canvas3DProps) {
         fragmentShader
       });
 
-    
       const oldMaterial = meshRef.current.material as THREE.Material;
       meshRef.current.material = newMaterial;
-      
-      
       meshRef.current.material.needsUpdate = true;
       
       oldMaterial.dispose();
-      console.log("Cosmos: Material swap successful.");
     } catch (e) {
       console.error("Cosmos: Shader injection failed", e);
     }
   }, [graph]);
+
+  // EFFECT 3: Geometry Swap (Runs on shape change)
+  useEffect(() => {
+    if (!meshRef.current) return;
+
+    const oldGeometry = meshRef.current.geometry;
+    meshRef.current.geometry = getGeometry(shape);
+    
+    // Dispose the old geometry to prevent memory leaks in the GPU
+    oldGeometry.dispose();
+  }, [shape]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

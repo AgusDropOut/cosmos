@@ -1,4 +1,3 @@
-// src/NodeEditor.tsx
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel } from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from 'reactflow';
@@ -10,22 +9,24 @@ import { BaseNode } from './components/BaseNode';
 
 interface NodeEditorProps {
   onGraphChange: (graph: ShaderGraph) => void;
+  onShapeChange: (shape: string) => void; /* New property for shape routing */
 }
 
-// Dynamically generate the initial state based on definitions
+/* Initial state includes both fragment and vertex outputs */
 const initialNodes: Node[] = [
   { id: 'out-1', type: 'OUTPUT_FRAG', position: { x: 600, y: 150 }, data: { astType: 'OUTPUT_FRAG', inputs: [{ id: 'color', type: 'vec3' }], outputs: [] } },
+  { id: 'out-vert-1', type: 'OUTPUT_VERT', position: { x: 600, y: 300 }, data: { astType: 'OUTPUT_VERT', inputs: [{ id: 'position_offset', type: 'vec3' }, { id: 'scale', type: 'float', value: 1.0 }], outputs: [] } }
 ];
 
-export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
+export default function NodeEditor({ onGraphChange, onShapeChange }: NodeEditorProps) {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [selectedShape, setSelectedShape] = useState<string>('CUBE');
 
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), []);
 
-  // Update logic to handle slider sliding permanently
   const updateNodeValue = useCallback((nodeId: string, inputId: string, newValue: any) => {
     setNodes((nds) =>
       nds.map((node) => {
@@ -40,13 +41,11 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     );
   }, []);
 
-  // Inject the updater into every node dynamically
   const displayNodes = nodes.map(node => ({
     ...node,
     data: { ...node.data, updateNodeValue }
   }));
 
-  // Dynamically map all definitions to the BaseNode React Component
   const nodeTypes = useMemo(() => {
     return Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
       acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
@@ -54,7 +53,6 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     }, {} as Record<string, React.ComponentType<any>>);
   }, []);
 
-  // Factory to create new nodes from the Panel
   const addNode = (type: string) => {
     const def = NODE_DEFINITIONS[type];
     if (!def) return;
@@ -62,7 +60,7 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     const newNode: Node = {
       id: `${type.toLowerCase()}-${Date.now()}`,
       type: def.type,
-      position: { x: window.innerWidth / 4, y: window.innerHeight / 4 }, // Spawn in view
+      position: { x: window.innerWidth / 4, y: window.innerHeight / 4 },
       data: { 
         astType: def.type,
         inputs: def.inputs.map(i => ({ id: i.id, type: i.type, value: i.default })),
@@ -72,7 +70,12 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     setNodes((nds) => [...nds, newNode]);
   };
 
-  // The Bridge
+  const handleShapeSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    setSelectedShape(val);
+    onShapeChange(val);
+  };
+
   useEffect(() => {
     const astNodes: ShaderNode[] = nodes.map(n => ({
       id: n.id,
@@ -96,7 +99,6 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
       <ReactFlow nodes={displayNodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView>
         
-        {/* Dynamic Toolbar */}
         <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px' }}>
           <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>ADD NODE</div>
           {Object.values(NODE_DEFINITIONS).map(def => (
@@ -106,6 +108,17 @@ export default function NodeEditor({ onGraphChange }: NodeEditorProps) {
               + {def.label}
             </button>
           ))}
+        </Panel>
+
+        {/* Geometry Selector Panel */}
+        <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333' }}>
+          <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>BASE SHAPE</div>
+          <select value={selectedShape} onChange={handleShapeSelection} style={{ background: '#121212', color: 'white', border: '1px solid #4a4a4a', padding: '4px', borderRadius: '4px', fontSize: '11px', outline: 'none' }}>
+            <option value="CUBE">Cube</option>
+            <option value="SPHERE">Sphere</option>
+            <option value="ICOSAHEDRON">Icosahedron</option>
+            <option value="CYLINDER">Cylinder</option>
+          </select>
         </Panel>
 
         <Background color="#333" gap={16} />

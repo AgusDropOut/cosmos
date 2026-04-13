@@ -77,5 +77,22 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       generateCode: ({ resolveInput }) => `    gl_FragColor = vec4(vec3(${resolveInput('color')}), 1.0);`
     }
+  },
+  OUTPUT_VERT: {
+    type: 'OUTPUT_VERT',
+    label: 'Vertex Displacement (Shape)',
+    color: '#ae3bff',
+    inputs: [
+      { id: 'position_offset', type: 'vec3', default: {r:0, g:0, b:0} },
+      { id: 'scale', type: 'float', default: 1.0 }
+    ],
+    outputs: [],
+    strategy: {
+      
+      generateCode: ({ resolveInput }) => `
+        vec3 displacedPosition = position * ${resolveInput('scale')} + ${resolveInput('position_offset')};
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
+      `
+    }
   }
 };

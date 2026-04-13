@@ -1,26 +1,20 @@
-// src/App.tsx
 import { useState } from 'react';
-import Canvas3D from './Canvas3D';
 import NodeEditor from './NodeEditor';
+import Canvas3D from './Canvas3D';
 import type { ShaderGraph } from './types/ast';
 
 function App() {
-  // App holds the central truth of the graph. We start it empty.
   const [graph, setGraph] = useState<ShaderGraph>({ nodes: [], connections: [] });
+  const [shape, setShape] = useState<string>('CUBE'); /* State routing */
 
   return (
-    <div style={{ display: 'flex', width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
-      
-      <div style={{ flex: 1, borderRight: '2px solid #2a2a2a' }}>
-        {/* Pass the setter function to the Editor */}
-        <NodeEditor onGraphChange={setGraph} />
-      </div>
-
+    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
       <div style={{ flex: 1 }}>
-        {/* Pass the data to the Canvas */}
-        <Canvas3D graph={graph} />
+        <NodeEditor onGraphChange={setGraph} onShapeChange={setShape} />
       </div>
-      
+      <div style={{ flex: 1 }}>
+        <Canvas3D graph={graph} shape={shape} />
+      </div>
     </div>
   );
 }

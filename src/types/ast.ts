@@ -1,5 +1,5 @@
 // src/types/ast.ts
-export type NodeType = 'OUTPUT_FRAG' | 'OUTPUT_VERT' | 'COLOR' | 'NOISE' | 'MULTIPLY' | 'TIME';
+export type NodeType = 'OUTPUT_FRAG' | 'OUTPUT_VERT' | 'COLOR' | 'NOISE' | 'MULTIPLY' | 'TIME' | 'MATERIAL_REF' | 'TRAIL_ENDPOINT';
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4';
 

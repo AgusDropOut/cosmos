@@ -88,11 +88,29 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [],
     strategy: {
-      
+  
       generateCode: ({ resolveInput }) => `
         vec3 displacedPosition = position * ${resolveInput('scale')} + ${resolveInput('position_offset')};
         gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
       `
     }
+  },
+  MATERIAL_REF: {
+    type: 'MATERIAL_REF',
+    label: 'Material: Pulsating Core',
+    color: '#ff922b',
+    inputs: [
+      { id: 'intensity', type: 'float', default: 1.0 }
+    ],
+    outputs: [{ id: 'out_color', type: 'vec3' }],
+    strategy: {
+    generateCode: ({ resolveInput, varName }) => `
+        // --- START SUB-GRAPH: Pulsating Core ---
+        float internal_time = abs(sin(u_time * 2.0));
+        vec3 internal_color = vec3(1.0, 0.2, 0.0); // Orange fire
+        vec3 ${varName} = internal_color * internal_time * ${resolveInput('intensity')};
+        // --- END SUB-GRAPH ---
+    ` 
   }
+}
 };

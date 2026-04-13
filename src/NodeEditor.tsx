@@ -1,5 +1,5 @@
 // src/NodeEditor.tsx
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel } from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
@@ -8,25 +8,83 @@ import type { ShaderGraph, ShaderNode, ShaderConnection, NodeType } from './type
 import { NODE_DEFINITIONS } from './core/NodeDefinitions';
 import { BaseNode } from './components/BaseNode';
 import type { IProjectContext } from './types/context';
+import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
+import type { SavedWorkspace } from './types/workspace';
 
 interface NodeEditorProps {
+  storage: IWorkspaceStorage;
   activeContext: IProjectContext;
-  contextSettings: Record<string, any>; // e.g., { shape: 'STAR_LAMP' }
+  contextSettings: Record<string, any>; 
+  loadedWorkspace: SavedWorkspace | null;               
+  onLoadWorkspace: (workspace: SavedWorkspace) => void; 
   onSettingChange: (key: string, value: any) => void;
   onGraphChange: (graph: ShaderGraph) => void;
 }
 
-export default function NodeEditor({ activeContext, contextSettings, onSettingChange, onGraphChange }: NodeEditorProps) {
- 
+export default function NodeEditor({ 
+  storage,
+  activeContext, 
+  contextSettings,
+  loadedWorkspace, 
+  onLoadWorkspace, 
+  onSettingChange, 
+  onGraphChange 
+}: NodeEditorProps) {
+  
   const [nodes, setNodes] = useState<Node[]>(activeContext.getInitialNodes());
   const [edges, setEdges] = useState<Edge[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
- 
+  // 1. SMART GRAPH RESET / LOAD
   useEffect(() => {
-    setNodes(activeContext.getInitialNodes());
-    setEdges([]);
-  }, [activeContext]);
+    if (loadedWorkspace && loadedWorkspace.contextId === activeContext.id) {
+      setNodes(loadedWorkspace.nodes);
+      setEdges(loadedWorkspace.edges);
+    } else {
+      setNodes(activeContext.getInitialNodes());
+      setEdges([]);
+    }
+  }, [activeContext, loadedWorkspace]);
 
+  // 2. STORAGE LOGIC
+  const handleSave = async (download: boolean) => {
+    const workspace: SavedWorkspace = {
+      version: "1.0",
+      name: "My Cosmos Shader", // In the future, you can add a text input for the user to name this!
+      contextId: activeContext.id,
+      settings: contextSettings,
+      nodes,
+      edges
+    };
+    
+    await storage.save(workspace); 
+    if (download) {
+        await storage.exportFile(workspace);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const workspace = await storage.importFile(file);
+      onLoadWorkspace(workspace);
+    } catch (err) {
+      alert("Failed to load project: " + err);
+    }
+  };
+
+  // 3. AUTOSAVE TRIGGER
+  useEffect(() => {
+    // Only autosave if we actually have nodes (prevents saving a blank screen on first load)
+    if (nodes.length > 0) {
+      handleSave(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes, edges, contextSettings]);
+
+
+  // 4. REACT FLOW LOGIC
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), []);
@@ -74,6 +132,7 @@ export default function NodeEditor({ activeContext, contextSettings, onSettingCh
     setNodes((nds) => [...nds, newNode]);
   };
 
+  // 5. COMPILER BRIDGE
   useEffect(() => {
     const astNodes: ShaderNode[] = nodes.map(n => ({
       id: n.id,
@@ -97,10 +156,21 @@ export default function NodeEditor({ activeContext, contextSettings, onSettingCh
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
       <ReactFlow nodes={displayNodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView>
         
-        {/* DYNAMIC LEFT PANEL: Only show nodes allowed by the active context */}
+        {/* IDE TOOLBAR */}
+        <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+          <button onClick={() => handleSave(true)} style={{ background: '#2b8a3e', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+            💾 Export .cosmosproj
+          </button>
+          <button onClick={() => fileInputRef.current?.click()} style={{ background: '#4dabf7', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+            📂 Load Project
+          </button>
+          <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={handleFileUpload} style={{ display: 'none' }} />
+        </Panel>
+
+        {/* DYNAMIC LEFT PANEL */}
         <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px' }}>
           <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>ADD NODE</div>
-          {Object.values(NODE_DEFINITIONS)
+         {Object.values(NODE_DEFINITIONS)
             .filter(def => activeContext.isNodeAllowed(def.type))
             .map(def => (
             <button 
@@ -111,7 +181,7 @@ export default function NodeEditor({ activeContext, contextSettings, onSettingCh
           ))}
         </Panel>
 
-        {/* DYNAMIC RIGHT PANEL: Injected by the Context */}
+        {/* DYNAMIC RIGHT PANEL */}
         <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333' }}>
           <activeContext.SettingsPanel 
             settings={contextSettings} 

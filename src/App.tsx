@@ -1,27 +1,23 @@
-
 import { useState, useEffect } from 'react';
 import NodeEditor from './NodeEditor';
 import Canvas3D from './Canvas3D';
 import { MaterialContext } from './core/contexts/MaterialContext';
+import { TrailContext } from './core/contexts/TrailContext'; // <-- Import the Trail Context
 import type { ShaderGraph } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
-
 
 interface AppProps {
     storage: IWorkspaceStorage;
 }
 
-const AVAILABLE_CONTEXTS = [MaterialContext];
+// 1. REGISTER AVAILABLE CONTEXTS HERE
+const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext]; 
 
 function App({ storage }: AppProps) {
-  
   const [graph, setGraph] = useState<ShaderGraph>({ nodes: [], connections: [] });
   const [activeContext, setActiveContext] = useState(MaterialContext);
-  const [contextSettings, setContextSettings] = useState<Record<string, any>>({
-    shape: 'STAR_LAMP' 
-  });
-
+  const [contextSettings, setContextSettings] = useState<Record<string, any>>({ shape: 'STAR_LAMP' });
   const [loadedWorkspace, setLoadedWorkspace] = useState<SavedWorkspace | null>(null);
 
   const handleLoadWorkspace = (workspace: SavedWorkspace) => {
@@ -37,10 +33,15 @@ function App({ storage }: AppProps) {
     });
   }, [storage]);
 
-  
-
   const handleSettingChange = (key: string, value: any) => {
     setContextSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  // 2. THE CONTEXT SWITCHER LOGIC
+  const handleContextChange = (contextId: string) => {
+    const newContext = AVAILABLE_CONTEXTS.find(c => c.id === contextId) || MaterialContext;
+    setActiveContext(newContext);
+    setLoadedWorkspace(null); // Clear loaded data to spawn default nodes for the new context
   };
 
   return (
@@ -49,15 +50,16 @@ function App({ storage }: AppProps) {
         <NodeEditor 
            storage={storage}
            activeContext={activeContext}
+           availableContexts={AVAILABLE_CONTEXTS}  // <-- Pass to Editor
+           onContextChange={handleContextChange}   // <-- Pass to Editor
            contextSettings={contextSettings}
-           loadedWorkspace={loadedWorkspace}       
-           onLoadWorkspace={handleLoadWorkspace}  
+           loadedWorkspace={loadedWorkspace}
+           onLoadWorkspace={handleLoadWorkspace}
            onSettingChange={handleSettingChange}
            onGraphChange={setGraph} 
         />
       </div>
       <div style={{ flex: 1 }}>
-        {/* Pass settings directly so Canvas3D can read settings.shape or settings.particleCount */}
         <Canvas3D graph={graph} contextSettings={contextSettings} activeContext={activeContext} />
       </div>
     </div>

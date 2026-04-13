@@ -112,5 +112,21 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
         // --- END SUB-GRAPH ---
     ` 
   }
-}
+},
+TRAIL_ENDPOINT: {
+    type: 'TRAIL_ENDPOINT',
+    label: 'Trail Output',
+    color: '#e03131',
+    inputs: [
+      { id: 'color', type: 'vec4', default: { r: 1.0, g: 0.5, b: 0.0, a: 1.0 } },
+      { id: 'width_multiplier', type: 'float', default: 1.0 }
+    ],
+    outputs: [],
+    strategy: {
+      generateCode: ({ resolveInput }) => `
+        vec4 finalColor = ${resolveInput('color')};
+        gl_FragColor = finalColor;
+      `
+    }
+  }
 };

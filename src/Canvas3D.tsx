@@ -3,9 +3,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { compileShader } from './core/compiler';
 import type { ShaderGraph } from './types/ast';
-import { ShapeRegistry } from './core/shapes/ShapeRegistry';
-import type { IProjectContext } from './types/context'; 
-
+import type { IProjectContext, IPreviewStrategy } from './types/context'; 
 
 interface Canvas3DProps {
   graph: ShaderGraph;
@@ -13,57 +11,62 @@ interface Canvas3DProps {
   activeContext: IProjectContext;
 }
 
-
 export default function Canvas3D({ graph, contextSettings, activeContext }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const meshRef = useRef<THREE.Mesh | null>(null);
   const requestRef = useRef<number>(0);
-
   
-  const currentShape = contextSettings.shape || 'CUBE';
+  // Mutable references for the animation loop
+  const settingsRef = useRef(contextSettings);
+  const strategyRef = useRef<IPreviewStrategy | null>(null);
+  const materialRef = useRef<THREE.ShaderMaterial | null>(null);
 
-  // EFFECT 1: Setup Scene
+  // Sync settings for the animation loop and trigger strategy updates
+  useEffect(() => {
+    settingsRef.current = contextSettings;
+    if (strategyRef.current) {
+        strategyRef.current.onSettingsChange(contextSettings);
+    }
+  }, [contextSettings]);
+
+  // Scene Setup & Strategy Execution
   useEffect(() => {
     if (!mountRef.current) return;
-
     mountRef.current.innerHTML = '';
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#1e1e1e');
-
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
-    camera.position.z = 2;
+    camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    renderer.debug.checkShaderErrors = true;
     mountRef.current.appendChild(renderer.domElement);
 
-    
-  
-    const generator = ShapeRegistry[currentShape] || ShapeRegistry['CUBE'];
-    const geometry = generator.generate();
-    
     const material = new THREE.ShaderMaterial({
-      vertexShader: `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-      fragmentShader: `void main() { gl_FragColor = vec4(0.5, 0.0, 0.5, 1.0); }`
+        uniforms: { u_time: { value: 0 } },
+        vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+        fragmentShader: `void main() { gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); }`,
+        side: THREE.DoubleSide,
+        transparent: true,
+        depthWrite: false
     });
-    
-    const mesh = new THREE.Mesh(geometry, material);
-    meshRef.current = mesh; 
-    scene.add(mesh);
+    materialRef.current = material;
+
+    // Initialize the specific context strategy
+    strategyRef.current = activeContext.createPreviewStrategy();
+    strategyRef.current.init({ scene, camera, material }, settingsRef.current);
 
     const animate = (time: number) => {
-      requestRef.current = requestAnimationFrame(animate);
-      
-      if (meshRef.current) {
+        requestRef.current = requestAnimationFrame(animate);
         
-        
-        if (meshRef.current.material instanceof THREE.ShaderMaterial && meshRef.current.material.uniforms.u_time) {
-          meshRef.current.material.uniforms.u_time.value = time * 0.001;
+        if (materialRef.current?.uniforms.u_time) {
+            materialRef.current.uniforms.u_time.value = time * 0.001;
         }
-      }
-      renderer.render(scene, camera);
+
+        if (strategyRef.current) {
+            strategyRef.current.update(time, settingsRef.current);
+        }
+
+        renderer.render(scene, camera);
     };
     
     requestRef.current = requestAnimationFrame(animate);
@@ -80,52 +83,30 @@ export default function Canvas3D({ graph, contextSettings, activeContext }: Canv
       cancelAnimationFrame(requestRef.current);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
-      if (meshRef.current) {
-        meshRef.current.geometry.dispose();
-        (meshRef.current.material as THREE.Material).dispose();
+      if (strategyRef.current) {
+          strategyRef.current.dispose();
+      }
+      if (materialRef.current) {
+          materialRef.current.dispose();
       }
       if (mountRef.current) mountRef.current.innerHTML = '';
     };
-  }, []); 
+  }, [activeContext]); // Rebuild scene entirely on context switch
 
-  // EFFECT 2: Material Injector (Runs on graph change)
+  // Shader Injection
   useEffect(() => {
-    if (!meshRef.current || !graph.nodes || graph.nodes.length === 0) return;
+    if (!materialRef.current || !graph.nodes || graph.nodes.length === 0) return;
 
     try {
       const { vertexShader, fragmentShader } = compileShader(graph);
 
-      const newMaterial = new THREE.ShaderMaterial({
-        uniforms: { u_time: { value: 0 } },
-        vertexShader,
-        fragmentShader
-      });
-
-      const oldMaterial = meshRef.current.material as THREE.Material;
-      meshRef.current.material = newMaterial;
-      meshRef.current.material.needsUpdate = true;
-      
-      oldMaterial.dispose();
+      materialRef.current.vertexShader = vertexShader;
+      materialRef.current.fragmentShader = fragmentShader;
+      materialRef.current.needsUpdate = true;
     } catch (e) {
       console.error("Cosmos: Shader injection failed", e);
     }
   }, [graph]);
-
-  // EFFECT 3: Geometry Swap (Runs on shape change)
-  useEffect(() => {
-    if (!meshRef.current) return;
-
-
-    const oldGeometry = meshRef.current.geometry;
-    const generator = ShapeRegistry[currentShape] || ShapeRegistry['CUBE'];
-    meshRef.current.geometry = generator.generate();
-
-    
-   
-    
-    // Dispose the old geometry to prevent memory leaks in the GPU
-    oldGeometry.dispose();
-  }, [currentShape]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

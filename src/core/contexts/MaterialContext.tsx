@@ -1,8 +1,13 @@
 // src/core/contexts/MaterialContext.tsx
 import React from 'react';
-import type { IProjectContext } from '../../types/context';
+import * as THREE from 'three';
+import type { IProjectContext, IPreviewStrategy } from '../../types/context';
 import { ShapeRegistry } from '../shapes/ShapeRegistry';
 import type { Node } from 'reactflow';
+
+const getSafeGenerator = (shapeKey: string) => {
+    return ShapeRegistry[shapeKey] || ShapeRegistry['CUBE'];
+};
 
 export const MaterialContext: IProjectContext = {
     id: 'MATERIAL',
@@ -13,11 +18,8 @@ export const MaterialContext: IProjectContext = {
         { id: 'out-vert-1', type: 'OUTPUT_VERT', position: { x: 600, y: 300 }, data: { astType: 'OUTPUT_VERT', inputs: [{ id: 'position_offset', type: 'vec3' }, { id: 'scale', type: 'float', value: 1.0 }], outputs: [] } }
     ],
 
-    isNodeAllowed: (nodeType: string) => {
-        return true; 
-    },
+    isNodeAllowed: (nodeType: string) => true,
 
-    
     SettingsPanel: ({ settings, onSettingChange }) => {
         const selectedShape = settings.shape || 'CUBE';
         return (
@@ -36,5 +38,37 @@ export const MaterialContext: IProjectContext = {
                 </select>
             </>
         );
+    },
+
+    createPreviewStrategy: (): IPreviewStrategy => {
+        let mesh: THREE.Mesh | null = null;
+
+        return {
+            init: ({ scene, material }, settings) => {
+                const generator = getSafeGenerator(settings.shape);
+                mesh = new THREE.Mesh(generator.generate(), material);
+                scene.add(mesh);
+            },
+            update: (time) => {
+                if (mesh) {
+                    mesh.rotation.x += 0.005;
+                    mesh.rotation.y += 0.005;
+                }
+            },
+            onSettingsChange: (settings) => {
+                if (mesh) {
+                    const oldGeo = mesh.geometry;
+                    const generator = getSafeGenerator(settings.shape);
+                    mesh.geometry = generator.generate();
+                    oldGeo.dispose();
+                }
+            },
+            dispose: () => {
+                if (mesh) {
+                    mesh.geometry.dispose();
+                    mesh.removeFromParent();
+                }
+            }
+        };
     }
 };

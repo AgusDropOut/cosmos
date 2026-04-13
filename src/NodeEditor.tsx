@@ -14,6 +14,8 @@ import type { SavedWorkspace } from './types/workspace';
 interface NodeEditorProps {
   storage: IWorkspaceStorage;
   activeContext: IProjectContext;
+  availableContexts: IProjectContext[];          
+  onContextChange: (contextId: string) => void;  
   contextSettings: Record<string, any>; 
   loadedWorkspace: SavedWorkspace | null;               
   onLoadWorkspace: (workspace: SavedWorkspace) => void; 
@@ -24,6 +26,8 @@ interface NodeEditorProps {
 export default function NodeEditor({ 
   storage,
   activeContext, 
+  availableContexts,
+  onContextChange,  
   contextSettings,
   loadedWorkspace, 
   onLoadWorkspace, 
@@ -157,12 +161,26 @@ export default function NodeEditor({
       <ReactFlow nodes={displayNodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView>
         
         {/* IDE TOOLBAR */}
-        <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}>
+        <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', boxShadow: '0 4px 12px rgba(0,0,0,0.5)', alignItems: 'center' }}>
+          
+          {/* THE NEW CONTEXT SELECTOR */}
+          <select 
+            value={activeContext.id} 
+            onChange={(e) => onContextChange(e.target.value)}
+            style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
+          >
+            {availableContexts.map(ctx => (
+              <option key={ctx.id} value={ctx.id}>{ctx.name}</option>
+            ))}
+          </select>
+
+          <div style={{ width: '1px', height: '20px', background: '#333', margin: '0 5px' }} /> {/* Divider */}
+
           <button onClick={() => handleSave(true)} style={{ background: '#2b8a3e', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
-            💾 Export .cosmosproj
+            💾 Export
           </button>
-          <button onClick={() => fileInputRef.current?.click()} style={{ background: '#4dabf7', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
-            📂 Load Project
+          <button onClick={() => fileInputRef.current?.click()} style={{ background: '#333', color: 'white', border: '1px solid #4a4a4a', padding: '6px 16px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>
+            📂 Load
           </button>
           <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={handleFileUpload} style={{ display: 'none' }} />
         </Panel>

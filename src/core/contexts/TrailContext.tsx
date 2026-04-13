@@ -1,0 +1,85 @@
+// src/core/contexts/TrailContext.tsx
+import React from 'react';
+import * as THREE from 'three';
+import type { IProjectContext, IPreviewStrategy } from '../../types/context';
+import type { Node } from 'reactflow';
+import { TrailGeometryGenerator } from '../shapes/TrailGeometryGenerator';
+
+export const TrailContext: IProjectContext = {
+    id: 'TRAIL',
+    name: 'Trail Projectile',
+    
+    getInitialNodes: (): Node[] => [
+        { 
+            id: 'trail-out-1', 
+            type: 'TRAIL_ENDPOINT', 
+            position: { x: 600, y: 150 }, 
+            data: { 
+                astType: 'TRAIL_ENDPOINT', 
+                inputs: [
+                    { id: 'color', type: 'vec4', value: { r: 1, g: 1, b: 1, a: 1 } },
+                    { id: 'width', type: 'float', value: 1.0 }
+                ], 
+                outputs: [] 
+            } 
+        }
+    ],
+
+    isNodeAllowed: (nodeType: string) => {
+        const forbidden = ['OUTPUT_FRAG', 'OUTPUT_VERT'];
+        return !forbidden.includes(nodeType);
+    },
+
+    SettingsPanel: ({ settings, onSettingChange }) => {
+        const length = settings.trailLength || 20;
+        return (
+            <>
+                <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>TRAIL SETTINGS</div>
+                <label style={{ fontSize: '11px', color: '#ccc' }}>Length: {length}
+                    <input 
+                        type="range" min="5" max="50" step="1" value={length} 
+                        onChange={(e) => onSettingChange('trailLength', parseInt(e.target.value))} 
+                        style={{ width: '100%', marginTop: '4px' }}
+                    />
+                </label>
+            </>
+        );
+    },
+
+    createPreviewStrategy: (): IPreviewStrategy => {
+        let mesh: THREE.Mesh | null = null;
+        let trailGenerator = new TrailGeometryGenerator();
+        let targetPos = new THREE.Vector3();
+        let camRef: THREE.PerspectiveCamera | null = null;
+
+        return {
+            init: ({ scene, material, camera }) => {
+                camRef = camera;
+                mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
+                scene.add(mesh);
+            },
+            update: (time, settings) => {
+                if (mesh && camRef) {
+                    const t = time * 0.002;
+                    targetPos.set(Math.cos(t) * 2, Math.sin(t * 2), Math.sin(t) * 1.5);
+                    
+                    const oldGeo = mesh.geometry;
+                    mesh.geometry = trailGenerator.update(
+                        targetPos, 
+                        camRef.position, 
+                        settings.trailLength || 20, 
+                        0.2
+                    );
+                    oldGeo.dispose();
+                }
+            },
+            onSettingsChange: () => {}, // Handled directly in update via settings reference
+            dispose: () => {
+                if (mesh) {
+                    mesh.geometry.dispose();
+                    mesh.removeFromParent();
+                }
+            }
+        };
+    }
+};

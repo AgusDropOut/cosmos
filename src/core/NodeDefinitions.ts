@@ -115,18 +115,15 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
 },
 TRAIL_ENDPOINT: {
     type: 'TRAIL_ENDPOINT',
-    label: 'Trail Output',
+    label: 'Trail System Output',
     color: '#e03131',
     inputs: [
-      { id: 'color', type: 'vec4', default: { r: 1.0, g: 0.5, b: 0.0, a: 1.0 } },
-      { id: 'width_multiplier', type: 'float', default: 1.0 }
+      { id: 'width', type: 'float', default: 1.0, control: { id: 'width', label: 'Base Width', type: 'slider', min: 0.1, max: 5.0, step: 0.1 } },
+      { id: 'orbit_offset', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
     ],
     outputs: [],
     strategy: {
-      generateCode: ({ resolveInput }) => `
-        vec4 finalColor = ${resolveInput('color')};
-        gl_FragColor = finalColor;
-      `
+      generateCode: () => `// Trail System Definition Marker`
     }
   }
 };

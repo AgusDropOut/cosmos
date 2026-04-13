@@ -9,9 +9,10 @@ interface Canvas3DProps {
   graph: ShaderGraph;
   contextSettings: Record<string, any>;
   activeContext: IProjectContext;
+  globalMaterial: ShaderGraph;
 }
 
-export default function Canvas3D({ graph, contextSettings, activeContext }: Canvas3DProps) {
+export default function Canvas3D({ graph, contextSettings, activeContext, globalMaterial }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
   

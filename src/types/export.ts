@@ -30,3 +30,13 @@ export interface ExportConfig {
 export interface IMetadataExtractor {
     extract(graph: ShaderGraph, config: ExportConfig): CosmosMetadata;
 }
+
+export interface ExportResult {
+    fileName: string;
+    fileContent: string | Blob;
+    mimeType: string;
+}
+
+export interface IWorkspaceExporter {
+    export(graph: ShaderGraph, settings: Record<string, any>, projectName: string): Promise<ExportResult>;
+}

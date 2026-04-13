@@ -2,7 +2,7 @@
 import type { ShaderGraph, GLSLType, NodeType } from '../types/ast';
 import { NodeRegistry } from './registry';
 
-function serializeValue(value: any, type: GLSLType): string {
+export function serializeValue(value: any, type: GLSLType): string {
     if (value === undefined || value === null) {
         if (type === 'vec3') return 'vec3(0.0)';
         if (type === 'vec2') return 'vec2(0.0)';

@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { compileShader } from './core/compiler';
 import type { ShaderGraph } from './types/ast';
+import { ShapeRegistry } from './core/shapes/ShapeRegistry';
 
 interface Canvas3DProps {
   graph: ShaderGraph;
@@ -47,7 +48,9 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
     mountRef.current.appendChild(renderer.domElement);
 
     
-    const geometry = getGeometry(shape);
+  
+    const generator = ShapeRegistry[shape] || ShapeRegistry['CUBE'];
+    const geometry = generator.generate();
     
     const material = new THREE.ShaderMaterial({
       vertexShader: `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
@@ -121,8 +124,13 @@ export default function Canvas3D({ graph, shape }: Canvas3DProps) {
   useEffect(() => {
     if (!meshRef.current) return;
 
+
     const oldGeometry = meshRef.current.geometry;
-    meshRef.current.geometry = getGeometry(shape);
+    const generator = ShapeRegistry[shape] || ShapeRegistry['CUBE'];
+    meshRef.current.geometry = generator.generate();
+
+    
+   
     
     // Dispose the old geometry to prevent memory leaks in the GPU
     oldGeometry.dispose();

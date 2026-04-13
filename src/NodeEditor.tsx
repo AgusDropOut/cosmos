@@ -6,6 +6,7 @@ import 'reactflow/dist/style.css';
 import type { ShaderGraph, ShaderNode, ShaderConnection, NodeType } from './types/ast';
 import { NODE_DEFINITIONS } from './core/NodeDefinitions';
 import { BaseNode } from './components/BaseNode';
+import { ShapeRegistry } from './core/shapes/ShapeRegistry';
 
 interface NodeEditorProps {
   onGraphChange: (graph: ShaderGraph) => void;
@@ -110,14 +111,15 @@ export default function NodeEditor({ onGraphChange, onShapeChange }: NodeEditorP
           ))}
         </Panel>
 
-        {/* Geometry Selector Panel */}
+        {/* Dynamic Geometry Selector Panel */}
         <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333' }}>
           <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>BASE SHAPE</div>
           <select value={selectedShape} onChange={handleShapeSelection} style={{ background: '#121212', color: 'white', border: '1px solid #4a4a4a', padding: '4px', borderRadius: '4px', fontSize: '11px', outline: 'none' }}>
-            <option value="CUBE">Cube</option>
-            <option value="SPHERE">Sphere</option>
-            <option value="ICOSAHEDRON">Icosahedron</option>
-            <option value="CYLINDER">Cylinder</option>
+            {Object.keys(ShapeRegistry).map((shapeKey) => (
+              <option key={shapeKey} value={shapeKey}>
+                {shapeKey.charAt(0) + shapeKey.slice(1).toLowerCase()}
+              </option>
+            ))}
           </select>
         </Panel>
 

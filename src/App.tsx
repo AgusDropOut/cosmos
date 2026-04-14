@@ -15,21 +15,35 @@ interface AppProps {
 
 const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext]; 
 
+// Synchronous load function prevents empty-state overwrites
+const getInitialState = () => {
+    try {
+        const saved = localStorage.getItem('cosmos_full_state');
+        if (saved) return JSON.parse(saved);
+    } catch (e) {
+        console.error("Cosmos: Failed to parse session state", e);
+    }
+    return null;
+};
+
 function App({ storage }: AppProps) {
-  // Global RAM State now explicitly stores ReactFlow Nodes & Edges to prevent layout loss!
-  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any }>>({
-    'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' } },
-    'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
-  });
+  const initialState = getInitialState();
+
+  // Initialize state with stored data or fallback to defaults
+  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any }>>(
+    initialState?.workspaces || {
+      'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' } },
+      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
+    }
+  );
   
-  const [activeContextId, setActiveContextId] = useState('MATERIAL');
+  const [activeContextId, setActiveContextId] = useState(initialState?.activeContextId || 'MATERIAL');
   const [loadedWorkspace, setLoadedWorkspace] = useState<SavedWorkspace | null>(null);
 
   const activeContext = useMemo(() => 
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 
   [activeContextId]);
 
-  // Sync the child's local React Flow state up to the App-level RAM
   const handleFlowChange = useCallback((nodes: Node[], edges: Edge[], graph: ShaderGraph) => {
     setWorkspaces(prev => ({
         ...prev,
@@ -79,19 +93,13 @@ function App({ storage }: AppProps) {
     setLoadedWorkspace(workspace);
   }, []);
 
-  // F5 Persistence
+  // Debounced session persistence
   useEffect(() => {
     const timer = setTimeout(() => {
         localStorage.setItem('cosmos_full_state', JSON.stringify({ workspaces, activeContextId }));
     }, 1000);
     return () => clearTimeout(timer);
   }, [workspaces, activeContextId]);
-
-  useEffect(() => {
-    storage.load().then(autosave => {
-      if (autosave) handleLoadWorkspace(autosave);
-    });
-  }, [storage, handleLoadWorkspace]);
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>

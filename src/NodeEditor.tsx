@@ -25,6 +25,8 @@ interface NodeEditorProps {
     storage?: IWorkspaceStorage;
     loadedWorkspace?: SavedWorkspace | null;
     onLoadWorkspace?: (workspace: SavedWorkspace) => void;
+    globalSettings: { namespace: string; projectName: string };
+    onGlobalSettingChange: (key: string, value: any) => void;
 }
 
 export default function NodeEditor({ 
@@ -39,7 +41,9 @@ export default function NodeEditor({
     storage,
     contextSettings,
     loadedWorkspace,
-    onLoadWorkspace
+    onLoadWorkspace,
+    globalSettings,
+    onGlobalSettingChange
 }: NodeEditorProps) {
   
   const [nodes, setNodes] = useState<Node[]>(rfNodes);
@@ -107,10 +111,10 @@ export default function NodeEditor({
                 currentGraph, 
                 contextSettings, 
                 materialData.graph, 
-                "MyProject"
+                globalSettings
             );
         } else {
-            result = await exporter.export(currentGraph, contextSettings, "MyProject");
+            result = await exporter.export(currentGraph, contextSettings, globalSettings);
         }
         
         const contentBlob = typeof result.fileContent === 'string' 
@@ -204,9 +208,34 @@ export default function NodeEditor({
   };
 
   return (
+    
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
-      <ReactFlow nodes={nodes.map(n => ({ ...n, data: { ...n.data, updateNodeValue } }))} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView>
+      {/* TODO: Evaluate moving this to a proper 
+        standalone header component in the future */}
+
+        <ReactFlow nodes={nodes.map(n => ({ ...n, data: { ...n.data, updateNodeValue } }))} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView >
+        
         <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', alignItems: 'center' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <span style={{ fontSize: '10px', color: '#888', fontWeight: 'bold' }}>MOD ID</span>
+    <input 
+        type="text" 
+        value={globalSettings.namespace}
+        onChange={(e) => onGlobalSettingChange('namespace', e.target.value)}
+        placeholder="namespace"
+        style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', borderRadius: '4px', padding: '4px 6px', fontSize: '12px', width: '90px', outline: 'none' }}
+    />
+</div>
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <span style={{ fontSize: '10px', color: '#888', fontWeight: 'bold' }}>PROJECT</span>
+    <input 
+        type="text" 
+        value={globalSettings.projectName}
+        onChange={(e) => onGlobalSettingChange('projectName', e.target.value)}
+        style={{ background: 'transparent', color: 'white', border: '1px dashed #4a4a4a', borderRadius: '4px', padding: '4px 6px', fontWeight: 'bold', fontSize: '12px', width: '130px', outline: 'none' }}
+    />
+</div>
           <select value={activeContext.id} onChange={(e) => onContextChange(e.target.value)} style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px' }}>
             {availableContexts.map(ctx => <option key={ctx.id} value={ctx.id}>{ctx.name}</option>)}
           </select>
@@ -215,7 +244,7 @@ export default function NodeEditor({
           <button onClick={() => fileInputRef.current?.click()} style={{ background: '#333', color: 'white', border: '1px solid #4a4a4a', padding: '6px 16px', borderRadius: '4px' }}>📂 Load</button>
           <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={handleFileUpload} style={{ display: 'none' }} />
         </Panel>
-        <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px' }}>
+        <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', marginTop : '100px' }}>
           <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>ADD NODE</div>
           {Object.values(NODE_DEFINITIONS).filter(def => activeContext.isNodeAllowed(def.type)).map(def => (
             <button key={def.type} onClick={() => addNode(def.type)} style={{ background: '#1e1e1e', color: def.color, border: `1px solid ${def.color}55`, padding: '6px 12px', borderRadius: '4px', fontSize: '11px', textAlign: 'left' }}>
@@ -223,11 +252,12 @@ export default function NodeEditor({
             </button>
           ))}
         </Panel>
+      
         <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333', marginTop: '100px' }}>
           <activeContext.SettingsPanel settings={contextSettings} onSettingChange={onSettingChange} />
         </Panel>
         <Background color="#333" gap={16} />
-        <Controls />
+        <Controls position="bottom-right"  />
       </ReactFlow>
     </div>
   );

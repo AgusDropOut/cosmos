@@ -4,14 +4,14 @@ import type { IWorkspaceExporter, ExportResult } from '../../types/export';
 import { compileShader } from '../compiler';
 
 export class MaterialExporter implements IWorkspaceExporter {
-    async export(graph: ShaderGraph, settings: Record<string, any>, projectName: string): Promise<ExportResult> {
+    async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult> {
         
         const { vertexShader, fragmentShader } = compileShader(graph);
 
-        const safeName = projectName.toLowerCase().replace(/\s+/g, '_');
+        const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
 
         const manifest = JSON.stringify({
-            namespace: "bloodyhell",
+            namespace: globalSettings.namespace,
             id: safeName,
             type: "cosmos:material",
             config: {

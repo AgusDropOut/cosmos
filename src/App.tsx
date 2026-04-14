@@ -13,6 +13,8 @@ interface AppProps {
     storage: IWorkspaceStorage;
 }
 
+
+
 const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext]; 
 
 // Synchronous load function prevents empty-state overwrites
@@ -36,9 +38,18 @@ function App({ storage }: AppProps) {
       'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
     }
   );
+
+
   
   const [activeContextId, setActiveContextId] = useState(initialState?.activeContextId || 'MATERIAL');
   const [loadedWorkspace, setLoadedWorkspace] = useState<SavedWorkspace | null>(null);
+
+  const [globalSettings, setGlobalSettings] = useState<{namespace: string, projectName: string}>(
+    initialState?.globalSettings || {
+      namespace: 'bloodyhell',
+      projectName: 'My Cosmos Project'
+    }
+  );
 
   const activeContext = useMemo(() => 
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 
@@ -63,6 +74,10 @@ function App({ storage }: AppProps) {
 
   const handleLoadWorkspace = useCallback((workspace: SavedWorkspace) => {
     const ctx = AVAILABLE_CONTEXTS.find(c => c.id === workspace.contextId) || MaterialContext;
+
+    if (workspace.globalSettings) {
+      setGlobalSettings(workspace.globalSettings);
+    }
     
     const mappedGraph: ShaderGraph = {
         nodes: workspace.nodes.map(n => ({
@@ -96,10 +111,10 @@ function App({ storage }: AppProps) {
   // Debounced session persistence
   useEffect(() => {
     const timer = setTimeout(() => {
-        localStorage.setItem('cosmos_full_state', JSON.stringify({ workspaces, activeContextId }));
+        localStorage.setItem('cosmos_full_state', JSON.stringify({ workspaces, activeContextId, globalSettings }));
     }, 1000);
     return () => clearTimeout(timer);
-  }, [workspaces, activeContextId]);
+  }, [workspaces, activeContextId, globalSettings]);
 
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
@@ -118,6 +133,8 @@ function App({ storage }: AppProps) {
            storage={storage}
            loadedWorkspace={loadedWorkspace}
            onLoadWorkspace={handleLoadWorkspace}
+           globalSettings={globalSettings}
+           onGlobalSettingChange={(key, value) => setGlobalSettings(prev => ({ ...prev, [key]: value }))}
         />
       </div>
       <div style={{ flex: 1 }}>

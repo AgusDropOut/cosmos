@@ -8,8 +8,8 @@ import { serializeValue } from '../compiler';
 export class TrailExporter implements IWorkspaceExporter {
     private matExporter = new MaterialExporter();
 
-    async export(graph: ShaderGraph, settings: Record<string, any>, projectName: string): Promise<ExportResult> {
-        const safeName = projectName.toLowerCase().replace(/\s+/g, '_');
+    async export(graph: ShaderGraph, settings: Record<string, any>,  globalSettings: { namespace: string; projectName: string }): Promise<ExportResult> {
+        const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
         // Fallback material ID for standalone exports
         const defaultMaterialId = `bloodyhell:${safeName}_mat`;
         const jsonContent = this.generateTrailJson(graph, settings, safeName, defaultMaterialId);
@@ -25,10 +25,10 @@ export class TrailExporter implements IWorkspaceExporter {
         trailGraph: ShaderGraph, 
         trailSettings: any, 
         materialGraph: ShaderGraph, 
-        projectName: string
+        globalSettings: { namespace: string; projectName: string }
     ): Promise<ExportResult> {
         const zip = new JSZip();
-        const safeName = projectName.toLowerCase().replace(/\s+/g, '_');
+        const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
         const materialId = `bloodyhell:${safeName}_mat`;
         
         // Generates the Trail Config with the exact generated material ID
@@ -36,7 +36,7 @@ export class TrailExporter implements IWorkspaceExporter {
         zip.file(`${safeName}.trail.csm.json`, trailJson);
 
         // Generates the Material JSON using the matching safeName identifier
-        const matResult = await this.matExporter.export(materialGraph, {}, `${safeName}_mat`);
+        const matResult = await this.matExporter.export(materialGraph, {}, globalSettings);
         zip.file(`${safeName}.mat.csm.json`, matResult.fileContent as string);
 
         const content = await zip.generateAsync({ type: 'blob' });

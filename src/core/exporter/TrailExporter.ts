@@ -12,7 +12,7 @@ export class TrailExporter implements IWorkspaceExporter {
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
         // Fallback material ID for standalone exports
         const defaultMaterialId = `bloodyhell:${safeName}_mat`;
-        const jsonContent = this.generateTrailJson(graph, settings, safeName, defaultMaterialId);
+        const jsonContent = this.generateTrailJson(graph, settings, safeName, defaultMaterialId, globalSettings);
 
         return {
             fileName: `${safeName}.trail.csm.json`,
@@ -32,7 +32,7 @@ export class TrailExporter implements IWorkspaceExporter {
         const materialId = `bloodyhell:${safeName}_mat`;
         
         // Generates the Trail Config with the exact generated material ID
-        const trailJson = this.generateTrailJson(trailGraph, trailSettings, safeName, materialId);
+        const trailJson = this.generateTrailJson(trailGraph, trailSettings, safeName, materialId, globalSettings);
         zip.file(`${safeName}.trail.csm.json`, trailJson);
 
         // Generates the Material JSON using the matching safeName identifier
@@ -48,7 +48,7 @@ export class TrailExporter implements IWorkspaceExporter {
         };
     }
 
-    private generateTrailJson(graph: ShaderGraph, settings: Record<string, any>, id: string, materialId: string): string {
+    private generateTrailJson(graph: ShaderGraph, settings: Record<string, any>, id: string, materialId: string, globalSettings: { namespace: string; projectName: string }): string {
         const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
 
         const evaluatePort = (targetNodeId: string, portId: string): string => {
@@ -78,7 +78,7 @@ export class TrailExporter implements IWorkspaceExporter {
         };
 
         return JSON.stringify({
-            namespace: "bloodyhell",
+            namespace: globalSettings.namespace,
             id: id,
             type: "cosmos:trail_system",
             config: {

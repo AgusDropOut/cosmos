@@ -82,7 +82,7 @@ export const TrailContext: IProjectContext = {
         return {
             init: ({ scene, material, camera }: RenderContext) => {
                 camRef = camera;
-                const previewMaterial = material.clone();
+                const previewMaterial = material
                 previewMaterial.side = THREE.DoubleSide;
                 
                 mesh = new THREE.Mesh(new THREE.BufferGeometry(), previewMaterial);

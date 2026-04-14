@@ -2,8 +2,9 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { compileShader } from './core/compiler';
+import { NODE_DEFINITIONS } from './core/NodeDefinitions';
 import type { ShaderGraph } from './types/ast';
-import type { IProjectContext, IPreviewStrategy } from './types/context'; 
+import type { IProjectContext, IPreviewStrategy } from './types/context';
 
 interface Canvas3DProps {
   graph: ShaderGraph;
@@ -16,12 +17,10 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
   const mountRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
   
-  // Mutable references for the animation loop
   const settingsRef = useRef(contextSettings);
   const strategyRef = useRef<IPreviewStrategy | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
 
-  // Sync settings for the animation loop and trigger strategy updates
   useEffect(() => {
     settingsRef.current = contextSettings;
     if (strategyRef.current) {
@@ -29,7 +28,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     }
   }, [contextSettings]);
 
-  // Scene Setup & Strategy Execution
   useEffect(() => {
     if (!mountRef.current) return;
     mountRef.current.innerHTML = '';
@@ -52,7 +50,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     });
     materialRef.current = material;
 
-    // Initialize the specific context strategy
     strategyRef.current = activeContext.createPreviewStrategy();
     strategyRef.current.init({ scene, camera, material }, settingsRef.current);
 
@@ -84,22 +81,25 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
       cancelAnimationFrame(requestRef.current);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
-      if (strategyRef.current) {
-          strategyRef.current.dispose();
-      }
-      if (materialRef.current) {
-          materialRef.current.dispose();
-      }
+      if (strategyRef.current) strategyRef.current.dispose();
+      if (materialRef.current) materialRef.current.dispose();
       if (mountRef.current) mountRef.current.innerHTML = '';
     };
-  }, [activeContext]); // Rebuild scene entirely on context switch
+  }, [activeContext]); 
 
-  // Shader Injection
+  // Shader Injection - Fixes applied here!
   useEffect(() => {
-    if (!materialRef.current || !graph.nodes || graph.nodes.length === 0) return;
+    // Determine the target graph: If it's not the Material Context, force it to use the Global Material
+    let targetGraph = graph;
+    if (activeContext.id !== 'MATERIAL') {
+        targetGraph = globalMaterial;
+    }
+
+    if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
     try {
-      const { vertexShader, fragmentShader } = compileShader(graph);
+      // Pass NODE_DEFINITIONS to prevent undefined variable errors inside the compiler
+      const { vertexShader, fragmentShader } = compileShader(targetGraph);
 
       materialRef.current.vertexShader = vertexShader;
       materialRef.current.fragmentShader = fragmentShader;
@@ -107,7 +107,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     } catch (e) {
       console.error("Cosmos: Shader injection failed", e);
     }
-  }, [graph]);
+  }, [graph, globalMaterial, activeContext.id]); // <-- CRITICAL: Dependencies trigger visual update on context switch
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

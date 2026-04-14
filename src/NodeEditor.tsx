@@ -10,13 +10,14 @@ import { BaseNode } from './components/BaseNode';
 import type { IProjectContext } from './types/context';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
-import type { TrailExporter } from './core/exporter/TrailExporter';
 
 interface NodeEditorProps {
     activeContext: IProjectContext;
+    rfNodes: Node[];
+    rfEdges: Edge[];
     graph: ShaderGraph;
     contextSettings: Record<string, any>;
-    onGraphChange: (graph: ShaderGraph) => void;
+    onFlowChange: (nodes: Node[], edges: Edge[], graph: ShaderGraph) => void;
     onSettingChange: (key: string, value: any) => void;
     onContextChange: (contextId: string) => void;
     allWorkspaces: Record<string, { graph: ShaderGraph; settings: any }>;
@@ -27,8 +28,10 @@ interface NodeEditorProps {
 }
 
 export default function NodeEditor({ 
-    activeContext, 
-    onGraphChange, 
+    activeContext,
+    rfNodes,
+    rfEdges,
+    onFlowChange, 
     onSettingChange, 
     allWorkspaces, 
     onContextChange,
@@ -39,20 +42,22 @@ export default function NodeEditor({
     onLoadWorkspace
 }: NodeEditorProps) {
   
-  const [nodes, setNodes] = useState<Node[]>(activeContext.getInitialNodes());
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes] = useState<Node[]>(rfNodes);
+  const [edges, setEdges] = useState<Edge[]>(rfEdges);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync internal ReactFlow state with external context switches or file loads
+  // Restore Local Nodes when Context Swaps
   useEffect(() => {
     if (loadedWorkspace && loadedWorkspace.contextId === activeContext.id) {
       setNodes(loadedWorkspace.nodes);
       setEdges(loadedWorkspace.edges);
     } else {
-      setNodes(activeContext.getInitialNodes());
-      setEdges([]);
+      // Pull strictly from the RAM state passed via props!
+      setNodes(rfNodes);
+      setEdges(rfEdges);
     }
-  }, [activeContext, loadedWorkspace]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeContext.id, loadedWorkspace]); 
 
   const handleSave = async (download: boolean) => {
     if (!storage) return;
@@ -96,7 +101,6 @@ export default function NodeEditor({
 
     try {
         let result;
-        // Composite Export logic for Trails
         if (activeContext.id === 'TRAIL' && 'exportComposite' in exporter) {
             const materialData = allWorkspaces['MATERIAL'];
             result = await (exporter as any).exportComposite(
@@ -117,10 +121,8 @@ export default function NodeEditor({
         const a = document.createElement('a');
         a.href = url;
         a.download = result.fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
     } catch (e) {
         alert("Failed to export: " + e);
     }
@@ -138,7 +140,7 @@ export default function NodeEditor({
     }
   };
 
-  // Compiler Bridge: Syncs local nodes/edges to the App-level RAM state
+  // Sync to Global RAM when Local Nodes Change
   useEffect(() => {
     if (nodes.length === 0) return;
 
@@ -157,10 +159,10 @@ export default function NodeEditor({
       targetPortId: e.targetHandle || 'in'
     }));
 
-    onGraphChange({ nodes: astNodes, connections: astConnections });
-  }, [nodes, edges, onGraphChange]);
+    // Save ReactFlow visual data AND AST to App RAM
+    onFlowChange(nodes, edges, { nodes: astNodes, connections: astConnections });
+  }, [nodes, edges, onFlowChange]);
 
-  // React Flow logic
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
   const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), []);
@@ -188,7 +190,6 @@ export default function NodeEditor({
   const addNode = (type: string) => {
     const def = NODE_DEFINITIONS[type];
     if (!def) return;
-
     const newNode: Node = {
       id: `${type.toLowerCase()}-${Date.now()}`,
       type: def.type,
@@ -204,45 +205,27 @@ export default function NodeEditor({
 
   return (
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
-      <ReactFlow 
-        nodes={nodes.map(n => ({ ...n, data: { ...n.data, updateNodeValue } }))} 
-        edges={edges} 
-        onNodesChange={onNodesChange} 
-        onEdgesChange={onEdgesChange} 
-        onConnect={onConnect} 
-        nodeTypes={nodeTypes} 
-        fitView
-      >
+      <ReactFlow nodes={nodes.map(n => ({ ...n, data: { ...n.data, updateNodeValue } }))} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView>
         <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', alignItems: 'center' }}>
-          <select 
-            value={activeContext.id} 
-            onChange={(e) => onContextChange(e.target.value)}
-            style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px' }}
-          >
+          <select value={activeContext.id} onChange={(e) => onContextChange(e.target.value)} style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px' }}>
             {availableContexts.map(ctx => <option key={ctx.id} value={ctx.id}>{ctx.name}</option>)}
           </select>
-
           <button onClick={handleGameExport} style={{ background: '#2b8a3e', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 'bold' }}>🚀 Export to Minecraft</button>
           <button onClick={() => handleSave(true)} style={{ background: '#333', color: 'white', border: '1px solid #4a4a4a', padding: '6px 16px', borderRadius: '4px' }}>💾 Export .cosmosproj</button>
           <button onClick={() => fileInputRef.current?.click()} style={{ background: '#333', color: 'white', border: '1px solid #4a4a4a', padding: '6px 16px', borderRadius: '4px' }}>📂 Load</button>
           <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={handleFileUpload} style={{ display: 'none' }} />
         </Panel>
-
         <Panel position="top-left" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px' }}>
           <div style={{ color: 'white', fontSize: '12px', fontWeight: 'bold' }}>ADD NODE</div>
-          {Object.values(NODE_DEFINITIONS)
-            .filter(def => activeContext.isNodeAllowed(def.type))
-            .map(def => (
+          {Object.values(NODE_DEFINITIONS).filter(def => activeContext.isNodeAllowed(def.type)).map(def => (
             <button key={def.type} onClick={() => addNode(def.type)} style={{ background: '#1e1e1e', color: def.color, border: `1px solid ${def.color}55`, padding: '6px 12px', borderRadius: '4px', fontSize: '11px', textAlign: 'left' }}>
               + {def.label}
             </button>
           ))}
         </Panel>
-
-        <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333' }}>
+        <Panel position="top-right" style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '10px', background: '#1e1e1e', borderRadius: '6px', border: '1px solid #333', marginTop: '100px' }}>
           <activeContext.SettingsPanel settings={contextSettings} onSettingChange={onSettingChange} />
         </Panel>
-
         <Background color="#333" gap={16} />
         <Controls />
       </ReactFlow>

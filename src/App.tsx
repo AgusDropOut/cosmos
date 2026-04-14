@@ -4,9 +4,10 @@ import NodeEditor from './NodeEditor';
 import Canvas3D from './Canvas3D';
 import { MaterialContext } from './core/contexts/MaterialContext';
 import { TrailContext } from './core/contexts/TrailContext';
-import type { ShaderGraph } from './types/ast';
+import type { ShaderGraph, NodeType } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
+import type { Node, Edge } from 'reactflow';
 
 interface AppProps {
     storage: IWorkspaceStorage;
@@ -15,9 +16,10 @@ interface AppProps {
 const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext]; 
 
 function App({ storage }: AppProps) {
-  const [workspaces, setWorkspaces] = useState<Record<string, { graph: ShaderGraph, settings: any }>>({
-    'MATERIAL': { graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' } },
-    'TRAIL': { graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
+  // Global RAM State now explicitly stores ReactFlow Nodes & Edges to prevent layout loss!
+  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any }>>({
+    'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' } },
+    'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
   });
   
   const [activeContextId, setActiveContextId] = useState('MATERIAL');
@@ -27,28 +29,12 @@ function App({ storage }: AppProps) {
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 
   [activeContextId]);
 
-  // Memoized handlers to prevent infinite update loops in child components
-  const handleLoadWorkspace = useCallback((workspace: SavedWorkspace) => {
-    const ctx = AVAILABLE_CONTEXTS.find(c => c.id === workspace.contextId) || MaterialContext;
-    setActiveContextId(ctx.id);
+  // Sync the child's local React Flow state up to the App-level RAM
+  const handleFlowChange = useCallback((nodes: Node[], edges: Edge[], graph: ShaderGraph) => {
     setWorkspaces(prev => ({
         ...prev,
-        [ctx.id]: { graph: { nodes: [], connections: [] }, settings: workspace.settings }
+        [activeContextId]: { ...prev[activeContextId], rfNodes: nodes, rfEdges: edges, graph }
     }));
-    setLoadedWorkspace(workspace);
-  }, []);
-
-  const updateCurrentWorkspace = useCallback((graph: ShaderGraph) => {
-    setWorkspaces(prev => {
-        // Deep comparison check to break potential update loops
-        const currentGraph = prev[activeContextId].graph;
-        if (JSON.stringify(currentGraph) === JSON.stringify(graph)) return prev;
-        
-        return {
-            ...prev,
-            [activeContextId]: { ...prev[activeContextId], graph }
-        };
-    });
   }, [activeContextId]);
 
   const handleSettingChange = useCallback((key: string, value: any) => {
@@ -61,7 +47,39 @@ function App({ storage }: AppProps) {
     }));
   }, [activeContextId]);
 
-  // Persistence logic
+  const handleLoadWorkspace = useCallback((workspace: SavedWorkspace) => {
+    const ctx = AVAILABLE_CONTEXTS.find(c => c.id === workspace.contextId) || MaterialContext;
+    
+    const mappedGraph: ShaderGraph = {
+        nodes: workspace.nodes.map(n => ({
+            id: n.id,
+            type: n.data.astType as NodeType,
+            inputs: n.data.inputs || [],
+            outputs: n.data.outputs || []
+        })),
+        connections: workspace.edges.map(e => ({
+            id: e.id,
+            sourceNodeId: e.source,
+            sourcePortId: e.sourceHandle || 'out',
+            targetNodeId: e.target,
+            targetPortId: e.targetHandle || 'in'
+        }))
+    };
+
+    setActiveContextId(ctx.id);
+    setWorkspaces(prev => ({
+        ...prev,
+        [ctx.id]: { 
+            rfNodes: workspace.nodes, 
+            rfEdges: workspace.edges, 
+            graph: mappedGraph, 
+            settings: workspace.settings 
+        }
+    }));
+    setLoadedWorkspace(workspace);
+  }, []);
+
+  // F5 Persistence
   useEffect(() => {
     const timer = setTimeout(() => {
         localStorage.setItem('cosmos_full_state', JSON.stringify({ workspaces, activeContextId }));
@@ -81,9 +99,11 @@ function App({ storage }: AppProps) {
         <NodeEditor 
            activeContext={activeContext}
            availableContexts={AVAILABLE_CONTEXTS}
+           rfNodes={workspaces[activeContextId].rfNodes}
+           rfEdges={workspaces[activeContextId].rfEdges}
            graph={workspaces[activeContextId].graph}
            contextSettings={workspaces[activeContextId].settings}
-           onGraphChange={updateCurrentWorkspace}
+           onFlowChange={handleFlowChange}
            onSettingChange={handleSettingChange}
            allWorkspaces={workspaces}
            onContextChange={setActiveContextId}
@@ -97,7 +117,7 @@ function App({ storage }: AppProps) {
             graph={workspaces[activeContextId].graph} 
             contextSettings={workspaces[activeContextId].settings} 
             activeContext={activeContext} 
-            globalMaterial={workspaces['MATERIAL'].graph}
+            globalMaterial={workspaces['MATERIAL'].graph} 
         />
       </div>
     </div>

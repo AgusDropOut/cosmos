@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import type { IProjectContext, IPreviewStrategy } from '../../types/context';
 import { ShapeRegistry } from '../shapes/ShapeRegistry';
 import type { Node } from 'reactflow';
+import { MaterialExporter } from '../exporter/MaterialExporter';
 
 const getSafeGenerator = (shapeKey: string) => {
     return ShapeRegistry[shapeKey] || ShapeRegistry['CUBE'];
@@ -71,5 +72,5 @@ export const MaterialContext: IProjectContext = {
                 }
             }
         };
-    },getExporter: () => null
+    },getExporter: () => new MaterialExporter()
 };

@@ -9,8 +9,10 @@ export class TrailExporter implements IWorkspaceExporter {
     private matExporter = new MaterialExporter();
 
     async export(graph: ShaderGraph, settings: Record<string, any>, projectName: string): Promise<ExportResult> {
-        const jsonContent = this.generateTrailJson(graph, settings, projectName);
         const safeName = projectName.toLowerCase().replace(/\s+/g, '_');
+        // Fallback material ID for standalone exports
+        const defaultMaterialId = `bloodyhell:${safeName}_mat`;
+        const jsonContent = this.generateTrailJson(graph, settings, safeName, defaultMaterialId);
 
         return {
             fileName: `${safeName}.trail.csm.json`,
@@ -27,11 +29,14 @@ export class TrailExporter implements IWorkspaceExporter {
     ): Promise<ExportResult> {
         const zip = new JSZip();
         const safeName = projectName.toLowerCase().replace(/\s+/g, '_');
+        const materialId = `bloodyhell:${safeName}_mat`;
         
-        const trailJson = this.generateTrailJson(trailGraph, trailSettings, projectName);
+        // Generates the Trail Config with the exact generated material ID
+        const trailJson = this.generateTrailJson(trailGraph, trailSettings, safeName, materialId);
         zip.file(`${safeName}.trail.csm.json`, trailJson);
 
-        const matResult = await this.matExporter.export(materialGraph, {}, projectName);
+        // Generates the Material JSON using the matching safeName identifier
+        const matResult = await this.matExporter.export(materialGraph, {}, `${safeName}_mat`);
         zip.file(`${safeName}.mat.csm.json`, matResult.fileContent as string);
 
         const content = await zip.generateAsync({ type: 'blob' });
@@ -43,7 +48,7 @@ export class TrailExporter implements IWorkspaceExporter {
         };
     }
 
-    private generateTrailJson(graph: ShaderGraph, settings: Record<string, any>, projectName: string): string {
+    private generateTrailJson(graph: ShaderGraph, settings: Record<string, any>, id: string, materialId: string): string {
         const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
 
         const evaluatePort = (targetNodeId: string, portId: string): string => {
@@ -74,13 +79,13 @@ export class TrailExporter implements IWorkspaceExporter {
 
         return JSON.stringify({
             namespace: "bloodyhell",
-            id: projectName.toLowerCase().replace(/\s+/g, '_'),
+            id: id,
             type: "cosmos:trail_system",
             config: {
                 history_segments: settings.segments || 20,
                 width_curve: endpoint ? evaluatePort(endpoint.id, 'width') : "1.0",
                 orbit_offset: endpoint ? evaluatePort(endpoint.id, 'orbit_offset') : "[0.0, 0.0, 0.0]",
-                material_id: settings.material_id || "bloodyhell:default"
+                material_id: materialId
             }
         }, null, 4);
     }

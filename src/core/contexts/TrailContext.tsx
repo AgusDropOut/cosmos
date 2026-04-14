@@ -35,7 +35,6 @@ export const TrailContext: IProjectContext = {
 
     SettingsPanel: ({ settings, onSettingChange }) => {
         const segments = settings.segments || 20;
-        const materialId = settings.material_id || "bloodyhell:magical_fire"; 
 
         return (
             <>
@@ -46,27 +45,6 @@ export const TrailContext: IProjectContext = {
                         type="range" min="5" max="50" step="1" value={segments} 
                         onChange={(e) => onSettingChange('segments', parseInt(e.target.value))} 
                         style={{ width: '100%', marginTop: '4px' }}
-                    />
-                </label>
-
-                <div style={{ marginTop: '10px' }} />
-                <label style={{ fontSize: '11px', color: '#ccc', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    Material ID (Linker):
-                    <input 
-                        type="text" 
-                        value={materialId} 
-                        onChange={(e) => onSettingChange('material_id', e.target.value)} 
-                        placeholder="modid:shader_name"
-                        style={{ 
-                            background: '#121212', 
-                            color: '#e03131',
-                            border: '1px solid #4a4a4a', 
-                            padding: '6px', 
-                            borderRadius: '4px', 
-                            fontSize: '11px', 
-                            outline: 'none',
-                            fontFamily: 'monospace'
-                        }}
                     />
                 </label>
             </>
@@ -82,10 +60,11 @@ export const TrailContext: IProjectContext = {
         return {
             init: ({ scene, material, camera }: RenderContext) => {
                 camRef = camera;
-                const previewMaterial = material
-                previewMaterial.side = THREE.DoubleSide;
                 
-                mesh = new THREE.Mesh(new THREE.BufferGeometry(), previewMaterial);
+                // Utilizes the shared material reference injected by the renderer
+                material.side = THREE.DoubleSide;
+                
+                mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
                 scene.add(mesh);
             },
             update: (time: number, settings: Record<string, any>) => {
@@ -107,7 +86,6 @@ export const TrailContext: IProjectContext = {
             dispose: () => {
                 if (mesh) {
                     mesh.geometry.dispose();
-                    (mesh.material as THREE.Material).dispose();
                     mesh.removeFromParent();
                 }
             }

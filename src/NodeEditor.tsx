@@ -11,6 +11,7 @@ import type { IProjectContext } from './types/context';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import { useWorkspaceIO } from './core/hooks/useWorkSpaceIO';
+import { useShaderCompiler } from './core/hooks/useShaderCompiler';
 
 interface NodeEditorProps {
     activeContext: IProjectContext;
@@ -70,28 +71,7 @@ export default function NodeEditor({
   
 
 
-  // Sync to Global RAM when Local Nodes Change
-  useEffect(() => {
-    if (nodes.length === 0) return;
-
-    const astNodes: ShaderNode[] = nodes.map(n => ({
-      id: n.id,
-      type: n.data.astType as NodeType,
-      inputs: n.data.inputs || [],
-      outputs: n.data.outputs || []
-    }));
-
-    const astConnections: ShaderConnection[] = edges.map(e => ({
-      id: e.id,
-      sourceNodeId: e.source,
-      sourcePortId: e.sourceHandle || 'out',
-      targetNodeId: e.target,
-      targetPortId: e.targetHandle || 'in'
-    }));
-
-    // Save ReactFlow visual data AND AST to App RAM
-    onFlowChange(nodes, edges, { nodes: astNodes, connections: astConnections });
-  }, [nodes, edges, onFlowChange]);
+  useShaderCompiler({ nodes, edges, onFlowChange });
 
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);

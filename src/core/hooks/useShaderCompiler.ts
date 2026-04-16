@@ -5,10 +5,12 @@ import type { ShaderNode, NodeType, ShaderConnection } from '../../types/ast';
 interface UseShaderCompilerProps {
     nodes: Node[];
     edges: Edge[];
-    onFlowChange: (nodes: Node[], edges: Edge[], graph: any) => void;
+    past: any[];   
+    future: any[]; 
+    onFlowChange: (nodes: Node[], edges: Edge[], graph: any, past: any[], future: any[]) => void;
 }
 
-export function useShaderCompiler({ nodes, edges, onFlowChange }: UseShaderCompilerProps) {
+export function useShaderCompiler({ nodes, edges, past, future, onFlowChange }: UseShaderCompilerProps, ) {
     useEffect(() => {
         if (nodes.length === 0) return;
 
@@ -27,7 +29,7 @@ export function useShaderCompiler({ nodes, edges, onFlowChange }: UseShaderCompi
               targetPortId: e.targetHandle || 'in'
             }));
 
-            onFlowChange(nodes, edges, { nodes: astNodes, connections: astConnections });
+            onFlowChange(nodes, edges, { nodes: astNodes, connections: astConnections }, past, future);
         
-    }, [nodes, edges, onFlowChange]);
+   }, [nodes, edges, past, future, onFlowChange]);
 }

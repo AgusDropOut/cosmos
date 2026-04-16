@@ -9,3 +9,9 @@ export interface SavedWorkspace {
     nodes: Node[];       // The exact React Flow visual layout & values
     edges: Edge[];       // The exact React Flow wire connections
 }
+
+//  THE RAM STATE 
+export interface EditorWorkspaceState extends SavedWorkspace {
+    historyPast: any[];  
+    historyFuture: any[]; 
+}

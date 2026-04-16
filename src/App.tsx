@@ -8,6 +8,7 @@ import type { ShaderGraph, NodeType } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import type { Node, Edge } from 'reactflow';
+import type { useHistory } from './core/hooks/useHistory';
 
 interface AppProps {
     storage: IWorkspaceStorage;
@@ -32,10 +33,10 @@ function App({ storage }: AppProps) {
   const initialState = getInitialState();
 
   // Initialize state with stored data or fallback to defaults
-  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any }>>(
+  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any, historyPast:{nodes : Node[] , edges: Edge[]}[], historyFuture:{nodes : Node[] , edges: Edge[]}[] }>>(
     initialState?.workspaces || {
-      'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' } },
-      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 } }
+      'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' }, historyPast: [], historyFuture: [] },
+      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] }
     }
   );
 
@@ -55,10 +56,13 @@ function App({ storage }: AppProps) {
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 
   [activeContextId]);
 
-  const handleFlowChange = useCallback((nodes: Node[], edges: Edge[], graph: ShaderGraph) => {
+  const handleFlowChange = useCallback((
+    nodes: Node[], edges: Edge[], graph: ShaderGraph , 
+    past: {nodes: Node[], edges: Edge[]}[], 
+    future: {nodes: Node[], edges: Edge[]}[]) => {
     setWorkspaces(prev => ({
         ...prev,
-        [activeContextId]: { ...prev[activeContextId], rfNodes: nodes, rfEdges: edges, graph }
+        [activeContextId]: { ...prev[activeContextId], rfNodes: nodes, rfEdges: edges, graph, historyPast: past, historyFuture: future }
     }));
   }, [activeContextId]);
 
@@ -102,7 +106,9 @@ function App({ storage }: AppProps) {
             rfNodes: workspace.nodes, 
             rfEdges: workspace.edges, 
             graph: mappedGraph, 
-            settings: workspace.settings 
+            settings: workspace.settings,
+            historyPast: [],
+            historyFuture: [] 
         }
     }));
     setLoadedWorkspace(workspace);
@@ -127,6 +133,8 @@ function App({ storage }: AppProps) {
            graph={workspaces[activeContextId].graph}
            contextSettings={workspaces[activeContextId].settings}
            onFlowChange={handleFlowChange}
+           initialPast={workspaces[activeContextId].historyPast}
+           initialFuture={workspaces[activeContextId].historyFuture}
            onSettingChange={handleSettingChange}
            allWorkspaces={workspaces}
            onContextChange={setActiveContextId}

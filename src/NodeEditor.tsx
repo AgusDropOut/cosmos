@@ -12,6 +12,12 @@ import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import { useWorkspaceIO } from './core/hooks/useWorkSpaceIO';
 import { useShaderCompiler } from './core/hooks/useShaderCompiler';
+import { useHistory } from './core/hooks/useHistory';
+
+const nodeTypes = Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
+    acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
+    return acc;
+}, {} as Record<string, React.ComponentType<any>>);
 
 interface NodeEditorProps {
     activeContext: IProjectContext;
@@ -19,7 +25,9 @@ interface NodeEditorProps {
     rfEdges: Edge[];
     graph: ShaderGraph;
     contextSettings: Record<string, any>;
-    onFlowChange: (nodes: Node[], edges: Edge[], graph: ShaderGraph) => void;
+    onFlowChange: (nodes: Node[], edges: Edge[], graph: ShaderGraph, past: any[], future: any[]) => void;
+    initialPast: {nodes: Node[], edges: Edge[]}[];
+    initialFuture: {nodes: Node[], edges: Edge[]}[];
     onSettingChange: (key: string, value: any) => void;
     onContextChange: (contextId: string) => void;
     allWorkspaces: Record<string, { graph: ShaderGraph; settings: any }>;
@@ -35,7 +43,10 @@ export default function NodeEditor({
     activeContext,
     rfNodes,
     rfEdges,
+    graph,
     onFlowChange, 
+    initialPast,
+    initialFuture,
     onSettingChange, 
     allWorkspaces, 
     onContextChange,
@@ -51,8 +62,20 @@ export default function NodeEditor({
   const [nodes, setNodes] = useState<Node[]>(rfNodes);
   const [edges, setEdges] = useState<Edge[]>(rfEdges);
 
+  const history = useHistory(
+    initialPast,
+    initialFuture,
+    setNodes,
+    setEdges,
+    nodes,
+    edges
+  );
+
   // Restore Local Nodes when Context Swaps
   useEffect(() => {
+
+    history.setHistory(initialPast, initialFuture);
+
     if (loadedWorkspace && loadedWorkspace.contextId === activeContext.id) {
       setNodes(loadedWorkspace.nodes);
       setEdges(loadedWorkspace.edges);
@@ -71,11 +94,20 @@ export default function NodeEditor({
   
 
 
-  useShaderCompiler({ nodes, edges, onFlowChange });
+  useShaderCompiler({ 
+      nodes, 
+      edges, 
+      past: history.past, 
+      future: history.future, 
+      onFlowChange 
+  });
 
   const onNodesChange = useCallback((changes: NodeChange[]) => setNodes((nds) => applyNodeChanges(changes, nds)), []);
   const onEdgesChange = useCallback((changes: EdgeChange[]) => setEdges((eds) => applyEdgeChanges(changes, eds)), []);
-  const onConnect = useCallback((params: Connection) => setEdges((eds) => addEdge(params, eds)), []);
+  const onConnect = useCallback((params: Connection) => {
+      history.takeSnapshot(); 
+      setEdges((eds) => addEdge(params, eds)); 
+  }, [history.takeSnapshot]);
 
   const updateNodeValue = useCallback((nodeId: string, inputId: string, newValue: any) => {
     setNodes((nds) => nds.map((node) => {
@@ -90,16 +122,16 @@ export default function NodeEditor({
     );
   }, []);
 
-  const nodeTypes = useMemo(() => {
-    return Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
-      acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
-      return acc;
-    }, {} as Record<string, React.ComponentType<any>>);
-  }, []);
+  const onNodeDragStart = useCallback(() => {
+      history.takeSnapshot();
+  }, [history.takeSnapshot]);
+
+
 
   const addNode = (type: string) => {
     const def = NODE_DEFINITIONS[type];
     if (!def) return;
+    history.takeSnapshot();
     const newNode: Node = {
       id: `${type.toLowerCase()}-${Date.now()}`,
       type: def.type,
@@ -113,13 +145,20 @@ export default function NodeEditor({
     setNodes((nds) => [...nds, newNode]);
   };
 
+  const flowNodes = useMemo(() => {
+    return nodes.map((n) => ({
+      ...n,
+      data: { ...n.data, updateNodeValue },
+    }));
+  }, [nodes, updateNodeValue]);
+
   return (
     
     <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
       {/* TODO: Evaluate moving this to a proper 
         standalone header component in the future */}
 
-        <ReactFlow nodes={nodes.map(n => ({ ...n, data: { ...n.data, updateNodeValue } }))} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} fitView >
+        <ReactFlow nodes={flowNodes} edges={edges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} nodeTypes={nodeTypes} onNodeDragStart={onNodeDragStart} fitView >
         
         <Panel position="top-center" style={{ display: 'flex', gap: '10px', padding: '10px', background: '#1e1e1e', borderRadius: '8px', border: '1px solid #333', alignItems: 'center' }}>
                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -142,7 +181,7 @@ export default function NodeEditor({
         style={{ background: 'transparent', color: 'white', border: '1px dashed #4a4a4a', borderRadius: '4px', padding: '4px 6px', fontWeight: 'bold', fontSize: '12px', width: '130px', outline: 'none' }}
     />
 </div>
-          <select value={activeContext.id} onChange={(e) => onContextChange(e.target.value)} style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px' }}>
+          <select value={activeContext.id} onChange={(e) => {onFlowChange(nodes, edges, graph ,history.past, history.future);onContextChange(e.target.value)}} style={{ background: '#121212', color: '#4dabf7', border: '1px solid #4a4a4a', padding: '6px', borderRadius: '4px', fontSize: '12px' }}>
             {availableContexts.map(ctx => <option key={ctx.id} value={ctx.id}>{ctx.name}</option>)}
           </select>
           <button onClick={handleGameExport} style={{ background: '#2b8a3e', color: 'white', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 'bold' }}>🚀 Export to Minecraft</button>

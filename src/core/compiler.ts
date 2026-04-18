@@ -1,4 +1,3 @@
-// src/core/compiler.ts
 import type { ShaderGraph, GLSLType, NodeType } from '../types/ast';
 import { NodeRegistry } from './registry';
 
@@ -20,6 +19,8 @@ export function serializeValue(value: any, type: GLSLType): string {
     }
 }
 
+export type CompilerTarget = 'web' | 'minecraft';
+
 /**
  * Traverses backwards from a specific Endpoint Node,
  * generating GLSL only for the nodes connected to that specific tree.
@@ -33,33 +34,19 @@ class TreeCompiler {
     constructor(graph: ShaderGraph) {
         this.graph = graph;
     }
-
-    public compileTree(endpointType: NodeType, isVertex: boolean): string {
+    
+    public compileTree(endpointType: NodeType, isVertex: boolean, target: CompilerTarget): string {
         const endpointNode = this.graph.nodes.find(n => n.type === endpointType);
         
-        // Fallbacks if the user deleted the output nodes
-        if (!endpointNode) {
-            return isVertex 
-                ? `varying vec2 vUv;\nvoid main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
-                : `varying vec2 vUv;\nvoid main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }`; // Magenta missing texture
+        if (endpointNode) {
+            this.traverseNode(endpointNode.id);
         }
 
-        // 1. Traverse backwards from the endpoint
-        this.traverseNode(endpointNode.id);
-
-        // 2. Assemble the final shader string
-        const globalsString = Array.from(this.globalFunctions).join('\n\n');
-        const mainString = this.mainBodyCode.join('\n');
-
-        return `
-varying vec2 vUv;
-${globalsString}
-
-void main() {
-${isVertex ? '    vUv = uv;' : ''}
-${mainString}
-}
-        `.trim();
+        if (target === 'minecraft') {
+            return this.assembleMinecraft(isVertex, !!endpointNode);
+        } else {
+            return this.assembleWeb(isVertex, !!endpointNode);
+        }
     }
 
     private traverseNode(nodeId: string) {
@@ -74,7 +61,6 @@ ${mainString}
             return;
         }
 
-        // Ensure upstream nodes are generated FIRST (Backwards Traversal)
         node.inputs.forEach(input => {
             const connection = this.graph.connections.find(
                 c => c.targetNodeId === nodeId && c.targetPortId === input.id
@@ -90,7 +76,6 @@ ${mainString}
 
         const varName = `node_${node.id.replace(/-/g, '_')}`;
 
-        // The Smart Resolver
         const resolveInput = (portId: string): string => {
             const inputDef = node.inputs.find(i => i.id === portId);
             const expectedType = inputDef?.type || 'float';
@@ -119,17 +104,106 @@ ${mainString}
         
         this.generatedNodes.add(nodeId);
     }
+
+    private assembleWeb(isVertex: boolean, hasEndpoint: boolean): string {
+        if (!hasEndpoint) {
+            return isVertex 
+                ? `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
+                : `void main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }`;
+        }
+
+        const globalsString = Array.from(this.globalFunctions).join('\n\n');
+        const mainString = this.mainBodyCode.join('\n');
+
+        return `
+varying vec2 vUv;
+${globalsString}
+
+void main() {
+    ${isVertex ? 'vUv = uv;' : ''}
+    ${mainString}
+}
+        `.trim();
+    }
+
+   private assembleMinecraft(isVertex: boolean, hasEndpoint: boolean): string {
+        if (!hasEndpoint) {
+            return isVertex 
+                ? `#version 150\nin vec3 Position; uniform mat4 ProjMat; uniform mat4 ModelViewMat; void main() { gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0); }`
+                : `#version 150\nout vec4 fragColor; void main() { fragColor = vec4(1.0, 0.0, 1.0, 1.0); }`;
+        }
+
+        let globalsString = Array.from(this.globalFunctions).join('\n\n');
+        let mainString = this.mainBodyCode.join('\n');
+
+        /* Minecraft's shader environment has some hardcoded uniforms and varying semantics.
+         * We need to adapt our generated GLSL to fit those constraints. 
+         * By applying global string replacements  
+        */
+
+        globalsString = globalsString.replace(/uniform float u_time;/g, '');
+
+        mainString = mainString.replace(/\bu_time\b/g, '(CosmosTime * 1000.0)');
+        mainString = mainString.replace(/\buv\b/g, 'UV0');
+        mainString = mainString.replace(/\bposition\b/g, 'Position');
+        mainString = mainString.replace(/\bprojectionMatrix\b/g, 'ProjMat');
+        mainString = mainString.replace(/\bmodelViewMatrix\b/g, 'ModelViewMat');
+        
+        globalsString = globalsString.replace(/\bgl_FragColor\b/g, 'fragColor');
+        mainString = mainString.replace(/\bgl_FragColor\b/g, 'fragColor');
+
+        if (isVertex) {
+            return `
+#version 150
+in vec3 Position;
+in vec4 Color;
+in vec2 UV0;
+
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
+uniform float CosmosTime;
+
+out vec2 vUv;
+out vec4 vertexColor;
+
+${globalsString}
+
+void main() {
+    vUv = UV0;
+    vertexColor = Color;
+${mainString}
+}
+            `.trim();
+        } else {
+            return `
+#version 150
+
+in vec2 vUv;
+in vec4 vertexColor;
+out vec4 fragColor;
+
+uniform float CosmosTime;
+
+${globalsString}
+
+void main() {
+${mainString}
+}
+            `.trim();
+        }
+    }
 }
 
 /**
- * Master Entry Point. Spawns two independent tree traversals.
+ * Master Entry Point. Spawns two independent tree traversals. 
+ * One for the webgl previewer and the other for minecraft.
  */
-export function compileShader(graph: ShaderGraph) {
+export function compileShader(graph: ShaderGraph, target: CompilerTarget = 'web') {
     const vertexCompiler = new TreeCompiler(graph);
     const fragmentCompiler = new TreeCompiler(graph);
 
     return {
-        vertexShader: vertexCompiler.compileTree('OUTPUT_VERT', true),
-        fragmentShader: fragmentCompiler.compileTree('OUTPUT_FRAG', false)
+        vertexShader: vertexCompiler.compileTree('OUTPUT_VERT', true, target),
+        fragmentShader: fragmentCompiler.compileTree('OUTPUT_FRAG', false, target)
     };
 }

@@ -64,7 +64,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
-      globalFunctions: `uniform float u_time;`,
+     globalFunctions: `uniform float u_time;`,
       generateCode: ({ resolveInput, varName }) => `    float ${varName} = abs(sin(u_time * ${resolveInput('speed')}));`
     }
   },

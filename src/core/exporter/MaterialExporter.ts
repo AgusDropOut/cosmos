@@ -6,7 +6,7 @@ import { compileShader } from '../compiler';
 export class MaterialExporter implements IWorkspaceExporter {
     async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]> {
         
-        const { vertexShader, fragmentShader } = compileShader(graph);
+        const { vertexShader, fragmentShader } = compileShader(graph, 'minecraft');
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
 
         const manifest = JSON.stringify({

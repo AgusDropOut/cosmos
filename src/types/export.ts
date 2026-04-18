@@ -38,5 +38,5 @@ export interface ExportResult {
 }
 
 export interface IWorkspaceExporter {
-    export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult>;
+    export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]>;
 }

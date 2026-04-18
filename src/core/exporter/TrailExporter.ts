@@ -8,17 +8,16 @@ import { serializeValue } from '../compiler';
 export class TrailExporter implements IWorkspaceExporter {
     private matExporter = new MaterialExporter();
 
-    async export(graph: ShaderGraph, settings: Record<string, any>,  globalSettings: { namespace: string; projectName: string }): Promise<ExportResult> {
+    async export(graph: ShaderGraph, settings: Record<string, any>,  globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]> {
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
-        // Fallback material ID for standalone exports
-        const defaultMaterialId = `bloodyhell:${safeName}_mat`;
+        const defaultMaterialId = `${globalSettings.namespace}:${safeName}`;
         const jsonContent = this.generateTrailJson(graph, settings, safeName, defaultMaterialId, globalSettings);
 
-        return {
-            fileName: `${safeName}.trail.csm.json`,
+        return [{
+            fileName: `cosmos_data/${safeName}.trail.csm.json`,
             fileContent: jsonContent,
             mimeType: 'application/json'
-        };
+        }];
     }
 
     async exportComposite(
@@ -29,15 +28,16 @@ export class TrailExporter implements IWorkspaceExporter {
     ): Promise<ExportResult> {
         const zip = new JSZip();
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
-        const materialId = `bloodyhell:${safeName}_mat`;
+        const materialId = `${globalSettings.namespace}:${safeName}`;
         
-        // Generates the Trail Config with the exact generated material ID
         const trailJson = this.generateTrailJson(trailGraph, trailSettings, safeName, materialId, globalSettings);
-        zip.file(`${safeName}.trail.csm.json`, trailJson);
+        zip.file(`cosmos_data/${safeName}.trail.csm.json`, trailJson);
 
-        // Generates the Material JSON using the matching safeName identifier
-        const matResult = await this.matExporter.export(materialGraph, {}, globalSettings);
-        zip.file(`${safeName}.mat.csm.json`, matResult.fileContent as string);
+        const matResults = await this.matExporter.export(materialGraph, {}, globalSettings);
+        
+        for (const matFile of matResults) {
+            zip.file(matFile.fileName, matFile.fileContent);
+        }
 
         const content = await zip.generateAsync({ type: 'blob' });
 

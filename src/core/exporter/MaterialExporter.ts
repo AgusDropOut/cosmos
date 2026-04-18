@@ -4,10 +4,9 @@ import type { IWorkspaceExporter, ExportResult } from '../../types/export';
 import { compileShader } from '../compiler';
 
 export class MaterialExporter implements IWorkspaceExporter {
-    async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult> {
+    async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]> {
         
         const { vertexShader, fragmentShader } = compileShader(graph);
-
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
 
         const manifest = JSON.stringify({
@@ -15,8 +14,6 @@ export class MaterialExporter implements IWorkspaceExporter {
             id: safeName,
             type: "cosmos:material",
             config: {
-                vertex: vertexShader,
-                fragment: fragmentShader,
                 render_state: {
                     transparency: settings.isTranslucent ? 'TRANSLUCENT' : 'OPAQUE',
                     depth_test: 'LEQUAL'
@@ -24,10 +21,22 @@ export class MaterialExporter implements IWorkspaceExporter {
             }
         }, null, 4);
 
-        return {
-            fileName: `${safeName}.mat.csm.json`,
-            fileContent: manifest,
-            mimeType: 'application/json'
-        };
+        return [
+            {
+                fileName: `cosmos_data/${safeName}.mat.csm.json`,
+                fileContent: manifest,
+                mimeType: 'application/json'
+            },
+            {
+                fileName: `shaders/core/${safeName}.vsh`,
+                fileContent: vertexShader,
+                mimeType: 'text/plain'
+            },
+            {
+                fileName: `shaders/core/${safeName}.fsh`,
+                fileContent: fragmentShader,
+                mimeType: 'text/plain'
+            }
+        ];
     }
 }

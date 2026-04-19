@@ -16,7 +16,10 @@ export type NodeType =
   | 'SMOOTHSTEP'
   | 'MIX_COLORS'
   | 'FBM_NOISE_2D'
-  | 'RIDGE_NOISE_3D';
+  | 'RIDGE_NOISE_3D'
+  | 'PACK_VEC2'
+  | 'VECTOR_SCALAR_MATH'
+  | 'VECTOR_MATH';
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4' | 'string';
 

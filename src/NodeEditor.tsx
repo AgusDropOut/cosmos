@@ -154,7 +154,7 @@ export default function NodeEditor({
 
   return (
     
-    <div style={{ width: '100%', height: '100%', backgroundColor: '#121212' }}>
+   <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#121212', position: 'relative' }}>
       {/* TODO: Evaluate moving this to a proper 
         standalone header component in the future */}
 

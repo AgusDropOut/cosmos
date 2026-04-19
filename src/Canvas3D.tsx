@@ -2,7 +2,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { compileShader } from './core/compiler';
-import { NODE_DEFINITIONS } from './core/NodeDefinitions';
 import type { ShaderGraph } from './types/ast';
 import type { IProjectContext, IPreviewStrategy } from './types/context';
 
@@ -23,7 +22,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
   useEffect(() => {
     settingsRef.current = contextSettings;
-    if (strategyRef.current) {
+    if (strategyRef.current && strategyRef.current.onSettingsChange) {
         strategyRef.current.onSettingsChange(contextSettings);
     }
   }, [contextSettings]);
@@ -32,12 +31,21 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     if (!mountRef.current) return;
     mountRef.current.innerHTML = '';
 
+    const width = mountRef.current.clientWidth;
+    const height = mountRef.current.clientHeight;
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
-    camera.position.z = 5;
+    
+    // 1. The Standard 3D Camera
+    const perspCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    perspCamera.position.z = 5;
+
+    // 2. The "Shadertoy" 2D Flat Camera (Clip space from -1 to 1)
+    const orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+    orthoCamera.position.z = 1;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
+    renderer.setSize(width, height);
     mountRef.current.appendChild(renderer.domElement);
 
     const material = new THREE.ShaderMaterial({
@@ -51,7 +59,8 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     materialRef.current = material;
 
     strategyRef.current = activeContext.createPreviewStrategy();
-    strategyRef.current.init({ scene, camera, material }, settingsRef.current);
+    // We pass perspCamera as default, strategy shouldn't care about the camera type
+    strategyRef.current.init({ scene, camera: perspCamera, material }, settingsRef.current);
 
     const animate = (time: number) => {
         requestRef.current = requestAnimationFrame(animate);
@@ -60,69 +69,57 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
             materialRef.current.uniforms.u_time.value = time * 0.001;
         }
 
-        if (strategyRef.current) {
+        if (strategyRef.current && strategyRef.current.update) {
             strategyRef.current.update(time, settingsRef.current);
         }
 
-        renderer.render(scene, camera);
+        // Dynamically select the camera right before rendering!
+        const activeCamera = settingsRef.current.shape === '2D_QUAD' ? orthoCamera : perspCamera;
+        renderer.render(scene, activeCamera);
     };
     
     requestRef.current = requestAnimationFrame(animate);
 
     const handleResize = () => {
       if (!mountRef.current) return;
-      renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-      camera.aspect = mountRef.current.clientWidth / mountRef.current.clientHeight;
-      camera.updateProjectionMatrix();
+      const newWidth = mountRef.current.clientWidth;
+      const newHeight = mountRef.current.clientHeight;
+      
+      renderer.setSize(newWidth, newHeight);
+      
+      // Update the 3D camera aspect ratio (Ortho camera stays strictly -1 to 1 for shadertoy mapping)
+      perspCamera.aspect = newWidth / newHeight;
+      perspCamera.updateProjectionMatrix();
     };
+    
     window.addEventListener('resize', handleResize);
 
     return () => {
       cancelAnimationFrame(requestRef.current);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
-      if (strategyRef.current) strategyRef.current.dispose();
+      if (strategyRef.current && strategyRef.current.dispose) strategyRef.current.dispose();
       if (materialRef.current) materialRef.current.dispose();
       if (mountRef.current) mountRef.current.innerHTML = '';
     };
   }, [activeContext]); 
 
-  // Shader Injection 
+  // Shader Injection
   useEffect(() => {
     let targetGraph = graph;
     if (activeContext.id !== 'MATERIAL') {
         targetGraph = globalMaterial;
     }
 
-    console.log("Canvas3D: Received Graph Update", targetGraph);
-
-    if (!materialRef.current) {
-        console.warn("Canvas3D: materialRef is null. Bailing out.");
-        return;
-    }
-
-    if (!targetGraph.nodes || targetGraph.nodes.length === 0) {
-        console.warn("Canvas3D: targetGraph has no nodes. Bailing out.");
-        return;
-    }
+    if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
     try {
-      console.log("Canvas3D: Attempting to compile shader...");
       const { vertexShader, fragmentShader } = compileShader(targetGraph);
-
-      console.log("--- GENERATED VERTEX SHADER ---");
-      console.log(vertexShader);
-      
-      console.log("--- GENERATED FRAGMENT SHADER ---");
-      console.log(fragmentShader);
-
       materialRef.current.vertexShader = vertexShader;
       materialRef.current.fragmentShader = fragmentShader;
       materialRef.current.needsUpdate = true;
-      
-      console.log("Canvas3D: Shader successfully injected into material.");
     } catch (e) {
-      console.error("Cosmos: Shader injection failed heavily during compilation:", e);
+      console.error("Cosmos: Shader injection failed:", e);
     }
   }, [graph, globalMaterial, activeContext.id]);
 

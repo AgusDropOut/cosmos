@@ -65,17 +65,18 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
      globalFunctions: `uniform float u_time;`,
-      generateCode: ({ resolveInput, varName }) => `    float ${varName} = abs(sin(u_time * ${resolveInput('speed')}));`
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = u_time * ${resolveInput('speed')};`
     }
   },
   OUTPUT_FRAG: {
     type: 'OUTPUT_FRAG',
     label: 'Fragment Output',
     color: '#51cf66',
-    inputs: [{ id: 'color', type: 'vec3', default: {r:0, g:0, b:0} }],
+    inputs: [{ id: 'color', type: 'vec3', default: {r:0, g:0, b:0} },
+    { id: 'alpha', type: 'float', default: 1.0, control: { id: 'alpha', label: 'Alpha', type: 'slider', min: 0, max: 1, step: 0.05 } }],
     outputs: [],
     strategy: {
-      generateCode: ({ resolveInput }) => `    gl_FragColor = vec4(vec3(${resolveInput('color')}), 1.0);`
+      generateCode: ({ resolveInput }) => `    gl_FragColor = vec4(vec3(${resolveInput('color')}), ${resolveInput('alpha')});`
     }
   },
   OUTPUT_VERT: {
@@ -312,9 +313,56 @@ float ridge3D(vec3 p) {
     inputs: [
       { id: 'a', type: 'float', default: 1.0 },
       { id: 'b', type: 'float', default: 1.0 },
-      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide'] } }
+      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide', 'pow', 'max', 'min'] } }
     ],
     outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName, node }) => {
+        const opInput = node.inputs.find(i => i.id === 'op');
+        const op = opInput?.value || 'multiply';
+        const a = resolveInput('a');
+        const b = resolveInput('b');
+        
+        // Handle GLSL built-in functions
+        if (op === 'pow') return `    float ${varName} = pow(${a}, ${b});`;
+        if (op === 'max') return `    float ${varName} = max(${a}, ${b});`;
+        if (op === 'min') return `    float ${varName} = min(${a}, ${b});`;
+        
+        // Handle standard operators
+        let operator = '*';
+        if (op === 'add') operator = '+';
+        else if (op === 'subtract') operator = '-';
+        else if (op === 'divide') operator = '/';
+        
+        return `    float ${varName} = ${a} ${operator} ${b};`;
+      }
+    }
+  },
+  PACK_VEC2: {
+    type: 'PACK_VEC2',
+    label: 'Pack Vec2',
+    color: '#12b886',
+    inputs: [
+      { id: 'x', type: 'float', default: 0.0 },
+      { id: 'y', type: 'float', default: 0.0 }
+    ],
+    outputs: [{ id: 'out', type: 'vec2' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => 
+        `    vec2 ${varName} = vec2(${resolveInput('x')}, ${resolveInput('y')});`
+    }
+  },
+
+  VECTOR_SCALAR_MATH: {
+    type: 'VECTOR_SCALAR_MATH',
+    label: 'Vector & Scalar Math',
+    color: '#4c6ef5',
+    inputs: [
+      { id: 'vec', type: 'vec3', default: { r: 1.0, g: 1.0, b: 1.0 } },
+      { id: 'scalar', type: 'float', default: 1.0 },
+      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['multiply', 'divide', 'add', 'subtract'] } }
+    ],
+    outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
       generateCode: ({ resolveInput, varName, node }) => {
         const opInput = node.inputs.find(i => i.id === 'op');
@@ -325,7 +373,28 @@ float ridge3D(vec3 p) {
         else if (op === 'subtract') operator = '-';
         else if (op === 'divide') operator = '/';
         
-        return `    float ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
+        return `    vec3 ${varName} = ${resolveInput('vec')} ${operator} ${resolveInput('scalar')};`;
+      }
+    }
+  },
+  VECTOR_MATH: {
+    type: 'VECTOR_MATH',
+    label: 'Vector Math',
+    color: '#4c6ef5',
+    inputs: [
+      { id: 'a', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'b', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'op', type: 'string', default: 'add', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide'] } }
+    ],
+    outputs: [{ id: 'out', type: 'vec3' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName, node }) => {
+        const op = node.inputs.find(i => i.id === 'op')?.value || 'add';
+        let operator = '+';
+        if (op === 'subtract') operator = '-';
+        else if (op === 'multiply') operator = '*';
+        else if (op === 'divide') operator = '/';
+        return `    vec3 ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
       }
     }
   }

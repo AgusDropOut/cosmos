@@ -23,6 +23,12 @@ export class IcosahedronShape implements IShapeGenerator {
     generate() { return new THREE.IcosahedronGeometry(0.6, 0); }
 }
 
+export class QuadShape implements IShapeGenerator {
+    generate() { 
+        return new THREE.PlaneGeometry(2, 2); 
+    }
+}
+
 //  Shape (The Star)
 export class StarLampShape implements IShapeGenerator {
     
@@ -105,5 +111,6 @@ export const ShapeRegistry: Record<string, IShapeGenerator> = {
     'SPHERE': new SphereShape(),
     'CYLINDER': new CylinderShape(),
     'ICOSAHEDRON': new IcosahedronShape(),
-    'STAR': new StarLampShape() 
+    'STAR': new StarLampShape(),
+    '2D_QUAD': new QuadShape()
 };

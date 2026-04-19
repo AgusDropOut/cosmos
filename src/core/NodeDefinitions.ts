@@ -188,7 +188,7 @@ TRAIL_ENDPOINT: {
     label: 'Math Function',
     color: '#868e96',
     inputs: [
-      { id: 'value', type: 'float', default: 1.0 },
+      { id: 'value', type: 'float', default: 1.0, control: { type: 'number', label: 'Val', step: 0.1 } },
       { id: 'func', type: 'string', default: 'abs', control: { id: 'func', label: 'Function', type: 'select', options: ['abs', 'exp', 'sin', 'cos', 'fract', 'floor'] } }
     ],
     outputs: [{ id: 'out', type: 'float' }],
@@ -311,8 +311,8 @@ float ridge3D(vec3 p) {
     label: 'Math (Binary)',
     color: '#868e96',
     inputs: [
-      { id: 'a', type: 'float', default: 1.0 },
-      { id: 'b', type: 'float', default: 1.0 },
+      { id: 'a', type: 'float', default: 1.0, control: { type: 'number', label: 'A', step: 0.1 } },
+      { id: 'b', type: 'float', default: 1.0, control: { type: 'number', label: 'B', step: 0.1 } },
       { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide', 'pow', 'max', 'min'] } }
     ],
     outputs: [{ id: 'out', type: 'float' }],
@@ -397,5 +397,22 @@ float ridge3D(vec3 p) {
         return `    vec3 ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
       }
     }
-  }
+  },
+  MAPPING_2D: {
+    type: 'MAPPING_2D',
+    label: 'UV Mapping',
+    color: '#20c997',
+    inputs: [
+      { id: 'uv', type: 'vec2', default: { x: 0, y: 0 } },
+      { id: 'scale_x', type: 'float', default: 1.0, control: { type: 'number', label: 'Scale X', step: 0.1 } },
+      { id: 'scale_y', type: 'float', default: 1.0, control: { type: 'number', label: 'Scale Y', step: 0.1 } },
+      { id: 'offset_x', type: 'float', default: 0.0, control: { type: 'number', label: 'Off X', step: 0.1 } },
+      { id: 'offset_y', type: 'float', default: 0.0, control: { type: 'number', label: 'Off Y', step: 0.1 } }
+    ],
+    outputs: [{ id: 'out', type: 'vec2' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => 
+        `    vec2 ${varName} = (${resolveInput('uv')} + vec2(${resolveInput('offset_x')}, ${resolveInput('offset_y')})) * vec2(${resolveInput('scale_x')}, ${resolveInput('scale_y')});`
+    }
+  },
 };

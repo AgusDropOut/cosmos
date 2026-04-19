@@ -3,9 +3,9 @@ import type { NodeType, GLSLType } from './ast';
 import type { NodeStrategy } from './compiler';
 
 export interface NodeControl {
-  id: string;
+  id?: string;
   label: string;
-  type: 'slider' | 'color-rgb' | 'none'| 'select';
+  type: 'slider' | 'color-rgb' | 'none'| 'select' | 'number';
   min?: number;
   max?: number;
   step?: number;

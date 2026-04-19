@@ -1,3 +1,4 @@
+// src/core/compiler.ts
 import type { ShaderGraph, GLSLType, NodeType } from '../types/ast';
 import { NodeRegistry } from './registry';
 
@@ -98,7 +99,6 @@ class TreeCompiler {
                 const sourceOutput = sourceNode?.outputs.find(o => o.id === connection.sourcePortId);
                 const actualType = sourceOutput?.type || 'float';
                 
-                
                 let sourceVarName = `node_${connection.sourceNodeId.replace(/-/g, '_')}`;
                 if (sourceNode && sourceNode.outputs.length > 1) {
                     sourceVarName = `${sourceVarName}_${connection.sourcePortId}`;
@@ -122,7 +122,8 @@ class TreeCompiler {
     private assembleWeb(isVertex: boolean, hasEndpoint: boolean): string {
         if (!hasEndpoint) {
             return isVertex 
-                ? `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
+                // MAP X FROM [0, 1] to [-1, 1]
+                ? `varying vec2 vUv; void main() { vUv = vec2((uv.x * 2.0) - 1.0, uv.y); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
                 : `void main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }`;
         }
 
@@ -131,25 +132,20 @@ class TreeCompiler {
 
         return `
 varying vec2 vUv;
-// FIX 2: Web Preview Stub for Vertex Colors
+// --- WEB PREVIEW STUBS ---
 vec4 vertexColor = vec4(1.0, 1.0, 1.0, 1.0); 
 
 ${globalsString}
 
 void main() {
-    ${isVertex ? 'vUv = uv;' : ''}
+    // MAP X FROM [0, 1] to [-1, 1] so Cosmos perfectly matches Minecraft trails!
+    ${isVertex ? 'vUv = vec2((uv.x * 2.0) - 1.0, uv.y);' : ''}
     ${mainString}
 }
         `.trim();
     }
 
-   private assembleMinecraft(isVertex: boolean, hasEndpoint: boolean): string {
-        if (!hasEndpoint) {
-            return isVertex 
-                ? `#version 150\nin vec3 Position; uniform mat4 ProjMat; uniform mat4 ModelViewMat; void main() { gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0); }`
-                : `#version 150\nout vec4 fragColor; void main() { fragColor = vec4(1.0, 0.0, 1.0, 1.0); }`;
-        }
-
+    private assembleMinecraft(isVertex: boolean, hasEndpoint: boolean): string {
         let globalsString = Array.from(this.globalFunctions).join('\n\n');
         let mainString = this.mainBodyCode.join('\n');
 
@@ -157,10 +153,9 @@ void main() {
          * We need to adapt our generated GLSL to fit those constraints. 
          * By applying global string replacements  
         */
-
         globalsString = globalsString.replace(/uniform float u_time;/g, '');
 
-        mainString = mainString.replace(/\bu_time\b/g, '(CosmosTime * 1000.0)');
+        mainString = mainString.replace(/\bu_time\b/g, 'CosmosTime');
         mainString = mainString.replace(/\buv\b/g, 'UV0');
         mainString = mainString.replace(/\bposition\b/g, 'Position');
         mainString = mainString.replace(/\bprojectionMatrix\b/g, 'ProjMat');
@@ -170,6 +165,27 @@ void main() {
         mainString = mainString.replace(/\bgl_FragColor\b/g, 'fragColor');
 
         if (isVertex) {
+            if (!hasEndpoint) {
+                return `
+#version 150
+in vec3 Position;
+in vec4 Color;
+in vec2 UV0;
+
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
+
+out vec2 vUv;
+out vec4 vertexColor;
+
+void main() {
+    vUv = UV0;
+    vertexColor = Color;
+    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
+}
+                `.trim();
+            }
+
             return `
 #version 150
 in vec3 Position;
@@ -191,7 +207,18 @@ void main() {
 ${mainString}
 }
             `.trim();
+
         } else {
+            if (!hasEndpoint) {
+                return `
+#version 150
+out vec4 fragColor;
+void main() { 
+    fragColor = vec4(1.0, 0.0, 1.0, 1.0); 
+}
+                `.trim();
+            }
+
             return `
 #version 150
 

@@ -19,7 +19,9 @@ export type NodeType =
   | 'RIDGE_NOISE_3D'
   | 'PACK_VEC2'
   | 'VECTOR_SCALAR_MATH'
-  | 'VECTOR_MATH';
+  | 'VECTOR_MATH'
+  | 'MAPPING_2D'
+  ;
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4' | 'string';
 

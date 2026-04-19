@@ -87,27 +87,44 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     };
   }, [activeContext]); 
 
-  // Shader Injection - Fixes applied here!
+  // Shader Injection 
   useEffect(() => {
-    // Determine the target graph: If it's not the Material Context, force it to use the Global Material
     let targetGraph = graph;
     if (activeContext.id !== 'MATERIAL') {
         targetGraph = globalMaterial;
     }
 
-    if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
+    console.log("Canvas3D: Received Graph Update", targetGraph);
+
+    if (!materialRef.current) {
+        console.warn("Canvas3D: materialRef is null. Bailing out.");
+        return;
+    }
+
+    if (!targetGraph.nodes || targetGraph.nodes.length === 0) {
+        console.warn("Canvas3D: targetGraph has no nodes. Bailing out.");
+        return;
+    }
 
     try {
-      // Pass NODE_DEFINITIONS to prevent undefined variable errors inside the compiler
+      console.log("Canvas3D: Attempting to compile shader...");
       const { vertexShader, fragmentShader } = compileShader(targetGraph);
+
+      console.log("--- GENERATED VERTEX SHADER ---");
+      console.log(vertexShader);
+      
+      console.log("--- GENERATED FRAGMENT SHADER ---");
+      console.log(fragmentShader);
 
       materialRef.current.vertexShader = vertexShader;
       materialRef.current.fragmentShader = fragmentShader;
       materialRef.current.needsUpdate = true;
+      
+      console.log("Canvas3D: Shader successfully injected into material.");
     } catch (e) {
-      console.error("Cosmos: Shader injection failed", e);
+      console.error("Cosmos: Shader injection failed heavily during compilation:", e);
     }
-  }, [graph, globalMaterial, activeContext.id]); // <-- CRITICAL: Dependencies trigger visual update on context switch
+  }, [graph, globalMaterial, activeContext.id]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;
 }

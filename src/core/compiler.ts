@@ -5,16 +5,25 @@ export function serializeValue(value: any, type: GLSLType): string {
     if (value === undefined || value === null) {
         if (type === 'vec3') return 'vec3(0.0)';
         if (type === 'vec2') return 'vec2(0.0)';
+        if (type === 'string') return '';
         return '0.0';
     }
     
     switch (type) {
-        case 'float': return Number.isInteger(value) ? `${value}.0` : `${value}`;
+        case 'float': 
+            return Number.isInteger(value) ? `${value}.0` : `${value}`;
+        case 'vec2': 
+            if (typeof value === 'object') {
+                return `vec2(${(value.x || 0).toFixed(3)}, ${(value.y || 0).toFixed(3)})`;
+            }
+            return `vec2(${value})`;
         case 'vec3': 
             if (typeof value === 'object') {
-                return `vec3(${value.r.toFixed(3)}, ${value.g.toFixed(3)}, ${value.b.toFixed(3)})`;
+                return `vec3(${(value.r || 0).toFixed(3)}, ${(value.g || 0).toFixed(3)}, ${(value.b || 0).toFixed(3)})`;
             }
             return `vec3(${value})`;
+        case 'string':
+            return value;
         default: return '0.0';
     }
 }
@@ -88,7 +97,12 @@ class TreeCompiler {
                 const sourceNode = this.graph.nodes.find(n => n.id === connection.sourceNodeId);
                 const sourceOutput = sourceNode?.outputs.find(o => o.id === connection.sourcePortId);
                 const actualType = sourceOutput?.type || 'float';
-                const sourceVarName = `node_${connection.sourceNodeId.replace(/-/g, '_')}`;
+                
+                
+                let sourceVarName = `node_${connection.sourceNodeId.replace(/-/g, '_')}`;
+                if (sourceNode && sourceNode.outputs.length > 1) {
+                    sourceVarName = `${sourceVarName}_${connection.sourcePortId}`;
+                }
 
                 if (expectedType === 'vec3' && actualType === 'float') {
                     return `vec3(${sourceVarName})`;
@@ -108,7 +122,7 @@ class TreeCompiler {
     private assembleWeb(isVertex: boolean, hasEndpoint: boolean): string {
         if (!hasEndpoint) {
             return isVertex 
-                ? `void main() { gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
+                ? `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`
                 : `void main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }`;
         }
 
@@ -117,6 +131,9 @@ class TreeCompiler {
 
         return `
 varying vec2 vUv;
+// FIX 2: Web Preview Stub for Vertex Colors
+vec4 vertexColor = vec4(1.0, 1.0, 1.0, 1.0); 
+
 ${globalsString}
 
 void main() {

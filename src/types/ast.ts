@@ -1,7 +1,24 @@
-// src/types/ast.ts
-export type NodeType = 'OUTPUT_FRAG' | 'OUTPUT_VERT' | 'COLOR' | 'NOISE' | 'MULTIPLY' | 'TIME' | 'MATERIAL_REF' | 'TRAIL_ENDPOINT';
+export type NodeType = 
+  | 'OUTPUT_FRAG' 
+  | 'OUTPUT_VERT' 
+  | 'COLOR' 
+  | 'NOISE' 
+  | 'MULTIPLY' 
+  | 'TIME' 
+  | 'MATERIAL_REF' 
+  | 'TRAIL_ENDPOINT'
+  | 'UV_COORDS'
+  | 'VERTEX_COLOR'
+  | 'SPLIT_VEC2'
+  | 'PACK_VEC3'
+  | 'MATH_UNARY'
+  | 'MATH_BINARY'
+  | 'SMOOTHSTEP'
+  | 'MIX_COLORS'
+  | 'FBM_NOISE_2D'
+  | 'RIDGE_NOISE_3D';
 
-export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4';
+export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4' | 'string';
 
 export interface NodePort {
     id: string;
@@ -14,6 +31,7 @@ export interface ShaderNode {
     type: NodeType;
     inputs: NodePort[];
     outputs: NodePort[];
+    data?: Record<string, any>; 
 }
 
 export interface ShaderConnection {

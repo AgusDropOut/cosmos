@@ -5,11 +5,13 @@ import type { NodeStrategy } from './compiler';
 export interface NodeControl {
   id: string;
   label: string;
-  type: 'slider' | 'color-rgb' | 'none';
+  type: 'slider' | 'color-rgb' | 'none'| 'select';
   min?: number;
   max?: number;
   step?: number;
+  options?: string[];
 }
+
 
 export interface NodeDefinition {
   type: NodeType;

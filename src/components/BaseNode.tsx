@@ -66,6 +66,33 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
                 </div>
               )}
 
+              {/*  Select Control (Dropdown) */}
+              {defInput.control?.type === 'select' && defInput.control.options && (
+                <label style={{ display: 'block' }}>
+                  {defInput.control.label || defInput.id.toUpperCase()}: <br/>
+                  <select 
+                    className="nodrag" 
+                    value={currentVal} 
+                    onChange={e => handleValueChange(defInput.id, e.target.value)}
+                    style={{ 
+                      background: '#333', 
+                      color: 'white', 
+                      border: '1px solid #555', 
+                      borderRadius: '4px', 
+                      fontSize: '11px', 
+                      padding: '4px', 
+                      marginTop: '4px',
+                      width: '100%',
+                      outline: 'none'
+                    }}
+                  >
+                    {defInput.control.options.map(opt => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </label>
+              )}
+
               {/* Pure Math Port (No UI Control) */}
               {!defInput.control && (
                 <div style={{ color: '#aaa', padding: '4px 0' }}>{defInput.id.toUpperCase()}</div>

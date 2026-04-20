@@ -22,6 +22,7 @@ import { useState, useRef, useEffect } from 'react';
     handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
     fileInputRef: React.RefObject<HTMLInputElement | null>;
     onOpenNodeMenu: () => void;
+    onOpenPresetMenu: () => void;
     contextSettings: Record<string, any>;
     onSettingChange: (key: string, value: any) => void;
 }
@@ -51,7 +52,7 @@ const compactInputStyle: React.CSSProperties = {
 export function EditorToolbar({
     globalSettings, onGlobalSettingChange, activeContext, availableContexts, onContextChange, onFlowChange,
     nodes, edges, graph, history, handleGameExport, handleSave, handleFileUpload, fileInputRef,
-    onOpenNodeMenu, contextSettings, onSettingChange
+    onOpenNodeMenu, onOpenPresetMenu, contextSettings, onSettingChange
 }: EditorToolbarProps) {
     
     const [activeMenu, setActiveMenu] = useState<'file' | 'settings' | null>(null);
@@ -92,6 +93,11 @@ export function EditorToolbar({
                 {/* ADD NODE */}
                 <button style={menuButtonStyle} onClick={onOpenNodeMenu}>
                     Add Node
+                </button>
+
+                {/* PRESETS OVERLAY BUTTON */}
+                <button style={menuButtonStyle} onClick={onOpenPresetMenu}>
+                    Presets
                 </button>
 
                 {/* SETTINGS MENU */}

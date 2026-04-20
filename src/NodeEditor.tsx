@@ -15,6 +15,8 @@ import { useShaderCompiler } from './core/hooks/useShaderCompiler';
 import { useHistory } from './core/hooks/useHistory';
 import { EditorToolbar } from './components/editor/EditorToolbar';
 import { NodeSearchModal } from './components/editor/NodeSearchModal';
+import { usePresets } from './core/hooks/usePresets';
+import { PresetModal } from './components/editor/PresetModal';
 
 const nodeTypes = Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
     acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
@@ -64,6 +66,8 @@ export default function NodeEditor({
   const [nodes, setNodes] = useState<Node[]>(rfNodes);
   const [edges, setEdges] = useState<Edge[]>(rfEdges);
   const [isNodeMenuOpen, setIsNodeMenuOpen] = useState(false);
+  const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
+  const { availablePresets, applyPreset } = usePresets(activeContext.id);
 
   const history = useHistory(
     initialPast,
@@ -173,7 +177,8 @@ return (
             handleSave={handleSave}
             handleFileUpload={handleFileUpload}
             fileInputRef={fileInputRef}
-            onOpenNodeMenu={() => setIsNodeMenuOpen(true)} // <-- Pass down function
+            onOpenNodeMenu={() => setIsNodeMenuOpen(true)}
+            onOpenPresetMenu={() => setIsPresetMenuOpen(true)}
             contextSettings={contextSettings}
             onSettingChange={onSettingChange}
         />
@@ -194,12 +199,23 @@ return (
                 <Controls position="bottom-right" style={{ background: '#1e1e1e', borderColor: '#333' }} />
             </ReactFlow>
 
+            
+
             {/* The Overlay Modal */}
             <NodeSearchModal 
                 isOpen={isNodeMenuOpen} 
                 onClose={() => setIsNodeMenuOpen(false)} 
                 activeContext={activeContext} 
                 addNode={addNode} 
+            />
+
+            <PresetModal 
+                isOpen={isPresetMenuOpen}
+                onClose={() => setIsPresetMenuOpen(false)}
+                availablePresets={availablePresets}
+                onSelectPreset={(presetId) => {
+                    applyPreset(presetId, setNodes, setEdges, onSettingChange, history.takeSnapshot);
+                }}
             />
         </div>
     </div>

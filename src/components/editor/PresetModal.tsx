@@ -1,11 +1,14 @@
 // src/components/editor/PresetModal.tsx
+import type { IProjectContext } from '../../types/context';
 import type { IPreset } from '../../types/preset';
+import { PresetPreviewCanvas } from './PresetPreviewCanvas';
 
 interface PresetModalProps {
     isOpen: boolean;
     onClose: () => void;
     availablePresets: IPreset[];
     onSelectPreset: (presetId: string) => void;
+    activeContext: IProjectContext;
 }
 
 const overlayStyle: React.CSSProperties = {
@@ -20,7 +23,7 @@ const modalStyle: React.CSSProperties = {
     display: 'flex', flexDirection: 'column', overflow: 'hidden'
 };
 
-export function PresetModal({ isOpen, onClose, availablePresets, onSelectPreset }: PresetModalProps) {
+export function PresetModal({ isOpen, onClose, availablePresets, onSelectPreset, activeContext }: PresetModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -56,14 +59,7 @@ export function PresetModal({ isOpen, onClose, availablePresets, onSelectPreset 
                                 <div style={{ color: '#fff', fontSize: '13px', fontWeight: 'bold', marginBottom: '4px' }}>{preset.name}</div>
                                 <div style={{ color: '#888', fontSize: '11px', lineHeight: '1.4', flex: 1 }}>{preset.description}</div>
                                 
-                                {/* FUTURE: WebGL Mini-Canvas Preview Placeholder */}
-                                <div style={{ 
-                                    height: '100px', background: '#111', borderRadius: '4px', marginTop: '12px',
-                                    display: 'flex', justifyContent: 'center', alignItems: 'center',
-                                    color: '#444', fontSize: '10px', border: '1px dashed #333'
-                                }}>
-                                    Preview Canvas (Coming Soon)
-                                </div>
+                                <PresetPreviewCanvas preset={preset} context={activeContext} />
                             </div>
                         ))
                     )}

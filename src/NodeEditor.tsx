@@ -216,6 +216,7 @@ return (
                 onSelectPreset={(presetId) => {
                     applyPreset(presetId, setNodes, setEdges, onSettingChange, history.takeSnapshot);
                 }}
+                activeContext={activeContext}
             />
         </div>
     </div>

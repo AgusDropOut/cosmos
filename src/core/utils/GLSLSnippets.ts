@@ -51,3 +51,29 @@ float ridge3D(vec3 p) {
     }
     return v;
 }`;
+
+export const GLSL_FBM_3D = `
+float plasma_hash(vec3 p) {
+    p  = fract(p * .1031);
+    p += dot(p, p.zyx + 31.32);
+    return fract((p.x + p.y) * p.z);
+}
+float plasma_noise3D(vec3 p) {
+    vec3 i = floor(p);
+    vec3 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(mix( plasma_hash(i + vec3(0,0,0)), plasma_hash(i + vec3(1,0,0)), f.x),
+                   mix( plasma_hash(i + vec3(0,1,0)), plasma_hash(i + vec3(1,1,0)), f.x), f.y),
+               mix(mix( plasma_hash(i + vec3(0,0,1)), plasma_hash(i + vec3(1,0,1)), f.x),
+                   mix( plasma_hash(i + vec3(0,1,1)), plasma_hash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+float atomic_fbm3D(vec3 p, int octaves) {
+    float v = 0.0, a = 0.5;
+    mat3 rot = mat3(0.00, 0.80, 0.60, -0.80, 0.36, -0.48, -0.60, -0.48, 0.64);
+    for (int i = 0; i < octaves; i++) {
+        v += a * plasma_noise3D(p);
+        p = rot * p * 2.0;
+        a *= 0.5;
+    }
+    return v;
+}`;

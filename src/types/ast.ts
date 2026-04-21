@@ -21,6 +21,8 @@ export type NodeType =
   | 'VECTOR_SCALAR_MATH'
   | 'VECTOR_MATH'
   | 'MAPPING_2D'
+  | 'FBM_NOISE_3D'
+  | 'DOT_PRODUCT'
   ;
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4' | 'string';

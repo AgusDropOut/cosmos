@@ -65,57 +65,107 @@ export const TrailContext: IProjectContext = {
 
     createPreviewStrategy: (): IPreviewStrategy => {
         let mesh: THREE.Mesh | null = null;
-        const trailGenerator = new TrailGeometryGenerator();
-        const targetPos = new THREE.Vector3();
+        let grid: THREE.GridHelper | null = null;
+        let entityMesh: THREE.Mesh | null = null;
+        
+        let trailGenerator = new TrailGeometryGenerator();
         let camRef: THREE.PerspectiveCamera | null = null;
+        
+        // NEW: Track the loop iterations to prevent "teleportation streaks"
+        let lastLoop = 0; 
 
         return {
             init: ({ scene, material, camera }: RenderContext) => {
                 camRef = camera;
                 
-                // Utilizes the shared material reference injected by the renderer
                 material.side = THREE.DoubleSide;
-                
                 mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
                 scene.add(mesh);
+
+                grid = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
+                grid.position.y = -2; // Ground level
+                scene.add(grid);
+
+                const entityGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
+                const entityMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+                entityMesh = new THREE.Mesh(entityGeo, entityMat);
+                scene.add(entityMesh);
+
+                camera.position.set(0, 3, 10); // Pulled back slightly for a better view of the arc
+                camera.lookAt(0, 0, 0);
             },
             update: (time: number, settings: Record<string, any>, graph?: ShaderGraph) => {
-            if (mesh && camRef) {
-                const t = time * 0.002;
-                let currentTarget = new THREE.Vector3(Math.cos(t) * 2, Math.sin(t * 2), Math.sin(t) * 1.5);
-                let currentWidth = 0.2;
+                if (mesh && camRef && entityMesh) {
+                    
+                    // --- 1. THE PHYSICS LOOP ---
+                    const LOOP_DURATION = 1500; // 1.5 seconds per throw
+                    const currentLoop = Math.floor(time / LOOP_DURATION);
+                    const p = (time % LOOP_DURATION) / LOOP_DURATION; // Normalized progress: 0.0 to 1.0
 
-                if (graph) {
-                    const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
-                    if (endpoint) {
-                        // Initialize the live evaluator for this exact frame
-                        const evaluator = new AstEvaluator(graph, time * 0.001);
-                        
-                        const evaluatedWidth = evaluator.evaluatePort(endpoint.id, 'width');
-                        if (typeof evaluatedWidth === 'number') currentWidth = evaluatedWidth;
+                    // If we just restarted the loop, destroy the old generator to clear the history
+                    if (currentLoop > lastLoop) {
+                        lastLoop = currentLoop;
+                        trailGenerator = new TrailGeometryGenerator(); 
+                    }
 
-                        const offset = evaluator.evaluatePort(endpoint.id, 'orbit_offset');
-                        if (offset && (offset.x !== undefined || offset.r !== undefined)) {
-                            currentTarget.add(new THREE.Vector3(
-                                offset.x ?? offset.r ?? 0,
-                                offset.y ?? offset.g ?? 0,
-                                offset.z ?? offset.b ?? 0
-                            ));
+                    // --- 2. THE PARABOLIC ARC ---
+                    // X and Z travel linearly across the grid
+                    const startX = -5, endX = 5;
+                    const startZ = -2, endZ = 2;
+                    
+                    const currentX = startX + (endX - startX) * p;
+                    const currentZ = startZ + (endZ - startZ) * p;
+                    
+                    // Y travels in a mathematically perfect parabola.
+                    // Equation: ground_level + 4 * peak_height * p * (1 - p)
+                    const ground = -2; // Matches grid.position.y
+                    const peak = 5;    // Max height of the throw
+                    const currentY = ground + 4 * peak * p * (1 - p);
+
+                    let currentTarget = new THREE.Vector3(currentX, currentY, currentZ);
+                    let currentWidth = 0.2;
+
+                    // --- 3. EVALUATE AST OFFSETS ---
+                    if (graph) {
+                        const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
+                        if (endpoint) {
+                            // Note: We use 'time * 0.001' here to match the u_time scale of the shaders!
+                            const evaluator = new AstEvaluator(graph, time * 0.001);
+                            
+                            const evaluatedWidth = evaluator.evaluatePort(endpoint.id, 'width');
+                            if (typeof evaluatedWidth === 'number') currentWidth = evaluatedWidth;
+
+                            const offset = evaluator.evaluatePort(endpoint.id, 'orbit_offset');
+                            if (offset && (offset.x !== undefined || offset.r !== undefined)) {
+                                currentTarget.add(new THREE.Vector3(
+                                    offset.x ?? offset.r ?? 0,
+                                    offset.y ?? offset.g ?? 0,
+                                    offset.z ?? offset.b ?? 0
+                                ));
+                            }
                         }
                     }
-                }
 
-                const oldGeo = mesh.geometry;
-                mesh.geometry = trailGenerator.update(currentTarget, camRef.position, settings.segments || 20, currentWidth);
-                oldGeo.dispose();
-            }
-        },
+                    // --- 4. UPDATE ENTITY & TRAIL ---
+                    entityMesh.position.copy(currentTarget);
+                    entityMesh.rotation.x += 0.1; // Keep the standard tumbling Minecraft item feel
+                    entityMesh.rotation.y += 0.1;
+
+                    const oldGeo = mesh.geometry;
+                    mesh.geometry = trailGenerator.update(
+                        currentTarget, 
+                        camRef.position, 
+                        settings.segments || 20, 
+                        currentWidth 
+                    );
+                    oldGeo.dispose();
+                }
+            },
             onSettingsChange: () => {}, 
             dispose: () => {
-                if (mesh) {
-                    mesh.geometry.dispose();
-                    mesh.removeFromParent();
-                }
+                if (mesh) { mesh.geometry.dispose(); mesh.removeFromParent(); }
+                if (grid) { grid.geometry.dispose(); grid.removeFromParent(); }
+                if (entityMesh) { entityMesh.geometry.dispose(); entityMesh.removeFromParent(); }
             }
         };
     }

@@ -1,7 +1,7 @@
 // src/core/NodeDefinitions.ts
 import type { NodeDefinition } from '../types/node-def';
 import { MathHelper } from './utils/MathHelper';
-import { GLSL_RANDOM_2D, GLSL_FBM_2D, GLSL_RIDGE_3D } from './utils/GLSLSnippets';
+import { GLSL_RANDOM_2D, GLSL_FBM_2D, GLSL_RIDGE_3D, GLSL_FBM_3D } from './utils/GLSLSnippets';
 
 export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
   COLOR: {
@@ -393,4 +393,46 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateCode: ({ resolveInput, varName }) => `    vec2 ${varName} = (${resolveInput('uv')} + vec2(${resolveInput('offset_x')}, ${resolveInput('offset_y')})) * vec2(${resolveInput('scale_x')}, ${resolveInput('scale_y')});`
     }
   },
+  FBM_NOISE_3D: {
+    type: 'FBM_NOISE_3D',
+    label: 'FBM Noise 3D',
+    color: '#4dabf7',
+    inputs: [
+      { id: 'pos', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'octaves', type: 'float', default: 4.0, control: { type: 'number', label: 'Octaves', step: 1.0 } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      globalFunctions: GLSL_FBM_3D,
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = atomic_fbm3D(${resolveInput('pos')}, int(${resolveInput('octaves')}));`,
+      generateMath: () => `0.0`,
+      evaluate: ({ resolveInput }) => {
+         const p = resolveInput('pos') || {x:0, y:0, z:0};
+         const px = p.x ?? p.r ?? 0;
+         return Math.sin(px * 10.0) * 0.5; 
+      }
+    }
+  },
+
+  DOT_PRODUCT: {
+    type: 'DOT_PRODUCT',
+    label: 'Dot Product',
+    color: '#4c6ef5',
+    inputs: [
+      { id: 'a', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'b', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = dot(${resolveInput('a')}, ${resolveInput('b')});`,
+      generateMath: () => `0.0`, 
+      evaluate: ({ resolveInput }) => {
+        const a = resolveInput('a') || {x:0, y:0, z:0};
+        const b = resolveInput('b') || {x:0, y:0, z:0};
+        const ax = a.x ?? a.r ?? 0, ay = a.y ?? a.g ?? 0, az = a.z ?? a.b ?? 0;
+        const bx = b.x ?? b.r ?? 0, by = b.y ?? b.g ?? 0, bz = b.z ?? b.b ?? 0;
+        return ax*bx + ay*by + az*bz;
+      }
+    }
+  }
 };

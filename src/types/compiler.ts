@@ -1,5 +1,6 @@
 import type { ShaderNode } from './ast';
 
+
 export interface CompilerContext {
     node: ShaderNode;
     varName: string;
@@ -7,15 +8,21 @@ export interface CompilerContext {
 }
 
 export interface NodeStrategy {
+    // WebGL String Generation
     generateCode: (ctx: CompilerContext) => string;
+    
+    // Java Backend String Generation
     generateMath?: (ctx: { 
-      resolveInput: (id: string) => string;
-      node: { 
-          id: string; 
-          type: string; 
-          inputs: Array<{ id: string; type?: string; value?: any }>; 
-          outputs: Array<{ id: string; type?: string }>;
-      }
-  }) => string;
+        resolveInput: (id: string) => string;
+        node: ShaderNode; 
+    }) => string;
+    
+    // Live 60fps JavaScript Evaluation
+    evaluate?: (ctx: { 
+        resolveInput: (id: string) => any; 
+        node: ShaderNode;
+        time: number; 
+    }) => any;
+    
     globalFunctions?: string;
 }

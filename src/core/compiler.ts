@@ -302,4 +302,56 @@ export class MathCompiler {
         console.warn(`Cosmos MathCompiler: Node type ${node.type} does not support math generation. Returning 0.0`);
         return '0.0'; 
     }
+
+    
+}
+
+/**
+ * A live execution engine that evaluates the AST in real-time.
+ * Used for driving the 3D preview geometries without needing string compilation.
+ */
+export class AstEvaluator {
+    private graph: ShaderGraph;
+    private time: number;
+
+    constructor(graph: ShaderGraph, time: number) {
+        this.graph = graph;
+        this.time = time;
+    }
+
+    public evaluatePort(targetNodeId: string, portId: string): any {
+        return this.resolveInput(targetNodeId, portId);
+    }
+
+    private resolveInput(targetNodeId: string, portId: string): any {
+        const node = this.graph.nodes.find(n => n.id === targetNodeId);
+        const inputDef = node?.inputs.find(i => i.id === portId);
+        
+        const connection = this.graph.connections.find(
+            c => c.targetNodeId === targetNodeId && c.targetPortId === portId
+        );
+
+        if (connection) {
+            return this.evaluateNode(connection.sourceNodeId);
+        }
+
+        return inputDef?.value; // Return the raw slider/UI value
+    }
+
+    private evaluateNode(nodeId: string): any {
+        const node = this.graph.nodes.find(n => n.id === nodeId);
+        if (!node) return 0.0;
+
+        const definition = NODE_DEFINITIONS[node.type];
+        
+        if (definition && definition.strategy.evaluate) {
+            return definition.strategy.evaluate({
+                node,
+                time: this.time,
+                resolveInput: (portId: string) => this.resolveInput(nodeId, portId)
+            });
+        }
+
+        return 0.0; 
+    }
 }

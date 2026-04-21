@@ -3,6 +3,7 @@ import type { Node } from 'reactflow';
 import React from 'react';
 import type * as THREE from 'three';
 import type { IWorkspaceExporter } from './export';
+import type { ShaderGraph } from './ast';
 
 export interface RenderContext {
     scene: THREE.Scene;
@@ -12,7 +13,7 @@ export interface RenderContext {
 
 export interface IPreviewStrategy {
     init: (ctx: RenderContext, settings: Record<string, any>) => void;
-    update: (time: number, settings: Record<string, any>) => void;
+    update: (time: number, settings: Record<string, any>, graph?: ShaderGraph) => void;
     onSettingsChange: (settings: Record<string, any>) => void;
     dispose: () => void;
 }

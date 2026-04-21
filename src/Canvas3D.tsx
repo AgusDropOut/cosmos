@@ -20,12 +20,20 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
   const strategyRef = useRef<IPreviewStrategy | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
 
+  // 1. NEW: Create a ref to hold the live graph so the animation loop can always see the freshest data
+  const graphRef = useRef(graph);
+
   useEffect(() => {
     settingsRef.current = contextSettings;
     if (strategyRef.current && strategyRef.current.onSettingsChange) {
         strategyRef.current.onSettingsChange(contextSettings);
     }
   }, [contextSettings]);
+
+  // 2. NEW: Update the ref every time the user connects a wire or moves a slider
+  useEffect(() => {
+      graphRef.current = graph;
+  }, [graph]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -36,11 +44,9 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
     const scene = new THREE.Scene();
     
-   
     const perspCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     perspCamera.position.z = 5;
 
-    
     const orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
     orthoCamera.position.z = 1;
 
@@ -70,10 +76,10 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
         }
 
         if (strategyRef.current && strategyRef.current.update) {
-            strategyRef.current.update(time, settingsRef.current);
+            // 3. NEW: Pass the live graph into the update loop!
+            strategyRef.current.update(time, settingsRef.current, graphRef.current);
         }
 
-        // select the camera right before rendering
         const activeCamera = settingsRef.current.shape === '2D_QUAD' ? orthoCamera : perspCamera;
         renderer.render(scene, activeCamera);
     };
@@ -86,8 +92,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
       const newHeight = mountRef.current.clientHeight;
       
       renderer.setSize(newWidth, newHeight);
-      
-      // Update the 3D camera aspect ratio 
       perspCamera.aspect = newWidth / newHeight;
       perspCamera.updateProjectionMatrix();
     };

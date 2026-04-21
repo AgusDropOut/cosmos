@@ -18,7 +18,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('rgb')};`
+      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('rgb')};`,
+      evaluate: ({ resolveInput }) => resolveInput('rgb')
     }
   },
   
@@ -27,12 +28,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     label: 'Procedural Noise',
     color: '#4dabf7',
     inputs: [
-      { 
-        id: 'scale', 
-        type: 'float', 
-        default: 10.0,
-        control: { id: 'scale', label: 'Scale', type: 'slider', min: 1, max: 50, step: 0.5 }
-      }
+      { id: 'scale', type: 'float', default: 10.0, control: { id: 'scale', label: 'Scale', type: 'slider', min: 1, max: 50, step: 0.5 } }
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
@@ -80,7 +76,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('a')} * ${resolveInput('b')};`
+      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('a')} * ${resolveInput('b')};`,
+      evaluate: ({ resolveInput }) => MathHelper.evaluateVectorScalar('multiply', resolveInput('a'), resolveInput('b'))
     }
   },
   
@@ -89,12 +86,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     label: 'Time',
     color: '#f06595',
     inputs: [
-      { 
-        id: 'speed', 
-        type: 'float', 
-        default: 1.0,
-        control: { id: 'speed', label: 'Speed', type: 'slider', min: 0.1, max: 10.0, step: 0.1 }
-      }
+      { id: 'speed', type: 'float', default: 1.0, control: { id: 'speed', label: 'Speed', type: 'slider', min: 0.1, max: 10.0, step: 0.1 } }
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
@@ -103,7 +95,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateMath: ({ resolveInput }) => {
           const speed = resolveInput('speed');
           return speed === '1.0' ? 'time' : `(time * ${speed})`;
-      }
+      },
+      evaluate: ({ resolveInput, time }) => time * resolveInput('speed')
     }
   },
 
@@ -124,6 +117,10 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateMath: ({ resolveInput, node }) => {
         const funcName = node.inputs.find(i => i.id === 'func')?.value || 'abs'; 
         return `${funcName}(${resolveInput('value')})`;
+      },
+      evaluate: ({ resolveInput, node }) => {
+        const funcName = node.inputs.find(i => i.id === 'func')?.value || 'abs'; 
+        return MathHelper.evaluateUnary(funcName, resolveInput('value'));
       }
     }
   },
@@ -146,6 +143,10 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateMath: ({ resolveInput, node }) => {
         const op = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
         return MathHelper.generateBinaryMath(op, resolveInput('a'), resolveInput('b'));
+      },
+      evaluate: ({ resolveInput, node }) => {
+        const op = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        return MathHelper.evaluateBinary(op, resolveInput('a'), resolveInput('b'));
       }
     }
   },
@@ -163,12 +164,15 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       generateCode: ({ resolveInput, varName, node }) => {
         const opStr = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
-        const operator = MathHelper.getOperator(opStr);
-        return `    vec3 ${varName} = ${resolveInput('vec')} ${operator} ${resolveInput('scalar')};`;
+        return `    vec3 ${varName} = ${resolveInput('vec')} ${MathHelper.getOperator(opStr)} ${resolveInput('scalar')};`;
       },
       generateMath: ({ resolveInput, node }) => {
         const opStr = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
         return MathHelper.operateScalar(opStr, resolveInput('vec'), resolveInput('scalar'));
+      },
+      evaluate: ({ resolveInput, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        return MathHelper.evaluateVectorScalar(opStr, resolveInput('vec'), resolveInput('scalar'));
       }
     }
   },
@@ -186,12 +190,15 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       generateCode: ({ resolveInput, varName, node }) => {
         const opStr = node.inputs.find(i => i.id === 'op')?.value || 'add';
-        const operator = MathHelper.getOperator(opStr);
-        return `    vec3 ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
+        return `    vec3 ${varName} = ${resolveInput('a')} ${MathHelper.getOperator(opStr)} ${resolveInput('b')};`;
       },
       generateMath: ({ resolveInput, node }) => {
         const opStr = node.inputs.find(i => i.id === 'op')?.value || 'add';
         return MathHelper.operateVector(opStr, resolveInput('a'), resolveInput('b'));
+      },
+      evaluate: ({ resolveInput, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'add';
+        return MathHelper.evaluateVector(opStr, resolveInput('a'), resolveInput('b'));
       }
     }
   },
@@ -296,7 +303,11 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
         vec2 ${varName}_in = ${resolveInput('vec')};
         float ${varName}_x = ${varName}_in.x;
         float ${varName}_y = ${varName}_in.y;
-      `
+      `,
+      evaluate: ({ resolveInput }) => {
+        const v = resolveInput('vec') || { x: 0, y: 0 };
+        return { x: v.x ?? 0, y: v.y ?? 0 }; // Evaluator resolves port IDs directly, but realistically splitting just needs to provide the object and let the compiler handle the port lookup.
+      }
     }
   },
 
@@ -310,7 +321,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'vec2' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => `    vec2 ${varName} = vec2(${resolveInput('x')}, ${resolveInput('y')});`
+      generateCode: ({ resolveInput, varName }) => `    vec2 ${varName} = vec2(${resolveInput('x')}, ${resolveInput('y')});`,
+      evaluate: ({ resolveInput }) => ({ x: resolveInput('x'), y: resolveInput('y') })
     }
   },
 
@@ -326,7 +338,12 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
       generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')});`,
-      generateMath: ({ resolveInput }) => `vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')})`
+      generateMath: ({ resolveInput }) => `vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')})`,
+      evaluate: ({ resolveInput }) => ({
+        x: resolveInput('x'),
+        y: resolveInput('y'),
+        z: resolveInput('z')
+      })
     }
   },
 

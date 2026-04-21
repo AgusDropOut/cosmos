@@ -53,4 +53,45 @@ export class MathHelper {
         const v = this.parseVec3(vecStr);
         return `vec3((${v[0]} ${op} ${scalarStr}), (${v[1]} ${op} ${scalarStr}), (${v[2]} ${op} ${scalarStr}))`;
     }
+
+    // --- LIVE EVALUATION (JS AST) ---
+    public static evaluateUnary(funcName: string, val: number): number {
+        if (funcName === 'fract') return val - Math.floor(val);
+        return (Math as any)[funcName]?.(val) ?? val;
+    }
+
+    public static evaluateBinary(op: string, a: number, b: number): number {
+        if (op === 'add') return a + b;
+        if (op === 'subtract') return a - b;
+        if (op === 'multiply') return a * b;
+        if (op === 'divide') return b !== 0 ? a / b : 0;
+        if (op === 'pow') return Math.pow(a, b);
+        if (op === 'max') return Math.max(a, b);
+        if (op === 'min') return Math.min(a, b);
+        return a * b; // default
+    }
+
+    public static evaluateVectorScalar(op: string, vec: any, scalar: number): any {
+        const v = vec || { x: 0, y: 0, z: 0 };
+        const vx = v.x ?? v.r ?? 0;
+        const vy = v.y ?? v.g ?? 0;
+        const vz = v.z ?? v.b ?? 0;
+
+        return {
+            x: this.evaluateBinary(op, vx, scalar),
+            y: this.evaluateBinary(op, vy, scalar),
+            z: this.evaluateBinary(op, vz, scalar)
+        };
+    }
+
+    public static evaluateVector(op: string, vecA: any, vecB: any): any {
+        const a = vecA || { x: 0, y: 0, z: 0 };
+        const b = vecB || { x: 0, y: 0, z: 0 };
+        
+        return {
+            x: this.evaluateBinary(op, a.x ?? a.r ?? 0, b.x ?? b.r ?? 0),
+            y: this.evaluateBinary(op, a.y ?? a.g ?? 0, b.y ?? b.g ?? 0),
+            z: this.evaluateBinary(op, a.z ?? a.b ?? 0, b.z ?? b.b ?? 0)
+        };
+    }
 }

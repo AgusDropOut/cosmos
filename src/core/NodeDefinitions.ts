@@ -1,5 +1,7 @@
 // src/core/NodeDefinitions.ts
 import type { NodeDefinition } from '../types/node-def';
+import { MathHelper } from './utils/MathHelper';
+import { GLSL_RANDOM_2D, GLSL_FBM_2D, GLSL_RIDGE_3D } from './utils/GLSLSnippets';
 
 export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
   COLOR: {
@@ -19,6 +21,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('rgb')};`
     }
   },
+  
   NOISE: {
     type: 'NOISE',
     label: 'Procedural Noise',
@@ -33,10 +36,40 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
-      globalFunctions: `float random(vec2 st) {\n    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);\n}`,
+      globalFunctions: GLSL_RANDOM_2D,
       generateCode: ({ resolveInput, varName }) => `    float ${varName} = random(vUv * ${resolveInput('scale')});`
     }
   },
+
+  FBM_NOISE_2D: {
+    type: 'FBM_NOISE_2D',
+    label: 'FBM Noise 2D',
+    color: '#4dabf7',
+    inputs: [
+      { id: 'uv', type: 'vec2', default: { x: 0, y: 0 } },
+      { id: 'scale', type: 'float', default: 5.0, control: { id: 'scale', label: 'Scale', type: 'slider', min: 1, max: 20, step: 0.1 } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      globalFunctions: GLSL_FBM_2D,
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = fbm2D(${resolveInput('uv')} * ${resolveInput('scale')});`
+    }
+  },
+
+  RIDGE_NOISE_3D: {
+    type: 'RIDGE_NOISE_3D',
+    label: 'Ridge Noise 3D',
+    color: '#3bc9db',
+    inputs: [
+      { id: 'pos', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      globalFunctions: GLSL_RIDGE_3D,
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = ridge3D(${resolveInput('pos')});`
+    }
+  },
+
   MULTIPLY: {
     type: 'MULTIPLY',
     label: 'Multiply',
@@ -50,6 +83,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('a')} * ${resolveInput('b')};`
     }
   },
+  
   TIME: {
     type: 'TIME',
     label: 'Time',
@@ -64,21 +98,118 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
-     globalFunctions: `uniform float u_time;`,
-      generateCode: ({ resolveInput, varName }) => `    float ${varName} = u_time * ${resolveInput('speed')};`
+      globalFunctions: `uniform float u_time;`,
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = u_time * ${resolveInput('speed')};`,
+      generateMath: ({ resolveInput }) => {
+          const speed = resolveInput('speed');
+          return speed === '1.0' ? 'time' : `(time * ${speed})`;
+      }
     }
   },
+
+  MATH_UNARY: {
+    type: 'MATH_UNARY',
+    label: 'Math Function',
+    color: '#868e96',
+    inputs: [
+      { id: 'value', type: 'float', default: 1.0, control: { type: 'number', label: 'Val', step: 0.1 } },
+      { id: 'func', type: 'string', default: 'abs', control: { id: 'func', label: 'Function', type: 'select', options: ['abs', 'exp', 'sin', 'cos', 'fract', 'floor'] } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+     generateCode: ({ resolveInput, varName, node }) => {
+        const funcName = node.inputs.find(i => i.id === 'func')?.value || 'abs'; 
+        return `    float ${varName} = ${funcName}(${resolveInput('value')});`;
+      },
+      generateMath: ({ resolveInput, node }) => {
+        const funcName = node.inputs.find(i => i.id === 'func')?.value || 'abs'; 
+        return `${funcName}(${resolveInput('value')})`;
+      }
+    }
+  },
+
+  MATH_BINARY: {
+    type: 'MATH_BINARY',
+    label: 'Math (Binary)',
+    color: '#868e96',
+    inputs: [
+      { id: 'a', type: 'float', default: 1.0, control: { type: 'number', label: 'A', step: 0.1 } },
+      { id: 'b', type: 'float', default: 1.0, control: { type: 'number', label: 'B', step: 0.1 } },
+      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide', 'pow', 'max', 'min'] } }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName, node }) => {
+        const op = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        return MathHelper.generateBinaryGLSL(op, resolveInput('a'), resolveInput('b'), varName);
+      },
+      generateMath: ({ resolveInput, node }) => {
+        const op = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        return MathHelper.generateBinaryMath(op, resolveInput('a'), resolveInput('b'));
+      }
+    }
+  },
+
+  VECTOR_SCALAR_MATH: {
+    type: 'VECTOR_SCALAR_MATH',
+    label: 'Vector & Scalar Math',
+    color: '#4c6ef5',
+    inputs: [
+      { id: 'vec', type: 'vec3', default: { r: 1.0, g: 1.0, b: 1.0 } },
+      { id: 'scalar', type: 'float', default: 1.0 },
+      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['multiply', 'divide', 'add', 'subtract'] } }
+    ],
+    outputs: [{ id: 'out', type: 'vec3' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        const operator = MathHelper.getOperator(opStr);
+        return `    vec3 ${varName} = ${resolveInput('vec')} ${operator} ${resolveInput('scalar')};`;
+      },
+      generateMath: ({ resolveInput, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'multiply';
+        return MathHelper.operateScalar(opStr, resolveInput('vec'), resolveInput('scalar'));
+      }
+    }
+  },
+
+  VECTOR_MATH: {
+    type: 'VECTOR_MATH',
+    label: 'Vector Math',
+    color: '#4c6ef5',
+    inputs: [
+      { id: 'a', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'b', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
+      { id: 'op', type: 'string', default: 'add', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide'] } }
+    ],
+    outputs: [{ id: 'out', type: 'vec3' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'add';
+        const operator = MathHelper.getOperator(opStr);
+        return `    vec3 ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
+      },
+      generateMath: ({ resolveInput, node }) => {
+        const opStr = node.inputs.find(i => i.id === 'op')?.value || 'add';
+        return MathHelper.operateVector(opStr, resolveInput('a'), resolveInput('b'));
+      }
+    }
+  },
+
   OUTPUT_FRAG: {
     type: 'OUTPUT_FRAG',
     label: 'Fragment Output',
     color: '#51cf66',
-    inputs: [{ id: 'color', type: 'vec3', default: {r:0, g:0, b:0} },
-    { id: 'alpha', type: 'float', default: 1.0, control: { id: 'alpha', label: 'Alpha', type: 'slider', min: 0, max: 1, step: 0.05 } }],
+    inputs: [
+      { id: 'color', type: 'vec3', default: {r:0, g:0, b:0} },
+      { id: 'alpha', type: 'float', default: 1.0, control: { id: 'alpha', label: 'Alpha', type: 'slider', min: 0, max: 1, step: 0.05 } }
+    ],
     outputs: [],
     strategy: {
       generateCode: ({ resolveInput }) => `    gl_FragColor = vec4(vec3(${resolveInput('color')}), ${resolveInput('alpha')});`
     }
   },
+
   OUTPUT_VERT: {
     type: 'OUTPUT_VERT',
     label: 'Vertex Displacement (Shape)',
@@ -89,32 +220,14 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     ],
     outputs: [],
     strategy: {
-  
       generateCode: ({ resolveInput }) => `
         vec3 displacedPosition = position * ${resolveInput('scale')} + ${resolveInput('position_offset')};
         gl_Position = projectionMatrix * modelViewMatrix * vec4(displacedPosition, 1.0);
       `
     }
   },
-  MATERIAL_REF: {
-    type: 'MATERIAL_REF',
-    label: 'Material: Pulsating Core',
-    color: '#ff922b',
-    inputs: [
-      { id: 'intensity', type: 'float', default: 1.0 }
-    ],
-    outputs: [{ id: 'out_color', type: 'vec3' }],
-    strategy: {
-    generateCode: ({ resolveInput, varName }) => `
-        // --- START SUB-GRAPH: Pulsating Core ---
-        float internal_time = abs(sin(u_time * 2.0));
-        vec3 internal_color = vec3(1.0, 0.2, 0.0); // Orange fire
-        vec3 ${varName} = internal_color * internal_time * ${resolveInput('intensity')};
-        // --- END SUB-GRAPH ---
-    ` 
-  }
-},
-TRAIL_ENDPOINT: {
+
+  TRAIL_ENDPOINT: {
     type: 'TRAIL_ENDPOINT',
     label: 'Trail System Output',
     color: '#e03131',
@@ -127,6 +240,26 @@ TRAIL_ENDPOINT: {
       generateCode: () => `// Trail System Definition Marker`
     }
   },
+
+  MATERIAL_REF: {
+    type: 'MATERIAL_REF',
+    label: 'Material: Pulsating Core',
+    color: '#ff922b',
+    inputs: [
+      { id: 'intensity', type: 'float', default: 1.0 }
+    ],
+    outputs: [{ id: 'out_color', type: 'vec3' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => `
+        // --- START SUB-GRAPH: Pulsating Core ---
+        float internal_time = abs(sin(u_time * 2.0));
+        vec3 internal_color = vec3(1.0, 0.2, 0.0); // Orange fire
+        vec3 ${varName} = internal_color * internal_time * ${resolveInput('intensity')};
+        // --- END SUB-GRAPH ---
+      ` 
+    }
+  },
+
   UV_COORDS: {
     type: 'UV_COORDS',
     label: 'UV Coordinates',
@@ -134,7 +267,6 @@ TRAIL_ENDPOINT: {
     inputs: [],
     outputs: [{ id: 'uv', type: 'vec2' }],
     strategy: {
-      // vUv is provided by your TreeCompiler wrapper
       generateCode: ({ varName }) => `    vec2 ${varName} = vUv;`
     }
   },
@@ -161,9 +293,24 @@ TRAIL_ENDPOINT: {
     ],
     strategy: {
       generateCode: ({ resolveInput, varName }) => `
-    vec2 ${varName}_in = ${resolveInput('vec')};
-    float ${varName}_x = ${varName}_in.x;
-    float ${varName}_y = ${varName}_in.y;`
+        vec2 ${varName}_in = ${resolveInput('vec')};
+        float ${varName}_x = ${varName}_in.x;
+        float ${varName}_y = ${varName}_in.y;
+      `
+    }
+  },
+
+  PACK_VEC2: {
+    type: 'PACK_VEC2',
+    label: 'Pack Vec2',
+    color: '#12b886',
+    inputs: [
+      { id: 'x', type: 'float', default: 0.0 },
+      { id: 'y', type: 'float', default: 0.0 }
+    ],
+    outputs: [{ id: 'out', type: 'vec2' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => `    vec2 ${varName} = vec2(${resolveInput('x')}, ${resolveInput('y')});`
     }
   },
 
@@ -178,26 +325,8 @@ TRAIL_ENDPOINT: {
     ],
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => 
-        `    vec3 ${varName} = vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')});`
-    }
-  },
-
-  MATH_UNARY: {
-    type: 'MATH_UNARY',
-    label: 'Math Function',
-    color: '#868e96',
-    inputs: [
-      { id: 'value', type: 'float', default: 1.0, control: { type: 'number', label: 'Val', step: 0.1 } },
-      { id: 'func', type: 'string', default: 'abs', control: { id: 'func', label: 'Function', type: 'select', options: ['abs', 'exp', 'sin', 'cos', 'fract', 'floor'] } }
-    ],
-    outputs: [{ id: 'out', type: 'float' }],
-    strategy: {
-     generateCode: ({ resolveInput, varName, node }) => {
-        const funcInput = node.inputs.find(i => i.id === 'func');
-        const funcName = funcInput?.value || 'abs'; 
-        return `    float ${varName} = ${funcName}(${resolveInput('value')});`;
-      }
+      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')});`,
+      generateMath: ({ resolveInput }) => `vec3(${resolveInput('x')}, ${resolveInput('y')}, ${resolveInput('z')})`
     }
   },
 
@@ -212,8 +341,7 @@ TRAIL_ENDPOINT: {
     ],
     outputs: [{ id: 'out', type: 'float' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => 
-        `    float ${varName} = smoothstep(${resolveInput('edge0')}, ${resolveInput('edge1')}, ${resolveInput('x')});`
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = smoothstep(${resolveInput('edge0')}, ${resolveInput('edge1')}, ${resolveInput('x')});`
     }
   },
 
@@ -228,176 +356,10 @@ TRAIL_ENDPOINT: {
     ],
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => 
-        `    vec3 ${varName} = mix(${resolveInput('a')}, ${resolveInput('b')}, clamp(${resolveInput('t')}, 0.0, 1.0));`
+      generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = mix(${resolveInput('a')}, ${resolveInput('b')}, clamp(${resolveInput('t')}, 0.0, 1.0));`
     }
   },
 
-  FBM_NOISE_2D: {
-    type: 'FBM_NOISE_2D',
-    label: 'FBM Noise 2D',
-    color: '#4dabf7',
-    inputs: [
-      { id: 'uv', type: 'vec2', default: { x: 0, y: 0 } },
-      { id: 'scale', type: 'float', default: 5.0, control: { id: 'scale', label: 'Scale', type: 'slider', min: 1, max: 20, step: 0.1 } }
-    ],
-    outputs: [{ id: 'out', type: 'float' }],
-    strategy: {
-      globalFunctions: `
-float hash12(vec2 p) {
-    vec3 p3  = fract(vec3(p.xyx) * .1031);
-    p3 += dot(p3, p3.yzx + 33.33);
-    return fract((p3.x + p3.y) * p3.z);
-}
-float noise2D(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(hash12(i), hash12(i + vec2(1.0, 0.0)), f.x),
-               mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0, 1.0)), f.x), f.y);
-}
-float fbm2D(vec2 p) {
-    float v = 0.0, a = 0.5;
-    for (int i = 0; i < 4; i++) {
-        v += a * noise2D(p); p *= 2.0; a *= 0.5;
-    }
-    return v;
-}`,
-      generateCode: ({ resolveInput, varName }) => 
-        `    float ${varName} = fbm2D(${resolveInput('uv')} * ${resolveInput('scale')});`
-    }
-  },
-
-  RIDGE_NOISE_3D: {
-    type: 'RIDGE_NOISE_3D',
-    label: 'Ridge Noise 3D',
-    color: '#3bc9db',
-    inputs: [
-      { id: 'pos', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
-    ],
-    outputs: [{ id: 'out', type: 'float' }],
-    strategy: {
-      globalFunctions: `
-float hash(vec3 p) {
-    p  = fract(p * .1031);
-    p += dot(p, p.zyx + 31.32);
-    return fract((p.x + p.y) * p.z);
-}
-float noise3D(vec3 p) {
-    vec3 i = floor(p);
-    vec3 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(mix(mix( hash(i + vec3(0,0,0)), hash(i + vec3(1,0,0)), f.x),
-                   mix( hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
-               mix(mix( hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
-                   mix( hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z);
-}
-float ridge3D(vec3 p) {
-    float v = 0.0, a = 0.5;
-    for (int i = 0; i < 4; i++) {
-        float n = 1.0 - abs(noise3D(p) - 0.5) * 2.0;
-        v += a * n;
-        p *= 2.0;
-        a *= 0.5;
-    }
-    return v;
-}`,
-      generateCode: ({ resolveInput, varName }) => 
-        `    float ${varName} = ridge3D(${resolveInput('pos')});`
-    }
-  },
-  MATH_BINARY: {
-    type: 'MATH_BINARY',
-    label: 'Math (Binary)',
-    color: '#868e96',
-    inputs: [
-      { id: 'a', type: 'float', default: 1.0, control: { type: 'number', label: 'A', step: 0.1 } },
-      { id: 'b', type: 'float', default: 1.0, control: { type: 'number', label: 'B', step: 0.1 } },
-      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide', 'pow', 'max', 'min'] } }
-    ],
-    outputs: [{ id: 'out', type: 'float' }],
-    strategy: {
-      generateCode: ({ resolveInput, varName, node }) => {
-        const opInput = node.inputs.find(i => i.id === 'op');
-        const op = opInput?.value || 'multiply';
-        const a = resolveInput('a');
-        const b = resolveInput('b');
-        
-        // Handle GLSL built-in functions
-        if (op === 'pow') return `    float ${varName} = pow(${a}, ${b});`;
-        if (op === 'max') return `    float ${varName} = max(${a}, ${b});`;
-        if (op === 'min') return `    float ${varName} = min(${a}, ${b});`;
-        
-        // Handle standard operators
-        let operator = '*';
-        if (op === 'add') operator = '+';
-        else if (op === 'subtract') operator = '-';
-        else if (op === 'divide') operator = '/';
-        
-        return `    float ${varName} = ${a} ${operator} ${b};`;
-      }
-    }
-  },
-  PACK_VEC2: {
-    type: 'PACK_VEC2',
-    label: 'Pack Vec2',
-    color: '#12b886',
-    inputs: [
-      { id: 'x', type: 'float', default: 0.0 },
-      { id: 'y', type: 'float', default: 0.0 }
-    ],
-    outputs: [{ id: 'out', type: 'vec2' }],
-    strategy: {
-      generateCode: ({ resolveInput, varName }) => 
-        `    vec2 ${varName} = vec2(${resolveInput('x')}, ${resolveInput('y')});`
-    }
-  },
-
-  VECTOR_SCALAR_MATH: {
-    type: 'VECTOR_SCALAR_MATH',
-    label: 'Vector & Scalar Math',
-    color: '#4c6ef5',
-    inputs: [
-      { id: 'vec', type: 'vec3', default: { r: 1.0, g: 1.0, b: 1.0 } },
-      { id: 'scalar', type: 'float', default: 1.0 },
-      { id: 'op', type: 'string', default: 'multiply', control: { id: 'op', label: 'Operation', type: 'select', options: ['multiply', 'divide', 'add', 'subtract'] } }
-    ],
-    outputs: [{ id: 'out', type: 'vec3' }],
-    strategy: {
-      generateCode: ({ resolveInput, varName, node }) => {
-        const opInput = node.inputs.find(i => i.id === 'op');
-        const op = opInput?.value || 'multiply';
-        
-        let operator = '*';
-        if (op === 'add') operator = '+';
-        else if (op === 'subtract') operator = '-';
-        else if (op === 'divide') operator = '/';
-        
-        return `    vec3 ${varName} = ${resolveInput('vec')} ${operator} ${resolveInput('scalar')};`;
-      }
-    }
-  },
-  VECTOR_MATH: {
-    type: 'VECTOR_MATH',
-    label: 'Vector Math',
-    color: '#4c6ef5',
-    inputs: [
-      { id: 'a', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
-      { id: 'b', type: 'vec3', default: { r: 0, g: 0, b: 0 } },
-      { id: 'op', type: 'string', default: 'add', control: { id: 'op', label: 'Operation', type: 'select', options: ['add', 'subtract', 'multiply', 'divide'] } }
-    ],
-    outputs: [{ id: 'out', type: 'vec3' }],
-    strategy: {
-      generateCode: ({ resolveInput, varName, node }) => {
-        const op = node.inputs.find(i => i.id === 'op')?.value || 'add';
-        let operator = '+';
-        if (op === 'subtract') operator = '-';
-        else if (op === 'multiply') operator = '*';
-        else if (op === 'divide') operator = '/';
-        return `    vec3 ${varName} = ${resolveInput('a')} ${operator} ${resolveInput('b')};`;
-      }
-    }
-  },
   MAPPING_2D: {
     type: 'MAPPING_2D',
     label: 'UV Mapping',
@@ -411,8 +373,7 @@ float ridge3D(vec3 p) {
     ],
     outputs: [{ id: 'out', type: 'vec2' }],
     strategy: {
-      generateCode: ({ resolveInput, varName }) => 
-        `    vec2 ${varName} = (${resolveInput('uv')} + vec2(${resolveInput('offset_x')}, ${resolveInput('offset_y')})) * vec2(${resolveInput('scale_x')}, ${resolveInput('scale_y')});`
+      generateCode: ({ resolveInput, varName }) => `    vec2 ${varName} = (${resolveInput('uv')} + vec2(${resolveInput('offset_x')}, ${resolveInput('offset_y')})) * vec2(${resolveInput('scale_x')}, ${resolveInput('scale_y')});`
     }
   },
 };

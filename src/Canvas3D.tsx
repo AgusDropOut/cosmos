@@ -36,11 +36,11 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
     const scene = new THREE.Scene();
     
-    // 1. The Standard 3D Camera
+   
     const perspCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
     perspCamera.position.z = 5;
 
-    // 2. The "Shadertoy" 2D Flat Camera (Clip space from -1 to 1)
+    
     const orthoCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
     orthoCamera.position.z = 1;
 
@@ -59,7 +59,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     materialRef.current = material;
 
     strategyRef.current = activeContext.createPreviewStrategy();
-    // We pass perspCamera as default, strategy shouldn't care about the camera type
+    
     strategyRef.current.init({ scene, camera: perspCamera, material }, settingsRef.current);
 
     const animate = (time: number) => {
@@ -73,7 +73,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
             strategyRef.current.update(time, settingsRef.current);
         }
 
-        // Dynamically select the camera right before rendering!
+        // select the camera right before rendering
         const activeCamera = settingsRef.current.shape === '2D_QUAD' ? orthoCamera : perspCamera;
         renderer.render(scene, activeCamera);
     };
@@ -87,7 +87,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
       
       renderer.setSize(newWidth, newHeight);
       
-      // Update the 3D camera aspect ratio (Ortho camera stays strictly -1 to 1 for shadertoy mapping)
+      // Update the 3D camera aspect ratio 
       perspCamera.aspect = newWidth / newHeight;
       perspCamera.updateProjectionMatrix();
     };

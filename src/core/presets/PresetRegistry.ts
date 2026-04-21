@@ -4,15 +4,44 @@ import type { IPreset } from '../../types/preset';
 
 
 export const BUILT_IN_PRESETS: IPreset[] = [
-    {
-        id: 'preset-bloody-hell-1to1',
-        name: 'Bloody Hell (1:1 Fidelity)',
-        description: 'The complete, scrolling 3D noise fire shader matched exactly to the original GLSL.',
-        contextId: 'MATERIAL',
-        settings: { shape: '2D_QUAD' },
-        
-        nodes: [ /* ... nodes array ... */ ],
-        edges: [ /* ... edges array ... */ ]
+   {
+        id: 'preset-pulsing-corkscrew',
+        name: 'Pulsing Corkscrew',
+        description: 'A spiraling trail that pulsates its thickness. A perfect stress-test for the new Java math parser (sin, cos, abs, max).',
+        contextId: 'TRAIL',
+        settings: { segments: 30 },
+        nodes: [
+          // --- WIDTH PULSATION LOGIC ---
+          { id: "t1", type: "TIME", position: { x: 0, y: 0 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 5.0 }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "sin_w", type: "MATH_UNARY", position: { x: 200, y: 0 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "sin" }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "abs_w", type: "MATH_UNARY", position: { x: 400, "y": 0 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "abs" }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "max_w", type: "MATH_BINARY", position: { x: 600, "y": 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 0.2 }, { id: "op", type: "string", value: "max" }], outputs: [{ id: "out", type: "float" }] } },
+          
+          // --- CORKSCREW ORBIT LOGIC ---
+          { id: "t2", type: "TIME", position: { x: 0, y: 240 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 10.0 }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "sin_o", type: "MATH_UNARY", position: { x: 200, y: 160 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "sin" }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "cos_o", type: "MATH_UNARY", position: { x: 200, y: 320 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "cos" }], outputs: [{ id: "out", type: "float" }] } },
+          { id: "pack", type: "PACK_VEC3", position: { x: 400, y: 240 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }, { id: "z", type: "float", value: 0.0 }], outputs: [{ id: "out", type: "vec3" }] } },
+          { id: "scale", type: "VECTOR_SCALAR_MATH", position: { x: 600, y: 240 }, data: { astType: "VECTOR_SCALAR_MATH", inputs: [{ id: "vec", type: "vec3" }, { id: "scalar", "type": "float", value: 1.5 }, { id: "op", "type": "string", value: "multiply" }], outputs: [{ id: "out", type: "vec3" }] } },
+          
+          // --- TRAIL OUTPUT ---
+          { id: "out", type: "TRAIL_ENDPOINT", position: { x: 900, y: 120 }, data: { astType: "TRAIL_ENDPOINT", inputs: [{ id: "width", type: "float" }, { id: "orbit_offset", "type": "vec3" }], outputs: [] } }
+        ],
+        edges: [
+          // Width wires
+          { id: "e1", source: "t1", sourceHandle: "out", target: "sin_w", targetHandle: "value" },
+          { id: "e2", source: "sin_w", sourceHandle: "out", target: "abs_w", targetHandle: "value" },
+          { id: "e3", source: "abs_w", sourceHandle: "out", target: "max_w", targetHandle: "a" },
+          { id: "e4", source: "max_w", sourceHandle: "out", target: "out", targetHandle: "width" },
+          
+          // Orbit wires
+          { id: "e5", source: "t2", sourceHandle: "out", target: "sin_o", targetHandle: "value" },
+          { id: "e6", source: "t2", sourceHandle: "out", target: "cos_o", targetHandle: "value" },
+          { id: "e7", source: "sin_o", sourceHandle: "out", target: "pack", targetHandle: "x" },
+          { id: "e8", "source": "cos_o", sourceHandle: "out", target: "pack", targetHandle: "y" },
+          { id: "e9", source: "pack", sourceHandle: "out", target: "scale", targetHandle: "vec" },
+          { id: "e10", source: "scale", sourceHandle: "out", target: "out", targetHandle: "orbit_offset" }
+        ]
     },
     {
       id: 'preset-fire-material',

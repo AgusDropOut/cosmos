@@ -1,6 +1,8 @@
 // src/core/compiler.ts
 import type { ShaderGraph, GLSLType, NodeType } from '../types/ast';
+import { NODE_DEFINITIONS } from './NodeDefinitions';
 import { NodeRegistry } from './registry';
+
 
 export function serializeValue(value: any, type: GLSLType): string {
     if (value === undefined || value === null) {
@@ -250,4 +252,54 @@ export function compileShader(graph: ShaderGraph, target: CompilerTarget = 'web'
         vertexShader: vertexCompiler.compileTree('OUTPUT_VERT', true, target),
         fragmentShader: fragmentCompiler.compileTree('OUTPUT_FRAG', false, target)
     };
+}
+
+/**
+ * A specialized compiler that generates inline math strings (e.g. "sin(time * 5.0)")
+ * specifically for the Java backend's CosmosExpressionParser.
+ */
+export class MathCompiler {
+    private graph: ShaderGraph;
+
+    constructor(graph: ShaderGraph) {
+        this.graph = graph;
+    }
+
+    public compilePort(targetNodeId: string, portId: string): string {
+        return this.resolveInput(targetNodeId, portId);
+    }
+
+    private resolveInput(targetNodeId: string, portId: string): string {
+        const node = this.graph.nodes.find(n => n.id === targetNodeId);
+        const inputDef = node?.inputs.find(i => i.id === portId);
+        const expectedType = inputDef?.type || 'float';
+
+        const connection = this.graph.connections.find(
+            c => c.targetNodeId === targetNodeId && c.targetPortId === portId
+        );
+
+        if (connection) {
+            return this.compileNode(connection.sourceNodeId);
+        }
+
+        // If nothing is connected, just return the raw serialized float/vec
+        return serializeValue(inputDef?.value, expectedType as GLSLType);
+    }
+
+    private compileNode(nodeId: string): string {
+        const node = this.graph.nodes.find(n => n.id === nodeId);
+        if (!node) return '0.0';
+
+        const definition = NODE_DEFINITIONS[node.type];
+        
+        if (definition && definition.strategy.generateMath) {
+            return definition.strategy.generateMath({
+                node,
+                resolveInput: (portId: string) => this.resolveInput(nodeId, portId)
+            });
+        }
+
+        console.warn(`Cosmos MathCompiler: Node type ${node.type} does not support math generation. Returning 0.0`);
+        return '0.0'; 
+    }
 }

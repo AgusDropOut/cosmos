@@ -29,8 +29,18 @@ export const TrailContext: IProjectContext = {
     ],
 
     isNodeAllowed: (nodeType: string) => {
-        const forbidden = ['OUTPUT_FRAG', 'OUTPUT_VERT', 'COLOR', 'MATERIAL_REF'];
-        return !forbidden.includes(nodeType);
+        const allowedMathNodes = [
+            'TRAIL_ENDPOINT',
+            'TIME',
+            'MATH_BINARY',
+            'MATH_UNARY',
+            'VECTOR_MATH',
+            'VECTOR_SCALAR_MATH',
+            'SPLIT_VEC2',
+            'PACK_VEC2',
+            'PACK_VEC3'
+        ];
+        return allowedMathNodes.includes(nodeType);
     },
 
     SettingsPanel: ({ settings, onSettingChange }) => {

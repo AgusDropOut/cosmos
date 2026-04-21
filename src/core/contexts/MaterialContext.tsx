@@ -19,7 +19,12 @@ export const MaterialContext: IProjectContext = {
         { id: 'out-vert-1', type: 'OUTPUT_VERT', position: { x: 600, y: 300 }, data: { astType: 'OUTPUT_VERT', inputs: [{ id: 'position_offset', type: 'vec3' }, { id: 'scale', type: 'float', value: 1.0 }], outputs: [] } }
     ],
 
-    isNodeAllowed: (nodeType: string) => true, 
+    isNodeAllowed: (nodeType: string) => {
+        const forbiddenForMaterial = [
+            'TRAIL_ENDPOINT'
+        ];
+        return !forbiddenForMaterial.includes(nodeType);
+    }, 
 
     SettingsPanel: ({ settings, onSettingChange }) => {
         const selectedShape = settings.shape || 'CUBE';

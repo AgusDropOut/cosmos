@@ -148,21 +148,22 @@ export const BeamContext: IProjectContext = {
                             let offset = new THREE.Vector3(0, 0, 0);
 
                             if (evaluator && endpointId) {
-                                // We inject 'v' into the evaluator so nodes know how far down the beam they are
-                                // NOTE: UV_COORDS node will map this to 'y'. So UV_COORDS.y = v.
+                                // Inject 'v' into the evaluator
                                 evaluator.setGlobals({ u: 0, v: v }); 
 
                                 const evaluatedRadius = evaluator.evaluatePort(endpointId, 'radius_curve');
                                 if (typeof evaluatedRadius === 'number') radius = evaluatedRadius;
 
-                                const evaluatedOffset = evaluator.evaluatePort(endpointId, 'position_offset');
-                                if (evaluatedOffset && (evaluatedOffset.x !== undefined || evaluatedOffset.r !== undefined)) {
-                                    offset.set(
-                                        evaluatedOffset.x ?? evaluatedOffset.r ?? 0,
-                                        evaluatedOffset.y ?? evaluatedOffset.g ?? 0,
-                                        evaluatedOffset.z ?? evaluatedOffset.b ?? 0
-                                    );
-                                }
+                                
+                                const ox = evaluator.evaluatePort(endpointId, 'offset_x');
+                                const oy = evaluator.evaluatePort(endpointId, 'offset_y');
+                                const oz = evaluator.evaluatePort(endpointId, 'offset_z');
+
+                                offset.set(
+                                    typeof ox === 'number' ? ox : 0,
+                                    typeof oy === 'number' ? oy : 0,
+                                    typeof oz === 'number' ? oz : 0
+                                );
                             }
                             return { radius, offset };
                         }

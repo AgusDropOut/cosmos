@@ -54,7 +54,11 @@ export class BeamExporter implements IWorkspaceExporter {
 
         // Compile the raw Java math strings for the runtime engine
         const radiusCurve = endpoint ? mathCompiler.compilePort(endpoint.id, 'radius_curve') : "1.0";
-        const positionOffset = endpoint ? mathCompiler.compilePort(endpoint.id, 'position_offset') : "vec3(0.0, 0.0, 0.0)";
+        
+
+        const offsetX = endpoint ? mathCompiler.compilePort(endpoint.id, 'offset_x') : "0.0";
+        const offsetY = endpoint ? mathCompiler.compilePort(endpoint.id, 'offset_y') : "0.0";
+        const offsetZ = endpoint ? mathCompiler.compilePort(endpoint.id, 'offset_z') : "0.0";
 
         return JSON.stringify({
             namespace: globalSettings.namespace,
@@ -64,7 +68,9 @@ export class BeamExporter implements IWorkspaceExporter {
                 radial_segments: settings.radialSegments || 6,
                 length_segments: settings.lengthSegments || 20,
                 radius_curve: radiusCurve,
-                position_offset: positionOffset,
+                offset_x: offsetX,
+                offset_y: offsetY,
+                offset_z: offsetZ,
                 material_id: materialId
             }
         }, null, 4);

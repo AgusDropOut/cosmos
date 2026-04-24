@@ -258,7 +258,9 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
         default: 1.0, 
         control: { id: 'radius', label: 'Base Radius', type: 'slider', min: 0.1, max: 10.0, step: 0.1 } 
       },
-      { id: 'position_offset', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
+      { id: 'offset_x', type: 'float', default: 0.0 },
+      { id: 'offset_y', type: 'float', default: 0.0 },
+      { id: 'offset_z', type: 'float', default: 0.0 }
     ],
     outputs: [],
     strategy: {

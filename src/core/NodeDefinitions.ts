@@ -282,7 +282,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
         vec3 internal_color = vec3(1.0, 0.2, 0.0); // Orange fire
         vec3 ${varName} = internal_color * internal_time * ${resolveInput('intensity')};
         // --- END SUB-GRAPH ---
-      ` 
+      `,
+      generateMath: () => `v`
     }
   },
 
@@ -327,7 +328,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       evaluate: ({ resolveInput }) => {
         const v = resolveInput('vec') || { x: 0, y: 0 };
         return { x: v.x ?? 0, y: v.y ?? 0 }; 
-      }
+      },
+      generateMath: () => `v`
     }
   },
 

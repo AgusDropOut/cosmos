@@ -69,7 +69,9 @@ export function useWorkspaceIO({
 
         try {
             let result;
-            if (activeContext.id === 'TRAIL' && 'exportComposite' in exporter) {
+
+
+            if ('exportComposite' in exporter) {
                 const materialData = allWorkspaces['MATERIAL'];
                 result = await (exporter as any).exportComposite(
                     currentGraph, contextSettings, materialData.graph, globalSettings

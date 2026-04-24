@@ -6,14 +6,13 @@ import type { Node } from 'reactflow';
 import type { ShaderGraph } from '../../types/ast';
 import { AstEvaluator } from '../compiler';
 import { BeamGeometryGenerator } from '../shapes/BeamGeometryGenerator';
-// import { BeamExporter } from '../exporter/BeamExporter';
+import { BeamExporter } from '../exporter/BeamExporter';
 
 export const BeamContext: IProjectContext = {
     id: 'BEAM',
     name: 'Magic Beam',
     
-    // getExporter: () => new BeamExporter(),
-    getExporter: () => null, // Placeholder until we write the exporter
+     getExporter: () => new BeamExporter(),
 
     getInitialNodes: (): Node[] => [
         { 

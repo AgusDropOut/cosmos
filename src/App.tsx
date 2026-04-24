@@ -9,6 +9,7 @@ import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import type { Node, Edge } from 'reactflow';
 import type { useHistory } from './core/hooks/useHistory';
+import { BeamContext } from './core/contexts/BeamContext';
 
 interface AppProps {
     storage: IWorkspaceStorage;
@@ -16,7 +17,7 @@ interface AppProps {
 
 
 
-const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext]; 
+const AVAILABLE_CONTEXTS = [MaterialContext, TrailContext, BeamContext]; 
 
 // Synchronous load function prevents empty-state overwrites
 const getInitialState = () => {
@@ -33,12 +34,17 @@ function App({ storage }: AppProps) {
   const initialState = getInitialState();
 
   // Initialize state with stored data or fallback to defaults
-  const [workspaces, setWorkspaces] = useState<Record<string, { rfNodes: Node[], rfEdges: Edge[], graph: ShaderGraph, settings: any, historyPast:{nodes : Node[] , edges: Edge[]}[], historyFuture:{nodes : Node[] , edges: Edge[]}[] }>>(
-    initialState?.workspaces || {
+  const defaultWorkspaces = {
       'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' }, historyPast: [], historyFuture: [] },
-      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] }
-    }
-  );
+      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] },
+      'BEAM': { rfNodes: BeamContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] }
+  };
+
+  
+  const [workspaces, setWorkspaces] = useState<Record<string, any>>({
+      ...defaultWorkspaces,
+      ...(initialState?.workspaces || {})
+  });
 
 
   
@@ -51,6 +57,8 @@ function App({ storage }: AppProps) {
       projectName: 'My Cosmos Project'
     }
   );
+
+  
 
   const activeContext = useMemo(() => 
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 

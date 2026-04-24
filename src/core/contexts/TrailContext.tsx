@@ -71,7 +71,7 @@ export const TrailContext: IProjectContext = {
         let trailGenerator = new TrailGeometryGenerator();
         let camRef: THREE.PerspectiveCamera | null = null;
         
-        // NEW: Track the loop iterations to prevent "teleportation streaks"
+        //  Track the loop iterations to prevent "teleportation streaks"
         let lastLoop = 0; 
 
         return {
@@ -97,19 +97,18 @@ export const TrailContext: IProjectContext = {
             update: (time: number, settings: Record<string, any>, graph?: ShaderGraph) => {
                 if (mesh && camRef && entityMesh) {
                     
-                    // --- 1. THE PHYSICS LOOP ---
+                    // --- THE PHYSICS LOOP ---
                     const LOOP_DURATION = 1500; // 1.5 seconds per throw
                     const currentLoop = Math.floor(time / LOOP_DURATION);
                     const p = (time % LOOP_DURATION) / LOOP_DURATION; // Normalized progress: 0.0 to 1.0
 
-                    // If we just restarted the loop, destroy the old generator to clear the history
+                   
                     if (currentLoop > lastLoop) {
                         lastLoop = currentLoop;
                         trailGenerator = new TrailGeometryGenerator(); 
                     }
 
-                    // --- 2. THE PARABOLIC ARC ---
-                    // X and Z travel linearly across the grid
+                    //  THE PARABOLIC ARC 
                     const startX = -5, endX = 5;
                     const startZ = -2, endZ = 2;
                     
@@ -117,7 +116,6 @@ export const TrailContext: IProjectContext = {
                     const currentZ = startZ + (endZ - startZ) * p;
                     
                     // Y travels in a mathematically perfect parabola.
-                    // Equation: ground_level + 4 * peak_height * p * (1 - p)
                     const ground = -2; // Matches grid.position.y
                     const peak = 5;    // Max height of the throw
                     const currentY = ground + 4 * peak * p * (1 - p);
@@ -125,11 +123,11 @@ export const TrailContext: IProjectContext = {
                     let currentTarget = new THREE.Vector3(currentX, currentY, currentZ);
                     let currentWidth = 0.2;
 
-                    // --- 3. EVALUATE AST OFFSETS ---
+                    //  EVALUATE AST OFFSETS 
                     if (graph) {
                         const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
                         if (endpoint) {
-                            // Note: We use 'time * 0.001' here to match the u_time scale of the shaders!
+            
                             const evaluator = new AstEvaluator(graph, time * 0.001);
                             
                             const evaluatedWidth = evaluator.evaluatePort(endpoint.id, 'width');
@@ -146,9 +144,9 @@ export const TrailContext: IProjectContext = {
                         }
                     }
 
-                    // --- 4. UPDATE ENTITY & TRAIL ---
+                    // UPDATE ENTITY & TRAIL
                     entityMesh.position.copy(currentTarget);
-                    entityMesh.rotation.x += 0.1; // Keep the standard tumbling Minecraft item feel
+                    entityMesh.rotation.x += 0.1; 
                     entityMesh.rotation.y += 0.1;
 
                     const oldGeo = mesh.geometry;

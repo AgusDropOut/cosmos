@@ -23,6 +23,7 @@ export type NodeType =
   | 'MAPPING_2D'
   | 'FBM_NOISE_3D'
   | 'DOT_PRODUCT'
+  | 'BEAM_ENDPOINT'
   ;
 
 export type GLSLType = 'float' | 'vec2' | 'vec3' | 'vec4' | 'string';

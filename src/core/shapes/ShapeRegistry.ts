@@ -78,7 +78,7 @@ export class StarLampShape implements IShapeGenerator {
             addTri(v3, v2, v1); // Reverse winding creates the backface
         };
 
-        // The core loop from renderStarLampIcosahedron
+      
         for (const f of faces) {
             const v1 = baseVerts[f[0]];
             const v2 = baseVerts[f[1]];
@@ -94,11 +94,11 @@ export class StarLampShape implements IShapeGenerator {
             addDoubleSidedTri(v1, v2, v3);
         }
 
-        // Convert the raw number array into GPU memory
+       
         const positionArray = new Float32Array(vertices);
         geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
         
-        // Three.js computes the smooth/flat shading normals automatically
+        
         geometry.computeVertexNormals();
 
         return geometry;

@@ -21,7 +21,8 @@ export interface NodeStrategy {
     evaluate?: (ctx: { 
         resolveInput: (id: string) => any; 
         node: ShaderNode;
-        time: number; 
+        time: number;
+        globals: any;
     }) => any;
     
     globalFunctions?: string;

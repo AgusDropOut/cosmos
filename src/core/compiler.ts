@@ -313,10 +313,15 @@ export class MathCompiler {
 export class AstEvaluator {
     private graph: ShaderGraph;
     private time: number;
+    private globals: Record<string, any> = {};
 
     constructor(graph: ShaderGraph, time: number) {
         this.graph = graph;
         this.time = time;
+    }
+
+    public setGlobals(globals: Record<string, any>) {
+        this.globals = globals;
     }
 
     public evaluatePort(targetNodeId: string, portId: string): any {
@@ -332,10 +337,18 @@ export class AstEvaluator {
         );
 
         if (connection) {
-            return this.evaluateNode(connection.sourceNodeId);
+            const rawValue = this.evaluateNode(connection.sourceNodeId);
+            
+            if (rawValue !== null && typeof rawValue === 'object' && connection.sourcePortId !== 'out') {
+                if (connection.sourcePortId in rawValue) {
+                    return rawValue[connection.sourcePortId];
+                }
+            }
+            return rawValue;
         }
 
-        return inputDef?.value; // Return the raw slider/UI value
+       
+        return inputDef?.value;
     }
 
     private evaluateNode(nodeId: string): any {
@@ -348,7 +361,8 @@ export class AstEvaluator {
             return definition.strategy.evaluate({
                 node,
                 time: this.time,
-                resolveInput: (portId: string) => this.resolveInput(nodeId, portId)
+                resolveInput: (portId: string) => this.resolveInput(nodeId, portId),
+                globals: this.globals,
             });
         }
 

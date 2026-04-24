@@ -124,7 +124,302 @@ export const BUILT_IN_PRESETS: IPreset[] = [
         { id: "f1", source: "mix", sourceHandle: "out", target: "out_f", targetHandle: "color" },
         { id: "f2", source: "sum", sourceHandle: "out", target: "out_f", targetHandle: "alpha" }
     ]
-},
+},{
+        id: 'preset-beam-dna-test',
+        name: 'Beam Test: DNA Spiral',
+        description: 'A pure math test for beam deformation. Uses only Sin, Cos, and Time to warp the cylinder into a rotating spiral.',
+        contextId: 'BEAM',
+        settings: { radialSegments: 8, lengthSegments: 40 }, // High length segments for smooth curves!
+        nodes: [
+            // --- INPUTS ---
+            { id: "uv", type: "UV_COORDS", position: { x: 0, y: 100 }, data: { astType: "UV_COORDS", inputs: [], outputs: [{ id: "uv", type: "vec2" }] } },
+            { id: "split_uv", type: "SPLIT_VEC2", position: { x: 200, y: 100 }, data: { astType: "SPLIT_VEC2", inputs: [{ id: "vec", type: "vec2" }], outputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }] } },
+            { id: "time", type: "TIME", position: { x: 0, y: 300 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 5.0 }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- THE WAVE PHASE: (uv.y * 10.0) - time ---
+            { id: "freq", type: "MATH_BINARY", position: { x: 400, y: 50 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 10.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "phase", type: "MATH_BINARY", position: { x: 600, y: 150 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- TRIGONOMETRY ---
+            { id: "wave_x", type: "MATH_UNARY", position: { x: 800, y: 50 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "sin" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "wave_z", type: "MATH_UNARY", position: { x: 800, y: 250 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "cos" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- AMPLITUDE: Make the wiggle 1.5 units wide ---
+            { id: "amp_x", type: "MATH_BINARY", position: { x: 1000, y: 50 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 1.5 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "amp_z", type: "MATH_BINARY", position: { x: 1000, y: 250 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 1.5 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- PACK AND OUTPUT ---
+            { id: "pack", type: "PACK_VEC3", position: { x: 1200, y: 150 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float" }, { id: "y", type: "float", value: 0.0 }, { id: "z", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "out", type: "BEAM_ENDPOINT", position: { x: 1500, y: 100 }, data: { astType: "BEAM_ENDPOINT", inputs: [{ id: "radius_curve", type: "float", value: 0.3 }, { id: "position_offset", type: "vec3" }], outputs: [] } }
+        ],
+        edges: [
+            // Phase calculation
+            { id: "e1", source: "uv", sourceHandle: "uv", target: "split_uv", targetHandle: "vec" },
+            { id: "e2", source: "split_uv", sourceHandle: "y", target: "freq", targetHandle: "a" },
+            { id: "e3", source: "freq", sourceHandle: "out", target: "phase", targetHandle: "a" },
+            { id: "e4", source: "time", sourceHandle: "out", target: "phase", targetHandle: "b" },
+
+            // Apply Trig
+            { id: "e5", source: "phase", sourceHandle: "out", target: "wave_x", targetHandle: "value" },
+            { id: "e6", source: "phase", sourceHandle: "out", target: "wave_z", targetHandle: "value" },
+
+            // Apply Amplitude
+            { id: "e7", source: "wave_x", sourceHandle: "out", target: "amp_x", targetHandle: "a" },
+            { id: "e8", source: "wave_z", sourceHandle: "out", target: "amp_z", targetHandle: "a" },
+
+            // Pack Vector and Output
+            { id: "e9", source: "amp_x", sourceHandle: "out", target: "pack", targetHandle: "x" },
+            { id: "e10", source: "amp_z", sourceHandle: "out", target: "pack", targetHandle: "z" },
+            { id: "e11", source: "pack", sourceHandle: "out", target: "out", targetHandle: "position_offset" }
+        ]
+    },
+    {
+        id: 'preset-moon-prism',
+        name: 'Moon Prism Power',
+        description: 'A magical beam material. Features a bright white core, a hot pink aura, and a scrolling energy pulse.',
+        contextId: 'MATERIAL',
+        settings: { shape: '2D_QUAD' },
+        nodes: [
+            // Center distance calculation
+            { id: "uv", type: "UV_COORDS", position: { x: -200, y: 150 }, data: { astType: "UV_COORDS", inputs: [], outputs: [{ id: "uv", type: "vec2" }] } },
+            { id: "split_uv", type: "SPLIT_VEC2", position: { x: 0, y: 150 }, data: { astType: "SPLIT_VEC2", inputs: [{ id: "vec", type: "vec2" }], outputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }] } },
+            { id: "center_x", type: "MATH_BINARY", position: { x: 200, y: 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 0.5 }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "abs_x", type: "MATH_UNARY", position: { x: 400, y: 0 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "abs" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "dist_mult", type: "MATH_BINARY", position: { x: 600, y: 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 2.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            
+            // Core inversion and sharpening
+            { id: "core_inv", type: "MATH_BINARY", position: { x: 800, y: 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float", value: 1.0 }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "core_pow", type: "MATH_BINARY", position: { x: 1000, y: -100 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 3.0 }, { id: "op", type: "string", value: "pow" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // Scrolling energy pulse calculation
+            { id: "time", type: "TIME", position: { x: -200, y: 400 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 4.0 }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "scroll_y", type: "MATH_BINARY", position: { x: 200, y: 300 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 15.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "scroll_sub", type: "MATH_BINARY", position: { x: 400, y: 350 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "scroll_sin", type: "MATH_UNARY", position: { x: 600, y: 350 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "sin" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "scroll_abs", type: "MATH_UNARY", position: { x: 800, y: 350 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "abs" }], outputs: [{ id: "out", type: "float" }] } },
+            
+            // Pulse mapping 
+            { id: "scroll_mult1", type: "MATH_BINARY", position: { x: 1000, y: 350 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 0.5 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "scroll_add2", type: "MATH_BINARY", position: { x: 1200, y: 350 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 0.5 }, { id: "op", type: "string", value: "add" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // Alpha intensity
+            { id: "beam_int", type: "MATH_BINARY", position: { x: 1400, y: 150 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // Color definitions
+            { id: "col_edge", type: "PACK_VEC3", position: { x: 1200, y: -300 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 1.0 }, { id: "y", type: "float", value: 0.08 }, { id: "z", type: "float", value: 0.58 }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "col_core", type: "PACK_VEC3", position: { x: 1200, y: -150 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 1.0 }, { id: "y", type: "float", value: 0.9 }, { id: "z", type: "float", value: 1.0 }], outputs: [{ id: "out", type: "vec3" }] } },
+            
+            // Mix colors
+            { id: "mix_core", type: "MIX_COLORS", position: { x: 1600, y: -200 }, data: { astType: "MIX_COLORS", inputs: [{ id: "a", type: "vec3" }, { id: "b", type: "vec3" }, { id: "t", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+            
+            // Final emission multiplier
+            { id: "final_col", type: "VECTOR_SCALAR_MATH", position: { x: 1900, y: 0 }, data: { astType: "VECTOR_SCALAR_MATH", inputs: [{ id: "vec", type: "vec3" }, { id: "scalar", type: "float", value: 2.5 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "out", type: "OUTPUT_FRAG", position: { x: 2200, y: 100 }, data: { astType: "OUTPUT_FRAG", inputs: [{ id: "color", type: "vec3" }, { id: "alpha", type: "float" }], outputs: [] } }
+        ],
+        edges: [
+            { id: "e1", source: "uv", sourceHandle: "uv", target: "split_uv", targetHandle: "vec" },
+            { id: "e2", source: "split_uv", sourceHandle: "x", target: "center_x", targetHandle: "a" },
+            { id: "e3", source: "center_x", sourceHandle: "out", target: "abs_x", targetHandle: "value" },
+            { id: "e4", source: "abs_x", sourceHandle: "out", target: "dist_mult", targetHandle: "a" },
+            { id: "e5", source: "dist_mult", sourceHandle: "out", target: "core_inv", targetHandle: "b" },
+            { id: "e6", source: "core_inv", sourceHandle: "out", target: "core_pow", targetHandle: "a" },
+
+            { id: "e7", source: "split_uv", sourceHandle: "y", target: "scroll_y", targetHandle: "a" },
+            { id: "e8", source: "scroll_y", sourceHandle: "out", target: "scroll_sub", targetHandle: "a" },
+            { id: "e9", source: "time", sourceHandle: "out", target: "scroll_sub", targetHandle: "b" },
+            { id: "e10", source: "scroll_sub", sourceHandle: "out", target: "scroll_sin", targetHandle: "value" },
+            { id: "e11", source: "scroll_sin", sourceHandle: "out", target: "scroll_abs", targetHandle: "value" },
+            { id: "e12", source: "scroll_abs", sourceHandle: "out", target: "scroll_mult1", targetHandle: "a" },
+            { id: "e13", source: "scroll_mult1", sourceHandle: "out", target: "scroll_add2", targetHandle: "a" },
+
+            { id: "e14", source: "core_inv", sourceHandle: "out", target: "beam_int", targetHandle: "a" },
+            { id: "e15", source: "scroll_add2", sourceHandle: "out", target: "beam_int", targetHandle: "b" },
+
+            { id: "e16", source: "col_edge", sourceHandle: "out", target: "mix_core", targetHandle: "a" },
+            { id: "e17", source: "col_core", sourceHandle: "out", target: "mix_core", targetHandle: "b" },
+            { id: "e18", source: "core_pow", sourceHandle: "out", target: "mix_core", targetHandle: "t" },
+
+            { id: "e19", source: "mix_core", sourceHandle: "out", target: "final_col", targetHandle: "vec" },
+            { id: "e20", source: "beam_int", sourceHandle: "out", target: "final_col", targetHandle: "scalar" },
+
+            { id: "e21", source: "final_col", sourceHandle: "out", target: "out", targetHandle: "color" },
+            { id: "e22", source: "beam_int", sourceHandle: "out", target: "out", targetHandle: "alpha" }
+        ]
+    },
+    {
+        id: 'preset-cyber-pulse',
+        name: 'Cyber-Pulse Laser',
+        description: 'A solid 3D beam material. Uses sine waves to create stretches of 0-alpha gaps, overlaid with noise for an unstable, surging energy effect.',
+        contextId: 'MATERIAL',
+        settings: { shape: '2D_QUAD' },
+        nodes: [
+            // --- INPUTS ---
+            { id: "uv", type: "UV_COORDS", position: { x: -200, y: 150 }, data: { astType: "UV_COORDS", inputs: [], outputs: [{ id: "uv", type: "vec2" }] } },
+            { id: "time", type: "TIME", position: { x: -200, y: 400 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 1.0 }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "split", type: "SPLIT_VEC2", position: { x: 0, y: 150 }, data: { astType: "SPLIT_VEC2", inputs: [{ id: "vec", type: "vec2" }], outputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }] } },
+
+            // --- 0-ALPHA PULSE GENERATOR (Creates the distinct breaks) ---
+            { id: "p_freq", type: "MATH_BINARY", position: { x: 200, y: 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 30.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "p_speed", type: "MATH_BINARY", position: { x: 200, y: 150 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 20.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "p_phase", type: "MATH_BINARY", position: { x: 400, y: 75 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "p_sin", type: "MATH_UNARY", position: { x: 600, y: 75 }, data: { astType: "MATH_UNARY", inputs: [{ id: "value", type: "float" }, { id: "func", type: "string", value: "sin" }], outputs: [{ id: "out", type: "float" }] } },
+            // max(sin, 0) strictly guarantees stretches of exactly 0.0 alpha!
+            { id: "p_max", type: "MATH_BINARY", position: { x: 800, y: 75 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 0.0 }, { id: "op", type: "string", value: "max" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "p_pow", type: "MATH_BINARY", position: { x: 1000, y: 75 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 2.0 }, { id: "op", type: "string", value: "pow" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- SURFACE SCROLLING NOISE (Makes the pulses look organic and crackling) ---
+            { id: "n_x", type: "MATH_BINARY", position: { x: 200, y: 300 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 4.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "n_y1", type: "MATH_BINARY", position: { x: 200, y: 450 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 10.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "n_y2", type: "MATH_BINARY", position: { x: 200, y: 600 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 5.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "n_y", type: "MATH_BINARY", position: { x: 400, y: 525 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "n_pack", type: "PACK_VEC2", position: { x: 600, y: 400 }, data: { astType: "PACK_VEC2", inputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }], outputs: [{ id: "out", type: "vec2" }] } },
+            { id: "n_fbm", type: "FBM_NOISE_2D", position: { x: 800, y: 400 }, data: { astType: "FBM_NOISE_2D", inputs: [{ id: "uv", type: "vec2" }, { id: "scale", type: "float", value: 1.5 }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- COMBINE PULSE & NOISE ---
+            { id: "a_mult", type: "MATH_BINARY", position: { x: 1200, y: 200 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "a_boost", type: "MATH_BINARY", position: { x: 1400, y: 200 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 3.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "a_clamp", type: "MATH_BINARY", position: { x: 1600, y: 200 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 1.0 }, { id: "op", type: "string", value: "min" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- COLOR & EMISSION ---
+            { id: "c1", type: "PACK_VEC3", position: { x: 1200, y: 400 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 0.0 }, { id: "y", type: "float", value: 1.0 }, { id: "z", type: "float", value: 0.8 }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "c2", type: "PACK_VEC3", position: { x: 1200, y: 550 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 0.0 }, { id: "y", type: "float", value: 0.2 }, { id: "z", type: "float", value: 1.0 }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "mix", type: "MIX_COLORS", position: { x: 1500, y: 450 }, data: { astType: "MIX_COLORS", inputs: [{ id: "a", type: "vec3" }, { id: "b", type: "vec3" }, { id: "t", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "glow", type: "VECTOR_SCALAR_MATH", position: { x: 1800, y: 350 }, data: { astType: "VECTOR_SCALAR_MATH", inputs: [{ id: "vec", type: "vec3" }, { id: "scalar", type: "float", value: 2.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "vec3" }] } },
+            
+            // --- OUTPUT ---
+            { id: "out", type: "OUTPUT_FRAG", position: { x: 2100, y: 250 }, data: { astType: "OUTPUT_FRAG", inputs: [{ id: "color", type: "vec3" }, { id: "alpha", type: "float" }], outputs: [] } }
+        ],
+        edges: [
+            // Split UVs
+            { id: "e1", source: "uv", sourceHandle: "uv", target: "split", targetHandle: "vec" },
+
+            // Pulse Generator
+            { id: "e2", source: "split", sourceHandle: "y", target: "p_freq", targetHandle: "a" },
+            { id: "e3", source: "time", sourceHandle: "out", target: "p_speed", targetHandle: "a" },
+            { id: "e4", source: "p_freq", sourceHandle: "out", target: "p_phase", targetHandle: "a" },
+            { id: "e5", source: "p_speed", sourceHandle: "out", target: "p_phase", targetHandle: "b" },
+            { id: "e6", source: "p_phase", sourceHandle: "out", target: "p_sin", targetHandle: "value" },
+            { id: "e7", source: "p_sin", sourceHandle: "out", target: "p_max", targetHandle: "a" },
+            { id: "e8", source: "p_max", sourceHandle: "out", target: "p_pow", targetHandle: "a" },
+
+            // Noise Coordinates
+            { id: "e9", source: "split", sourceHandle: "x", target: "n_x", targetHandle: "a" },
+            { id: "e10", source: "split", sourceHandle: "y", target: "n_y1", targetHandle: "a" },
+            { id: "e11", source: "time", sourceHandle: "out", target: "n_y2", targetHandle: "a" },
+            { id: "e12", source: "n_y1", sourceHandle: "out", target: "n_y", targetHandle: "a" },
+            { id: "e13", source: "n_y2", sourceHandle: "out", target: "n_y", targetHandle: "b" },
+            { id: "e14", source: "n_x", sourceHandle: "out", target: "n_pack", targetHandle: "x" },
+            { id: "e15", source: "n_y", sourceHandle: "out", target: "n_pack", targetHandle: "y" },
+            { id: "e16", source: "n_pack", sourceHandle: "out", target: "n_fbm", targetHandle: "uv" },
+
+            // Combine Alpha
+            { id: "e17", source: "p_pow", sourceHandle: "out", target: "a_mult", targetHandle: "a" },
+            { id: "e18", source: "n_fbm", sourceHandle: "out", target: "a_mult", targetHandle: "b" },
+            { id: "e19", source: "a_mult", sourceHandle: "out", target: "a_boost", targetHandle: "a" },
+            { id: "e20", source: "a_boost", sourceHandle: "out", target: "a_clamp", targetHandle: "a" },
+
+            // Color Generation
+            { id: "e21", source: "c2", sourceHandle: "out", target: "mix", targetHandle: "a" },
+            { id: "e22", source: "c1", sourceHandle: "out", target: "mix", targetHandle: "b" },
+            { id: "e23", source: "n_fbm", sourceHandle: "out", target: "mix", targetHandle: "t" },
+            { id: "e24", source: "mix", sourceHandle: "out", target: "glow", targetHandle: "vec" },
+
+            // Output
+            { id: "e25", source: "glow", sourceHandle: "out", target: "out", targetHandle: "color" },
+            { id: "e26", source: "a_clamp", sourceHandle: "out", target: "out", targetHandle: "alpha" }
+        ]
+    },
+    {
+        id: 'preset-frenzy-flame',
+        name: 'Frenzy Flame Beam',
+        description: 'An aggressive, boiling beam of chaos magic. Uses 3D FBM noise mapped to a high-contrast Red, Orange, and Searing Yellow palette with alpha tearing.',
+        contextId: 'MATERIAL',
+        settings: { shape: '2D_QUAD' },
+        nodes: [
+            // --- 1. COORDINATES & TIME ---
+            { id: "uv", type: "UV_COORDS", position: { x: -200, y: 150 }, data: { astType: "UV_COORDS", inputs: [], outputs: [{ id: "uv", type: "vec2" }] } },
+            { id: "split", type: "SPLIT_VEC2", position: { x: 0, y: 150 }, data: { astType: "SPLIT_VEC2", inputs: [{ id: "vec", type: "vec2" }], outputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }] } },
+            { id: "time", type: "TIME", position: { x: -200, y: 350 }, data: { astType: "TIME", inputs: [{ id: "speed", type: "float", value: 1.0 }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- 2. 3D NOISE SPACE MAPPING ---
+            // Wrap the X axis tightly so it looks like streaks (uv.x * 6.0)
+            { id: "nx", type: "MATH_BINARY", position: { x: 200, y: 0 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 6.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            
+            // Scroll the Y axis fast (uv.y * 2.0 - time * 6.0)
+            { id: "ny_scale", type: "MATH_BINARY", position: { x: 200, y: 150 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 2.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "ny_speed", type: "MATH_BINARY", position: { x: 200, y: 300 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 6.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "ny_scroll", type: "MATH_BINARY", position: { x: 400, y: 225 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float" }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            
+            // Evolve the Z axis so the fire "boils" (time * 4.0)
+            { id: "nz_boil", type: "MATH_BINARY", position: { x: 200, y: 450 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 4.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- 3. GENERATE CHAOS ---
+            { id: "n_pack", type: "PACK_VEC3", position: { x: 600, y: 225 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float" }, { id: "y", type: "float" }, { id: "z", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "fbm", type: "FBM_NOISE_3D", position: { x: 800, y: 225 }, data: { astType: "FBM_NOISE_3D", inputs: [{ id: "pos", type: "vec3" }, { id: "octaves", type: "float", value: 4.0 }], outputs: [{ id: "out", type: "float" }] } },
+            
+            // Sharpen the flames (pow(noise, 2.0)) and multiply intensity
+            { id: "f_sharp", type: "MATH_BINARY", position: { x: 1000, y: 225 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 2.0 }, { id: "op", type: "string", value: "pow" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "f_boost", type: "MATH_BINARY", position: { x: 1200, y: 225 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 3.0 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "float" }] } },
+
+            // --- 4. COLOR PALETTE (Dark Red -> Bright Orange -> Searing Yellow) ---
+            { id: "c_red", type: "PACK_VEC3", position: { x: 1200, y: -150 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 0.6 }, { id: "y", type: "float", value: 0.0 }, { id: "z", type: "float", value: 0.0 }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "c_org", type: "PACK_VEC3", position: { x: 1200, y: 0 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 1.0 }, { id: "y", type: "float", value: 0.4 }, { id: "z", type: "float", value: 0.0 }], outputs: [{ id: "out", type: "vec3" }] } },
+            { id: "c_yel", type: "PACK_VEC3", position: { x: 1500, y: 150 }, data: { astType: "PACK_VEC3", inputs: [{ id: "x", type: "float", value: 1.0 }, { id: "y", type: "float", value: 0.9 }, { id: "z", type: "float", value: 0.1 }], outputs: [{ id: "out", type: "vec3" }] } },
+
+            // Mix Red and Orange based on the raw noise
+            { id: "mix_base", type: "MIX_COLORS", position: { x: 1500, y: -50 }, data: { astType: "MIX_COLORS", inputs: [{ id: "a", type: "vec3" }, { id: "b", type: "vec3" }, { id: "t", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+            
+            // Extract only the brightest tips for the Searing Yellow core
+            { id: "core_mask", type: "MATH_BINARY", position: { x: 1500, y: 300 }, data: { astType: "MATH_BINARY", inputs: [{ id: "a", type: "float" }, { id: "b", type: "float", value: 1.0 }, { id: "op", type: "string", value: "subtract" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "mix_core", type: "MIX_COLORS", position: { x: 1800, y: 100 }, data: { astType: "MIX_COLORS", inputs: [{ id: "a", type: "vec3" }, { id: "b", type: "vec3" }, { id: "t", type: "float" }], outputs: [{ id: "out", type: "vec3" }] } },
+
+            // --- 5. EMISSION & TEARING ALPHA ---
+            { id: "glow", type: "VECTOR_SCALAR_MATH", position: { x: 2100, y: 50 }, data: { astType: "VECTOR_SCALAR_MATH", inputs: [{ id: "vec", type: "vec3" }, { id: "scalar", type: "float", value: 2.5 }, { id: "op", type: "string", value: "multiply" }], outputs: [{ id: "out", type: "vec3" }] } },
+            
+            // Smoothstep cuts off the low values completely, creating holes/tears in the beam
+            { id: "alpha_cut", type: "SMOOTHSTEP", position: { x: 2100, y: 300 }, data: { astType: "SMOOTHSTEP", inputs: [{ id: "edge0", type: "float", value: 0.1 }, { id: "edge1", type: "float", value: 0.8 }, { id: "x", type: "float" }], outputs: [{ id: "out", type: "float" }] } },
+            { id: "out", type: "OUTPUT_FRAG", position: { x: 2400, y: 200 }, data: { astType: "OUTPUT_FRAG", inputs: [{ id: "color", type: "vec3" }, { id: "alpha", type: "float" }], outputs: [] } }
+        ],
+        edges: [
+            // Split UVs
+            { id: "e1", source: "uv", sourceHandle: "uv", target: "split", targetHandle: "vec" },
+
+            // 3D Space Mapping
+            { id: "e2", source: "split", sourceHandle: "x", target: "nx", targetHandle: "a" },
+            { id: "e3", source: "split", sourceHandle: "y", target: "ny_scale", targetHandle: "a" },
+            { id: "e4", source: "time", sourceHandle: "out", target: "ny_speed", targetHandle: "a" },
+            { id: "e5", source: "ny_scale", sourceHandle: "out", target: "ny_scroll", targetHandle: "a" },
+            { id: "e6", source: "ny_speed", sourceHandle: "out", target: "ny_scroll", targetHandle: "b" },
+            { id: "e7", source: "time", sourceHandle: "out", target: "nz_boil", targetHandle: "a" },
+
+            // Pack & Noise
+            { id: "e8", source: "nx", sourceHandle: "out", target: "n_pack", targetHandle: "x" },
+            { id: "e9", source: "ny_scroll", sourceHandle: "out", target: "n_pack", targetHandle: "y" },
+            { id: "e10", source: "nz_boil", sourceHandle: "out", target: "n_pack", targetHandle: "z" },
+            { id: "e11", source: "n_pack", sourceHandle: "out", target: "fbm", targetHandle: "pos" },
+
+            // Sharpen & Boost
+            { id: "e12", source: "fbm", sourceHandle: "out", target: "f_sharp", targetHandle: "a" },
+            { id: "e13", source: "f_sharp", sourceHandle: "out", target: "f_boost", targetHandle: "a" },
+
+            // Mix Base Colors
+            { id: "e14", source: "c_red", sourceHandle: "out", target: "mix_base", targetHandle: "a" },
+            { id: "e15", source: "c_org", sourceHandle: "out", target: "mix_base", targetHandle: "b" },
+            { id: "e16", source: "f_boost", sourceHandle: "out", target: "mix_base", targetHandle: "t" },
+
+            // Mix Core Searing Yellow
+            { id: "e17", source: "f_boost", sourceHandle: "out", target: "core_mask", targetHandle: "a" },
+            { id: "e18", source: "mix_base", sourceHandle: "out", target: "mix_core", targetHandle: "a" },
+            { id: "e19", source: "c_yel", sourceHandle: "out", target: "mix_core", targetHandle: "b" },
+            { id: "e20", source: "core_mask", sourceHandle: "out", target: "mix_core", targetHandle: "t" },
+
+            // Output Glow & Alpha
+            { id: "e21", source: "mix_core", sourceHandle: "out", target: "glow", targetHandle: "vec" },
+            { id: "e22", source: "f_boost", sourceHandle: "out", target: "alpha_cut", targetHandle: "x" },
+            { id: "e23", source: "glow", sourceHandle: "out", target: "out", targetHandle: "color" },
+            { id: "e24", source: "alpha_cut", sourceHandle: "out", target: "out", targetHandle: "alpha" }
+        ]
+    },
     {
       id: 'preset-fire-material',
       name: 'Bloody Hell Fire',

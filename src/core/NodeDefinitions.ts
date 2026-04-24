@@ -247,6 +247,25 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       generateCode: () => `// Trail System Definition Marker`
     }
   },
+  BEAM_ENDPOINT: {
+    type: 'BEAM_ENDPOINT',
+    label: 'Beam System Output',
+    color: '#cc5de8', 
+    inputs: [
+      { 
+        id: 'radius_curve', 
+        type: 'float', 
+        default: 1.0, 
+        control: { id: 'radius', label: 'Base Radius', type: 'slider', min: 0.1, max: 10.0, step: 0.1 } 
+      },
+      { id: 'position_offset', type: 'vec3', default: { r: 0, g: 0, b: 0 } }
+    ],
+    outputs: [],
+    strategy: {
+      generateCode: () => `// Beam System Definition Marker`,
+      
+    }
+  },
 
   MATERIAL_REF: {
     type: 'MATERIAL_REF',
@@ -274,7 +293,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     inputs: [],
     outputs: [{ id: 'uv', type: 'vec2' }],
     strategy: {
-      generateCode: ({ varName }) => `    vec2 ${varName} = vUv;`
+      generateCode: ({ varName }) => `    vec2 ${varName} = vUv;`,
+      evaluate: ({ node, time, globals }) => ({ x: globals?.u ?? 0, y: globals?.v ?? 0 })
     }
   },
 
@@ -306,7 +326,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       `,
       evaluate: ({ resolveInput }) => {
         const v = resolveInput('vec') || { x: 0, y: 0 };
-        return { x: v.x ?? 0, y: v.y ?? 0 }; // Evaluator resolves port IDs directly, but realistically splitting just needs to provide the object and let the compiler handle the port lookup.
+        return { x: v.x ?? 0, y: v.y ?? 0 }; 
       }
     }
   },

@@ -1,0 +1,36 @@
+{
+  "id": "preset-beam-dna-test",
+  "name": "Beam Test: DNA Spiral",
+  "description": "A pure math test for beam deformation. Uses only Sin, Cos, and Time to warp the cylinder into a rotating spiral.",
+  "contextId": "BEAM",
+  "settings": {
+    "radialSegments": 8,
+    "lengthSegments": 40
+  },
+  "nodes": [
+    { "id": "uv", "type": "UV_COORDS", "position": { "x": 0, "y": 100 }, "data": { "astType": "UV_COORDS", "inputs": [], "outputs": [{ "id": "uv", "type": "vec2" }] } },
+    { "id": "split_uv", "type": "SPLIT_VEC2", "position": { "x": 200, "y": 100 }, "data": { "astType": "SPLIT_VEC2", "inputs": [{ "id": "vec", "type": "vec2" }], "outputs": [{ "id": "x", "type": "float" }, { "id": "y", "type": "float" }] } },
+    { "id": "time", "type": "TIME", "position": { "x": 0, "y": 300 }, "data": { "astType": "TIME", "inputs": [{ "id": "speed", "type": "float", "value": 5.0 }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "freq", "type": "MATH_BINARY", "position": { "x": 400, "y": 50 }, "data": { "astType": "MATH_BINARY", "inputs": [{ "id": "a", "type": "float" }, { "id": "b", "type": "float", "value": 10.0 }, { "id": "op", "type": "string", "value": "multiply" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "phase", "type": "MATH_BINARY", "position": { "x": 600, "y": 150 }, "data": { "astType": "MATH_BINARY", "inputs": [{ "id": "a", "type": "float" }, { "id": "b", "type": "float" }, { "id": "op", "type": "string", "value": "subtract" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "wave_x", "type": "MATH_UNARY", "position": { "x": 800, "y": 50 }, "data": { "astType": "MATH_UNARY", "inputs": [{ "id": "value", "type": "float" }, { "id": "func", "type": "string", "value": "sin" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "wave_z", "type": "MATH_UNARY", "position": { "x": 800, "y": 250 }, "data": { "astType": "MATH_UNARY", "inputs": [{ "id": "value", "type": "float" }, { "id": "func", "type": "string", "value": "cos" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "amp_x", "type": "MATH_BINARY", "position": { "x": 1000, "y": 50 }, "data": { "astType": "MATH_BINARY", "inputs": [{ "id": "a", "type": "float" }, { "id": "b", "type": "float", "value": 1.5 }, { "id": "op", "type": "string", "value": "multiply" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "amp_z", "type": "MATH_BINARY", "position": { "x": 1000, "y": 250 }, "data": { "astType": "MATH_BINARY", "inputs": [{ "id": "a", "type": "float" }, { "id": "b", "type": "float", "value": 1.5 }, { "id": "op", "type": "string", "value": "multiply" }], "outputs": [{ "id": "out", "type": "float" }] } },
+    { "id": "pack", "type": "PACK_VEC3", "position": { "x": 1200, "y": 150 }, "data": { "astType": "PACK_VEC3", "inputs": [{ "id": "x", "type": "float" }, { "id": "y", "type": "float", "value": 0.0 }, { "id": "z", "type": "float" }], "outputs": [{ "id": "out", "type": "vec3" }] } },
+    { "id": "out", "type": "BEAM_ENDPOINT", "position": { "x": 1500, "y": 100 }, "data": { "astType": "BEAM_ENDPOINT", "inputs": [{ "id": "radius_curve", "type": "float", "value": 0.3 }, { "id": "position_offset", "type": "vec3" }], "outputs": [] } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "uv", "sourceHandle": "uv", "target": "split_uv", "targetHandle": "vec" },
+    { "id": "e2", "source": "split_uv", "sourceHandle": "y", "target": "freq", "targetHandle": "a" },
+    { "id": "e3", "source": "freq", "sourceHandle": "out", "target": "phase", "targetHandle": "a" },
+    { "id": "e4", "source": "time", "sourceHandle": "out", "target": "phase", "targetHandle": "b" },
+    { "id": "e5", "source": "phase", "sourceHandle": "out", "target": "wave_x", "targetHandle": "value" },
+    { "id": "e6", "source": "phase", "sourceHandle": "out", "target": "wave_z", "targetHandle": "value" },
+    { "id": "e7", "source": "wave_x", "sourceHandle": "out", "target": "amp_x", "targetHandle": "a" },
+    { "id": "e8", "source": "wave_z", "sourceHandle": "out", "target": "amp_z", "targetHandle": "a" },
+    { "id": "e9", "source": "amp_x", "sourceHandle": "out", "target": "pack", "targetHandle": "x" },
+    { "id": "e10", "source": "amp_z", "sourceHandle": "out", "target": "pack", "targetHandle": "z" },
+    { "id": "e11", "source": "pack", "sourceHandle": "out", "target": "out", "targetHandle": "position_offset" }
+  ]
+}

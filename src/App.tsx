@@ -7,7 +7,7 @@ import { TrailContext } from './core/contexts/TrailContext';
 import type { ShaderGraph, NodeType } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
-import type { Node, Edge } from 'reactflow';
+import { type Node, type Edge, ReactFlowProvider } from 'reactflow';
 import type { useHistory } from './core/hooks/useHistory';
 import { BeamContext } from './core/contexts/BeamContext';
 
@@ -133,6 +133,7 @@ function App({ storage }: AppProps) {
   return (
     <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
       <div style={{ flex: 1 }}>
+        <ReactFlowProvider>
         <NodeEditor 
            activeContext={activeContext}
            availableContexts={AVAILABLE_CONTEXTS}
@@ -151,7 +152,7 @@ function App({ storage }: AppProps) {
            onLoadWorkspace={handleLoadWorkspace}
            globalSettings={globalSettings}
            onGlobalSettingChange={(key, value) => setGlobalSettings(prev => ({ ...prev, [key]: value }))}
-        />
+        /></ReactFlowProvider>
       </div>
       <div style={{ flex: 1 }}>
         <Canvas3D 

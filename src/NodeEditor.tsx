@@ -1,6 +1,6 @@
 // src/NodeEditor.tsx
 import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel } from 'reactflow';
+import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel, useReactFlow } from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -68,6 +68,7 @@ export default function NodeEditor({
   const [isNodeMenuOpen, setIsNodeMenuOpen] = useState(false);
   const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
   const { availablePresets, applyPreset } = usePresets(activeContext.id);
+  const { screenToFlowPosition } = useReactFlow();
 
   const history = useHistory(
     initialPast,
@@ -77,6 +78,7 @@ export default function NodeEditor({
     nodes,
     edges
   );
+
 
   // Restore Local Nodes when Context Swaps
   useEffect(() => {
@@ -138,19 +140,45 @@ export default function NodeEditor({
   const addNode = (type: string) => {
     const def = NODE_DEFINITIONS[type];
     if (!def) return;
+    
     history.takeSnapshot();
+    const flowElement = document.getElementById('cosmos-editor');
+    
+    let spawnPosition = { x: 100, y: 100 }; // Fallback
+
+    if (flowElement) {
+        const bounds = flowElement.getBoundingClientRect();
+        
+        
+        const screenCenterX = bounds.left + bounds.width / 2;
+        const screenCenterY = bounds.top + bounds.height / 2;
+
+        //  Project those physical pixels through the camera matrix
+        spawnPosition = screenToFlowPosition({
+            x: screenCenterX,
+            y: screenCenterY,
+        });
+    } else {
+        // Fallback: Assume the editor takes up the whole browser window
+        spawnPosition = screenToFlowPosition({
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2,
+        });
+    }
+
     const newNode: Node = {
       id: `${type.toLowerCase()}-${Date.now()}`,
       type: def.type,
-      position: { x: 100, y: 100 },
+      position: spawnPosition, 
       data: { 
         astType: def.type,
         inputs: def.inputs.map(i => ({ id: i.id, type: i.type, value: i.default })),
         outputs: def.outputs.map(o => ({ id: o.id, type: o.type }))
       }
     };
+    
     setNodes((nds) => [...nds, newNode]);
-  };
+};
 
   const flowNodes = useMemo(() => {
     return nodes.map((n) => ({
@@ -194,6 +222,7 @@ return (
                 nodeTypes={nodeTypes} 
                 onNodeDragStart={onNodeDragStart} 
                 fitView 
+                id="cosmos-editor"
             >
                 <Background color="#222" gap={16} />
                 <Controls position="bottom-right" style={{ background: '#1e1e1e', borderColor: '#333' }} />

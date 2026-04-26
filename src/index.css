@@ -1,3 +1,4 @@
+/* --- BASE & ENVIRONMENT --- */
 body, html {
   margin: 0;
   padding: 0;
@@ -5,4 +6,58 @@ body, html {
   height: 100%;
   overflow: hidden;
   background-color: #1e1e1e;
+}
+
+/* --- NODE STYLING --- */
+.react-flow__node {
+  transition: transform 0.1s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.react-flow__node.selected {
+  box-shadow: 
+    0 0 0 1px #4dabf7, 
+    0 0 0 3px rgba(77, 171, 247, 0.2), 
+    0 10px 20px rgba(0, 0, 0, 0.5) !important;
+  border-color: #4dabf7 !important;
+}
+
+.react-flow__node:hover:not(.selected) {
+  border-color: #555 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.react-flow__node.selected .react-flow__handle {
+  background-color: #4dabf7 !important;
+  border: 2px solid #1a1a1a;
+  box-shadow: 0 0 8px #4dabf7;
+}
+
+/* --- EDGE STYLING --- */
+.react-flow__edge-path {
+  stroke: #444;
+  stroke-width: 2;
+  transition: stroke 0.2s, stroke-width 0.2s;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #4dabf7 !important;
+  stroke-width: 3;
+  stroke-dasharray: 10, 5; 
+  animation: edgeFlow 0.5s linear infinite;
+}
+
+@keyframes edgeFlow {
+  from {
+    stroke-dashoffset: 15;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* --- SELECTION INTERFACE --- */
+.react-flow__selection {
+  background: rgba(77, 171, 247, 0.15) !important;
+  border: 1px solid #4dabf7 !important;
+  border-radius: 2px;
 }

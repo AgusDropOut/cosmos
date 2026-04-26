@@ -19,6 +19,7 @@ import { usePresets } from './core/hooks/usePresets';
 import { PresetModal } from './components/editor/PresetModal';
 import { ConfigModal } from './components/editor/ConfigModal';
 import { useIDEConfig } from './core/hooks/useIDEConfig';
+import { useAutoLayout } from './core/hooks/useAutoLayout';
 
 const nodeTypes = Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
     acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
@@ -72,7 +73,8 @@ export default function NodeEditor({
   const [isConfigMenuOpen, setIsConfigMenuOpen] = useState(false);
   const { config, updateConfig } = useIDEConfig();
   const { availablePresets, applyPreset } = usePresets(activeContext.id);
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition , fitView } = useReactFlow();
+  
 
   const history = useHistory(
     initialPast,
@@ -82,6 +84,13 @@ export default function NodeEditor({
     nodes,
     edges
   );
+
+  const { autoLayout } = useAutoLayout({
+      nodes,
+      edges,
+      setNodes,
+      takeSnapshot: history.takeSnapshot
+  });
 
 
   // Restore Local Nodes when Context Swaps
@@ -210,6 +219,12 @@ export default function NodeEditor({
     }));
   }, [nodes, updateNodeValue, updateNodeData]);
 
+  const handleAutoLayout = () => {
+      autoLayout('LR');
+      
+      setTimeout(() => fitView({ duration: 500, padding: 0.2 }), 50);
+  };
+
 return (
    <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0e0e0e', overflow: 'hidden' }}>
         
@@ -256,6 +271,30 @@ return (
                 <Background color="#222" gap={16} />
                 <Controls position="bottom-right" style={{ background: '#1e1e1e', borderColor: '#333' }} />
             </ReactFlow>
+
+            <Panel position="top-right" style={{ marginTop: '10px', marginRight: '10px' }}>
+                    <button 
+                        onClick={handleAutoLayout}
+                        style={{
+                            backgroundColor: '#2a2a2a',
+                            color: '#e0e0e0',
+                            border: '1px solid #444',
+                            borderRadius: '6px',
+                            padding: '6px 12px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                            transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a3a3a'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2a2a2a'}
+                    >
+                        🪄 Auto Sort
+                    </button>
+                </Panel>
 
             
 

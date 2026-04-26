@@ -1,9 +1,9 @@
 // src/Canvas3D.tsx
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { compileShader } from './core/compiler';
 import type { ShaderGraph } from './types/ast';
 import type { IProjectContext, IPreviewStrategy } from './types/context';
+import { CompilerService } from './core/workers/CompilerService';
 
 interface Canvas3DProps {
   graph: ShaderGraph;
@@ -20,7 +20,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
   const strategyRef = useRef<IPreviewStrategy | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
 
-  // 1. NEW: Create a ref to hold the live graph so the animation loop can always see the freshest data
+  
   const graphRef = useRef(graph);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     }
   }, [contextSettings]);
 
-  // 2. NEW: Update the ref every time the user connects a wire or moves a slider
+  // Update the ref every time the user connects a wire or moves a slider
   useEffect(() => {
       graphRef.current = graph;
   }, [graph]);
@@ -76,7 +76,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
         }
 
         if (strategyRef.current && strategyRef.current.update) {
-            // 3. NEW: Pass the live graph into the update loop!
             strategyRef.current.update(time, settingsRef.current, graphRef.current);
         }
 
@@ -117,14 +116,19 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
     if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
-    try {
-      const { vertexShader, fragmentShader } = compileShader(targetGraph);
-      materialRef.current.vertexShader = vertexShader;
-      materialRef.current.fragmentShader = fragmentShader;
-      materialRef.current.needsUpdate = true;
-    } catch (e) {
-      console.error("Cosmos: Shader injection failed:", e);
-    }
+    CompilerService.requestCompile(targetGraph, (result) => {
+        if (!materialRef.current) return;
+
+        if (result.success) {
+            materialRef.current.vertexShader = result.vertexShader;
+            materialRef.current.fragmentShader = result.fragmentShader;
+            materialRef.current.needsUpdate = true;
+        } else {
+            console.error("Cosmos: Shader compilation failed:", result.error);
+        }
+    });
+
+
   }, [graph, globalMaterial, activeContext.id]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;

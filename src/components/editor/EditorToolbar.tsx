@@ -23,6 +23,7 @@ import { useState, useRef, useEffect } from 'react';
     fileInputRef: React.RefObject<HTMLInputElement | null>;
     onOpenNodeMenu: () => void;
     onOpenPresetMenu: () => void;
+    onOpenConfigMenu: () => void;
     contextSettings: Record<string, any>;
     onSettingChange: (key: string, value: any) => void;
 }
@@ -52,7 +53,7 @@ const compactInputStyle: React.CSSProperties = {
 export function EditorToolbar({
     globalSettings, onGlobalSettingChange, activeContext, availableContexts, onContextChange, onFlowChange,
     nodes, edges, graph, history, handleGameExport, handleSave, handleFileUpload, fileInputRef,
-    onOpenNodeMenu, onOpenPresetMenu, contextSettings, onSettingChange
+    onOpenNodeMenu, onOpenPresetMenu, onOpenConfigMenu , contextSettings, onSettingChange
 }: EditorToolbarProps) {
     
     const [activeMenu, setActiveMenu] = useState<'file' | 'settings' | null>(null);
@@ -112,6 +113,10 @@ export function EditorToolbar({
                         </div>
                     )}
                 </div>
+                {/* Config btn */}
+                <button style={menuButtonStyle} onClick={onOpenConfigMenu}>
+                    Config
+                </button>
             </div>
 
             {/* Center: Compact Project Info */}

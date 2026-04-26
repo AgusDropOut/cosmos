@@ -17,6 +17,8 @@ import { EditorToolbar } from './components/editor/EditorToolbar';
 import { NodeSearchModal } from './components/editor/NodeSearchModal';
 import { usePresets } from './core/hooks/usePresets';
 import { PresetModal } from './components/editor/PresetModal';
+import { ConfigModal } from './components/editor/ConfigModal';
+import { useIDEConfig } from './core/hooks/useIDEConfig';
 
 const nodeTypes = Object.keys(NODE_DEFINITIONS).reduce((acc, key) => {
     acc[key] = (props: any) => <BaseNode {...props} definition={NODE_DEFINITIONS[key]} />;
@@ -67,6 +69,8 @@ export default function NodeEditor({
   const [edges, setEdges] = useState<Edge[]>(rfEdges);
   const [isNodeMenuOpen, setIsNodeMenuOpen] = useState(false);
   const [isPresetMenuOpen, setIsPresetMenuOpen] = useState(false);
+  const [isConfigMenuOpen, setIsConfigMenuOpen] = useState(false);
+  const { config, updateConfig } = useIDEConfig();
   const { availablePresets, applyPreset } = usePresets(activeContext.id);
   const { screenToFlowPosition } = useReactFlow();
 
@@ -216,6 +220,7 @@ return (
             fileInputRef={fileInputRef}
             onOpenNodeMenu={() => setIsNodeMenuOpen(true)}
             onOpenPresetMenu={() => setIsPresetMenuOpen(true)}
+            onOpenConfigMenu={() => setIsConfigMenuOpen(true)}
             contextSettings={contextSettings}
             onSettingChange={onSettingChange}
         />
@@ -229,9 +234,9 @@ return (
                 onEdgesChange={onEdgesChange} 
                 onNodesDelete={onNodesDelete}
                 onEdgesDelete={onEdgesDelete}
-                deleteKeyCode={['Backspace', 'Delete']}
-                selectionKeyCode="Shift"          
-                multiSelectionKeyCode={['Shift', 'Control', 'Meta']}
+                deleteKeyCode={config.shortcuts.delete}
+                selectionKeyCode={config.shortcuts.boxSelect}          
+                multiSelectionKeyCode={config.shortcuts.multiSelect}
                 onConnect={onConnect} 
                 nodeTypes={nodeTypes} 
                 onNodeDragStart={onNodeDragStart} 
@@ -261,6 +266,14 @@ return (
                 }}
                 activeContext={activeContext}
             />
+
+            <ConfigModal
+                isOpen={isConfigMenuOpen}
+                onClose={() => setIsConfigMenuOpen(false)}
+                config={config}
+                updateConfig={updateConfig}
+            />
+
         </div>
     </div>
   );

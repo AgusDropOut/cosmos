@@ -5,6 +5,7 @@ export type NodeType =
   | 'NOISE' 
   | 'MULTIPLY' 
   | 'TIME' 
+  | 'FLOAT'
   | 'MATERIAL_REF' 
   | 'TRAIL_ENDPOINT'
   | 'UV_COORDS'
@@ -40,6 +41,8 @@ export interface ShaderNode {
     inputs: NodePort[];
     outputs: NodePort[];
     data?: Record<string, any>; 
+    isUniform?: boolean;
+    uniformName?: string;
 }
 
 export interface ShaderConnection {

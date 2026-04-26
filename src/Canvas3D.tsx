@@ -116,19 +116,71 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
     if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
-    CompilerService.requestCompile(targetGraph, (result) => {
-        if (!materialRef.current) return;
+    
+    const timeoutId = setTimeout(() => {
+        CompilerService.requestCompile(targetGraph, (result) => {
+            if (!materialRef.current) return;
 
-        if (result.success) {
-            materialRef.current.vertexShader = result.vertexShader;
-            materialRef.current.fragmentShader = result.fragmentShader;
-            materialRef.current.needsUpdate = true;
-        } else {
-            console.error("Cosmos: Shader compilation failed:", result.error);
+            if (result.success) {
+                materialRef.current.vertexShader = result.vertexShader;
+                materialRef.current.fragmentShader = result.fragmentShader;
+                
+                console.log("--- STARTING UNIFORM INJECTION ---");
+                
+                //  Iterate over result.uniforms, not result!
+                Object.entries(result.uniforms || {}).forEach(([name, data]: [string, any]) => {
+                    
+                    //  Calculate the safe value
+                    let safeValue = data.value !== undefined ? data.value : 1.0;
+                    if (data.type === 'vec3' && typeof safeValue === 'object') {
+                        safeValue = new THREE.Color(safeValue.r, safeValue.g, safeValue.b);
+                    }
+
+                    //  Inject or Update
+                    if (!materialRef.current!.uniforms[name]) {
+                        // Create it if it doesn't exist
+                        materialRef.current!.uniforms[name] = { value: safeValue };
+                    } else {
+                        // UPDATE it if it already exists! 
+                        materialRef.current!.uniforms[name].value = safeValue;
+                    }
+                });
+                
+                console.log("--- FINISHED UNIFORM INJECTION ---");
+                materialRef.current.needsUpdate = true;
+
+            } else {
+                console.error("Cosmos: Shader compilation failed:", result.error);
+            }
+        });
+    }, 150); // Wait 150ms before compiling
+
+    return () => clearTimeout(timeoutId); // Cancel the compile if the slider moves again
+
+  }, [graph, globalMaterial, activeContext.id]);
+
+  useEffect(() => {
+    if (!materialRef.current) return;
+
+    const targetGraph = activeContext.id !== 'MATERIAL' ? globalMaterial : graph;
+
+    targetGraph.nodes.forEach(node => {
+       
+        if (node.isUniform && node.uniformName) {
+            const safeName = `u_${node.uniformName.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+            const uniform = materialRef.current!.uniforms[safeName];
+            
+          
+            if (uniform && node.inputs && node.inputs[0]) {
+                const val = node.inputs[0].value;
+                if (typeof val === 'object' && val.r !== undefined) {
+                    uniform.value.setRGB(val.r, val.g, val.b);
+                } else {
+                    uniform.value = val !== undefined ? val : 1.0;
+                }
+            }
         }
     });
-
-
   }, [graph, globalMaterial, activeContext.id]);
 
   return <div ref={mountRef} style={{ width: '100%', height: '100%', display: 'block' }} />;

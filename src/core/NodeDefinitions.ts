@@ -99,6 +99,25 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
       evaluate: ({ resolveInput, time }) => time * resolveInput('speed')
     }
   },
+  FLOAT: {
+    type: 'FLOAT',
+    label: 'Float Value',
+    color: '#adb5bd', // A nice neutral gray
+    inputs: [
+      { 
+        id: 'val', 
+        type: 'float', 
+        default: 1.0, 
+        control: { type: 'number', label: 'Value', step: 0.1 } 
+      }
+    ],
+    outputs: [{ id: 'out', type: 'float' }],
+    strategy: {
+      generateCode: ({ resolveInput, varName }) => `    float ${varName} = ${resolveInput('val')};`,
+      generateMath: ({ resolveInput }) => `${resolveInput('val')}`,
+      evaluate: ({ resolveInput }) => resolveInput('val')
+    }
+  },
 
   MATH_UNARY: {
     type: 'MATH_UNARY',

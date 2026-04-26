@@ -24,7 +24,9 @@ export function useShaderCompiler({ nodes, edges, past, future, onFlowChange }: 
             id: n.id,
             type: n.data.astType,
             inputs: n.data.inputs,
-            outputs: n.data.outputs
+            outputs: n.data.outputs,
+            isUniform: n.data.isUniform,     
+            uniformName: n.data.uniformName   
         }));
         
         const logicalEdges = edges.map(e => ({
@@ -48,7 +50,9 @@ export function useShaderCompiler({ nodes, edges, past, future, onFlowChange }: 
             id: n.id,
             type: n.data.astType as NodeType,
             inputs: n.data.inputs || [],
-            outputs: n.data.outputs || []
+            outputs: n.data.outputs || [],
+            isUniform: n.data.isUniform,
+            uniformName: n.data.uniformName
         }));
     
         const astConnections: ShaderConnection[] = edges.map(e => ({

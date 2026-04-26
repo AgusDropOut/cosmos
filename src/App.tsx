@@ -96,7 +96,9 @@ function App({ storage }: AppProps) {
             id: n.id,
             type: n.data.astType as NodeType,
             inputs: n.data.inputs || [],
-            outputs: n.data.outputs || []
+            outputs: n.data.outputs || [],
+            isUniform: n.data.isUniform,
+            uniformName: n.data.uniformName
         })),
         connections: workspace.edges.map(e => ({
             id: e.id,

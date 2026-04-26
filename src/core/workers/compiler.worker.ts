@@ -4,13 +4,14 @@ import type { ShaderGraph } from '../../types/ast';
 self.onmessage = (event: MessageEvent<ShaderGraph>) => {
     try {
         const graph = event.data;
-        const { vertexShader, fragmentShader } = compileShader(graph);
+        const { vertexShader, fragmentShader, uniforms } = compileShader(graph);
         
         // Send success back 
         self.postMessage({ 
             success: true, 
             vertexShader, 
-            fragmentShader 
+            fragmentShader,
+            uniforms 
         });
     } catch (error: any) {
         // Send compilation errors 

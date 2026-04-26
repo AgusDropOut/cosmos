@@ -135,6 +135,16 @@ export default function NodeEditor({
     );
   }, []);
 
+  const updateNodeData = useCallback((nodeId: string, newData: any) => {
+    setNodes((nds) => nds.map((node) => {
+        if (node.id === nodeId) {
+          return { ...node, data: { ...node.data, ...newData } };
+        }
+        return node;
+      })
+    );
+  }, []);
+
   const onNodeDragStart = useCallback(() => {
       history.takeSnapshot();
   }, [history.takeSnapshot]);
@@ -196,9 +206,9 @@ export default function NodeEditor({
   const flowNodes = useMemo(() => {
     return nodes.map((n) => ({
       ...n,
-      data: { ...n.data, updateNodeValue },
+      data: { ...n.data, updateNodeValue, updateNodeData },
     }));
-  }, [nodes, updateNodeValue]);
+  }, [nodes, updateNodeValue, updateNodeData]);
 
 return (
    <div style={{ width: '100%', height: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0e0e0e', overflow: 'hidden' }}>

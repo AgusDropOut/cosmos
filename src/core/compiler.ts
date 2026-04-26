@@ -43,6 +43,8 @@ class TreeCompiler {
     private globalFunctions = new Set<string>();
     private mainBodyCode: string[] = [];
 
+    public extractedUniforms: Record<string, { type: string, value: any }> = {};
+
     constructor(graph: ShaderGraph) {
         this.graph = graph;
     }
@@ -111,6 +113,18 @@ class TreeCompiler {
                 }
                 return sourceVarName;
             }
+            if (node.isUniform && node.uniformName) {
+                const safeName = `u_${node.uniformName.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+                
+                // Register uniform
+                console.log(`Extracting uniform: ${safeName} of type ${expectedType} with value`, inputDef?.value);
+                this.extractedUniforms[safeName] = { 
+                    type: expectedType, 
+                    value: inputDef?.value 
+                };
+
+                return safeName;
+            }
 
             return serializeValue(inputDef?.value, expectedType as GLSLType);
         };
@@ -130,10 +144,14 @@ class TreeCompiler {
         }
 
         const globalsString = Array.from(this.globalFunctions).join('\n\n');
+        const uniformStrings = Object.entries(this.extractedUniforms)
+            .map(([name, data]) => `uniform ${data.type} ${name};`)
+            .join('\n');
         const mainString = this.mainBodyCode.join('\n');
 
         return `
 varying vec2 vUv;
+${uniformStrings}
 // --- WEB PREVIEW STUBS ---
 vec4 vertexColor = vec4(1.0, 1.0, 1.0, 1.0); 
 
@@ -150,6 +168,10 @@ void main() {
     private assembleMinecraft(isVertex: boolean, hasEndpoint: boolean): string {
         let globalsString = Array.from(this.globalFunctions).join('\n\n');
         let mainString = this.mainBodyCode.join('\n');
+
+         const uniformStrings = Object.entries(this.extractedUniforms)
+            .map(([name, data]) => `uniform ${data.type} ${name};`)
+            .join('\n');
 
         /* Minecraft's shader environment has some hardcoded uniforms and varying semantics.
          * We need to adapt our generated GLSL to fit those constraints. 
@@ -176,6 +198,8 @@ in vec2 UV0;
 
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
+${uniformStrings}
+
 
 out vec2 vUv;
 out vec4 vertexColor;
@@ -197,6 +221,7 @@ in vec2 UV0;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 uniform float CosmosTime;
+${uniformStrings}
 
 out vec2 vUv;
 out vec4 vertexColor;
@@ -229,6 +254,7 @@ in vec4 vertexColor;
 out vec4 fragColor;
 
 uniform float CosmosTime;
+${uniformStrings}
 
 ${globalsString}
 
@@ -250,7 +276,8 @@ export function compileShader(graph: ShaderGraph, target: CompilerTarget = 'web'
 
     return {
         vertexShader: vertexCompiler.compileTree('OUTPUT_VERT', true, target),
-        fragmentShader: fragmentCompiler.compileTree('OUTPUT_FRAG', false, target)
+        fragmentShader: fragmentCompiler.compileTree('OUTPUT_FRAG', false, target),
+        uniforms: { ...vertexCompiler.extractedUniforms, ...fragmentCompiler.extractedUniforms }
     };
 }
 
@@ -282,7 +309,7 @@ export class MathCompiler {
             return this.compileNode(connection.sourceNodeId);
         }
 
-        // If nothing is connected, just return the raw serialized float/vec
+        
         return serializeValue(inputDef?.value, expectedType as GLSLType);
     }
 

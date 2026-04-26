@@ -28,7 +28,10 @@ interface BaseNodeProps {
   id: string;
   data: {
     inputs: any[];
+    isUniform?: boolean;      
+    uniformName?: string;     
     updateNodeValue: (nodeId: string, inputId: string, value: any) => void;
+    updateNodeData: (nodeId: string, newData: any) => void; 
   };
   definition: NodeDefinition;
 }
@@ -36,6 +39,8 @@ interface BaseNodeProps {
 export function BaseNode({ id, data, definition }: BaseNodeProps) {
   const { inputs, updateNodeValue } = data;
   const edges = useEdges();
+
+  const canBeUniform = definition.type === 'COLOR' || definition.type === 'FLOAT';
 
   const handleValueChange = (inputId: string, value: any) => {
     updateNodeValue(id, inputId, value);
@@ -51,6 +56,32 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
       <div style={{ fontSize: '12px', fontWeight: 'bold', color: definition.color, borderBottom: '1px solid #333', paddingBottom: '4px', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>
         {definition.label}
       </div>
+
+      {/* Expose as Parameter UI */}
+              {canBeUniform && (
+                  <div style={{ marginBottom: '12px', padding: '6px', background: '#111', borderRadius: '4px', border: '1px solid #333' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '10px', color: '#ccc', cursor: 'pointer' }}>
+                          <input 
+                              type="checkbox" 
+                              className="nodrag"
+                              checked={data.isUniform || false}
+                              onChange={(e) => data.updateNodeData(id, { isUniform: e.target.checked })}
+                          />
+                          Expose as Parameter
+                      </label>
+                      
+                      {data.isUniform && (
+                          <input 
+                              type="text" 
+                              className="nodrag"
+                              placeholder="Param_Name"
+                              value={data.uniformName || ''}
+                              onChange={(e) => data.updateNodeData(id, { uniformName: e.target.value.replace(/[^a-zA-Z0-9_]/g, '') })}
+                              style={{ marginTop: '6px', width: '100%', background: '#000', color: '#4dabf7', border: '1px solid #444', padding: '4px', fontSize: '10px', borderRadius: '2px', outline: 'none' }}
+                          />
+                      )}
+                  </div>
+              )}
 
       {/* Dynamic Inputs & Controls */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '11px' }}>
@@ -79,6 +110,8 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
                 }} 
               />
               
+              
+
               {/* Type Indicator & Label */}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
                   <span style={{ color: '#ccc', fontWeight: 'bold' }}>{defInput.control?.label || defInput.id.toUpperCase()}</span>

@@ -1,7 +1,7 @@
 import type { ShaderGraph } from '../../types/ast';
 import CompilerWorker from './compiler.worker?worker';
 
-export type CompileResult = { success: true; vertexShader: string; fragmentShader: string } 
+export type CompileResult = { success: true; vertexShader: string; fragmentShader: string; uniforms: Record<string, any> } 
                           | { success: false; error: string };
 
 class AsyncCompiler {

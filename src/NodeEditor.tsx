@@ -135,6 +135,15 @@ export default function NodeEditor({
       history.takeSnapshot();
   }, [history.takeSnapshot]);
 
+  const onNodesDelete = useCallback(() => {
+      
+      history.takeSnapshot();
+  }, [history]);
+
+  const onEdgesDelete = useCallback(() => {
+      history.takeSnapshot();
+  }, [history]);
+
 
 
   const addNode = (type: string) => {
@@ -218,6 +227,11 @@ return (
                 edges={edges} 
                 onNodesChange={onNodesChange} 
                 onEdgesChange={onEdgesChange} 
+                onNodesDelete={onNodesDelete}
+                onEdgesDelete={onEdgesDelete}
+                deleteKeyCode={['Backspace', 'Delete']}
+                selectionKeyCode="Shift"          
+                multiSelectionKeyCode={['Shift', 'Control', 'Meta']}
                 onConnect={onConnect} 
                 nodeTypes={nodeTypes} 
                 onNodeDragStart={onNodeDragStart} 

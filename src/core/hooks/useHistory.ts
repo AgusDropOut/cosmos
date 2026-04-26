@@ -33,6 +33,8 @@ export function useHistory(
         setFuture([]);
     }, [currentNodes, currentEdges]);
 
+    
+
     const undo = useCallback(() => {
         if (past.length === 0) return;
         

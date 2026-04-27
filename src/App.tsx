@@ -10,6 +10,7 @@ import type { SavedWorkspace } from './types/workspace';
 import { type Node, type Edge, ReactFlowProvider } from 'reactflow';
 import type { useHistory } from './core/hooks/useHistory';
 import { BeamContext } from './core/contexts/BeamContext';
+import { IDEConfigProvider } from './core/hooks/useIDEConfig';
 
 interface AppProps {
     storage: IWorkspaceStorage;
@@ -133,38 +134,41 @@ function App({ storage }: AppProps) {
   }, [workspaces, activeContextId, globalSettings]);
 
   return (
-    <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-      <div style={{ flex: 1 }}>
-        <ReactFlowProvider>
-        <NodeEditor 
-           activeContext={activeContext}
-           availableContexts={AVAILABLE_CONTEXTS}
-           rfNodes={workspaces[activeContextId].rfNodes}
-           rfEdges={workspaces[activeContextId].rfEdges}
-           graph={workspaces[activeContextId].graph}
-           contextSettings={workspaces[activeContextId].settings}
-           onFlowChange={handleFlowChange}
-           initialPast={workspaces[activeContextId].historyPast}
-           initialFuture={workspaces[activeContextId].historyFuture}
-           onSettingChange={handleSettingChange}
-           allWorkspaces={workspaces}
-           onContextChange={setActiveContextId}
-           storage={storage}
-           loadedWorkspace={loadedWorkspace}
-           onLoadWorkspace={handleLoadWorkspace}
-           globalSettings={globalSettings}
-           onGlobalSettingChange={(key, value) => setGlobalSettings(prev => ({ ...prev, [key]: value }))}
-        /></ReactFlowProvider>
+    <IDEConfigProvider>
+      <div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
+        <div style={{ flex: 1 }}>
+          <ReactFlowProvider>
+            <NodeEditor 
+               activeContext={activeContext}
+               availableContexts={AVAILABLE_CONTEXTS}
+               rfNodes={workspaces[activeContextId].rfNodes}
+               rfEdges={workspaces[activeContextId].rfEdges}
+               graph={workspaces[activeContextId].graph}
+               contextSettings={workspaces[activeContextId].settings}
+               onFlowChange={handleFlowChange}
+               initialPast={workspaces[activeContextId].historyPast}
+               initialFuture={workspaces[activeContextId].historyFuture}
+               onSettingChange={handleSettingChange}
+               allWorkspaces={workspaces}
+               onContextChange={setActiveContextId}
+               storage={storage}
+               loadedWorkspace={loadedWorkspace}
+               onLoadWorkspace={handleLoadWorkspace}
+               globalSettings={globalSettings}
+               onGlobalSettingChange={(key, value) => setGlobalSettings(prev => ({ ...prev, [key]: value }))}
+            />
+          </ReactFlowProvider>
+        </div>
+        <div style={{ flex: 1 }}>
+          <Canvas3D 
+              graph={workspaces[activeContextId].graph} 
+              contextSettings={workspaces[activeContextId].settings} 
+              activeContext={activeContext} 
+              globalMaterial={workspaces['MATERIAL'].graph} 
+          />
+        </div>
       </div>
-      <div style={{ flex: 1 }}>
-        <Canvas3D 
-            graph={workspaces[activeContextId].graph} 
-            contextSettings={workspaces[activeContextId].settings} 
-            activeContext={activeContext} 
-            globalMaterial={workspaces['MATERIAL'].graph} 
-        />
-      </div>
-    </div>
+    </IDEConfigProvider>
   );
 }
 

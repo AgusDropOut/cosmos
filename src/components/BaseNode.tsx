@@ -186,7 +186,8 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
         <PortPreviewCanvas 
             nodeId={id} 
             outputId={primaryOutput.id} 
-            outputType={primaryOutput.type} 
+            outputType={primaryOutput.type}
+          
         />
       )}
     </div>

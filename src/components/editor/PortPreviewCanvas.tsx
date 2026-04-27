@@ -12,6 +12,7 @@ interface PortPreviewCanvasProps {
     nodeId: string;
     outputId: string;
     outputType: string;
+    
 }
 
 export function PortPreviewCanvas({ nodeId, outputId, outputType }: PortPreviewCanvasProps) {
@@ -130,12 +131,15 @@ export function PortPreviewCanvas({ nodeId, outputId, outputType }: PortPreviewC
 
     if (!config?.previews?.enabled || !fragmentShader) return null;
 
+    const showFps = config?.previews?.showFps ?? false;
+    const showFpsColor = config?.previews?.fpsColor || '#00ff00';
     const resolution = config?.previews?.resolution || 128;
+    const targetFps = config?.previews?.fps || 15; 
 
     return (
         <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'center' }}>
             <div style={{ width: `${resolution}px`, height: `${resolution}px` }}>
-                <GLSLCanvas fragmentShader={fragmentShader} uniforms={uniforms} height={`${resolution}px`} />
+                <GLSLCanvas fragmentShader={fragmentShader} uniforms={uniforms} height={`${resolution}px`} fps={targetFps} key={`preview-${resolution}-${targetFps}-${showFps}-${showFpsColor}`} showFps={showFps} fpsColor={showFpsColor} />
             </div>
         </div>
     );

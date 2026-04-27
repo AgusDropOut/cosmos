@@ -48,6 +48,7 @@ function PreviewsTab({ config, updateConfig }: TabProps) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 
+                {/* Enable Previews Toggle */}
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '13px', cursor: 'pointer' }}>
                     <input
                         type="checkbox"
@@ -57,6 +58,7 @@ function PreviewsTab({ config, updateConfig }: TabProps) {
                     Enable Real-Time Previews
                 </label>
 
+                {/* Resolution Dropdown */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <label style={{ color: '#ccc', fontSize: '13px' }}>Resolution (px)</label>
                     <select
@@ -70,6 +72,7 @@ function PreviewsTab({ config, updateConfig }: TabProps) {
                     </select>
                 </div>
 
+                {/* Target FPS Slider */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     <label style={{ color: '#ccc', fontSize: '13px' }}>Target FPS ({config.previews.fps})</label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -85,6 +88,30 @@ function PreviewsTab({ config, updateConfig }: TabProps) {
                     </div>
                 </div>
 
+                {/* FPS Counter Toggle */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '13px', cursor: 'pointer' }}>
+                        <input
+                            type="checkbox"
+                            checked={config.previews.showFps || false}
+                            onChange={(e) => updateConfig('previews', { showFps: e.target.checked })}
+                        />
+                        Show FPS Counter
+                    </label>
+
+                    {/* FPS Color Picker (Only visible if FPS counter is enabled) */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: config.previews.showFps ? 1 : 0.3, pointerEvents: config.previews.showFps ? 'auto' : 'none' }}>
+                        <label style={{ color: '#ccc', fontSize: '13px' }}>Color</label>
+                        <input
+                            type="color"
+                            value={config.previews.fpsColor || '#00ff00'}
+                            onChange={(e) => updateConfig('previews', { fpsColor: e.target.value })}
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 0, width: '24px', height: '24px' }}
+                        />
+                    </div>
+                </div>
+
+                {/* UV Axes Toggle */}
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ccc', fontSize: '13px', cursor: 'pointer' }}>
                     <input
                         type="checkbox"

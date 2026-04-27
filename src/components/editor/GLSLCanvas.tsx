@@ -12,6 +12,9 @@ interface GLSLCanvasProps {
     backgroundColor?: string;
     context?: IProjectContext;
     settings?: any;
+    fps?: number;
+    showFps?: boolean;      
+    fpsColor?: string;      
 }
 
 export function GLSLCanvas({ 
@@ -22,14 +25,19 @@ export function GLSLCanvas({
     height = '140px', 
     backgroundColor = '#0a0a0a', 
     context, 
-    settings 
+    settings,
+    fps = 60,
+    showFps = false,
+    fpsColor = '#00ff00'
 }: GLSLCanvasProps) {
     const mountRef = useRef<HTMLDivElement>(null);
     const requestRef = useRef<number>(0);
+    const fpsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!mountRef.current || !fragmentShader) return;
         mountRef.current.innerHTML = '';
+        
         
         const width = mountRef.current.clientWidth || 280;
         const h = mountRef.current.clientHeight || parseInt(height);
@@ -77,18 +85,38 @@ export function GLSLCanvas({
             scene.add(mesh);
         }
 
+        const frameInterval = 1000 / fps;
+        let lastRenderTime = 0;
+        let framesCount = 0;
+        let lastFpsTime = performance.now();
+
         const animate = (time: number) => {
             requestRef.current = requestAnimationFrame(animate);
-            if (material.uniforms.u_time) {
-                material.uniforms.u_time.value = time * 0.001;
-            }
+            if (time - lastRenderTime >= frameInterval) {
+                if (material.uniforms.u_time) {
+                    material.uniforms.u_time.value = time * 0.001;
+                }
 
-            if (strategy && strategy.update) {
-                strategy.update(time, settings || { shape: 'CUBE' }, graph);
-            }
+                if (strategy && strategy.update) {
+                    strategy.update(time, settings || { shape: 'CUBE' }, graph);
+                }
 
-            const activeCamera = (context && settings?.shape !== '2D_QUAD') ? perspCamera : orthoCamera;
-            renderer.render(scene, activeCamera);
+                const activeCamera = (context && settings?.shape !== '2D_QUAD') ? perspCamera : orthoCamera;
+                renderer.render(scene, activeCamera);
+                
+                lastRenderTime = time;
+
+                if (showFps) {
+                    framesCount++;
+                    if (time >= lastFpsTime + 1000) {
+                        const currentFps = Math.round((framesCount * 1000) / (time - lastFpsTime));
+                        if (fpsRef.current) fpsRef.current.innerText = `${currentFps} FPS`;
+                        lastFpsTime = time;
+                        framesCount = 0;
+                    }
+                }
+
+            }
         };
         
         requestRef.current = requestAnimationFrame(animate);
@@ -102,19 +130,37 @@ export function GLSLCanvas({
             if (mountRef.current) mountRef.current.innerHTML = '';
         };
 
-    }, [fragmentShader, vertexShader, uniforms, graph, height, context, settings]);
+    }, [fragmentShader, vertexShader, uniforms, graph, height, context, settings, fps, showFps, fpsColor]);
 
     return (
-        <div 
-            ref={mountRef} 
-            style={{ 
-                width: '100%', 
-                height: height, 
-                background: backgroundColor, 
-                borderRadius: '4px', 
-                border: '1px solid #333',
-                overflow: 'hidden'
-            }} 
-        />
+        <div style={{ position: 'relative', width: '100%', height: height, borderRadius: '4px', border: '1px solid #333', overflow: 'hidden', background: backgroundColor }}>
+            
+            {/* The Overlay HUD */}
+            {showFps && (
+                <div 
+                    ref={fpsRef}
+                    style={{
+                        position: 'absolute',
+                        top: '4px',
+                        left: '4px',
+                        color: fpsColor,
+                        background: 'rgba(0, 0, 0, 0.75)',
+                        padding: '2px 6px',
+                        fontSize: '10px',
+                        fontWeight: 'bold',
+                        fontFamily: 'monospace',
+                        borderRadius: '3px',
+                        zIndex: 10,
+                        pointerEvents: 'none', 
+                        backdropFilter: 'blur(2px)'
+                    }}
+                >
+                    -- FPS
+                </div>
+            )}
+
+            {/* The WebGL Mount */}
+            <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+        </div>
     );
 }

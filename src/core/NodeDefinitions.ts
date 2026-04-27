@@ -14,13 +14,15 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
         type: 'vec3', 
         default: { r: 0.8, g: 0.2, b: 0.1 },
         control: { id: 'rgb', label: 'Color', type: 'color-rgb' } 
+        
       }
     ],
     outputs: [{ id: 'out', type: 'vec3' }],
     strategy: {
       generateCode: ({ resolveInput, varName }) => `    vec3 ${varName} = ${resolveInput('rgb')};`,
       evaluate: ({ resolveInput }) => resolveInput('rgb')
-    }
+    },
+    canHavePreview: true,
   },
   
   NOISE: {
@@ -34,7 +36,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       globalFunctions: GLSL_RANDOM_2D,
       generateCode: ({ resolveInput, varName }) => `    float ${varName} = random(vUv * ${resolveInput('scale')});`
-    }
+    },
+    canHavePreview: true,
   },
 
   FBM_NOISE_2D: {
@@ -49,7 +52,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       globalFunctions: GLSL_FBM_2D,
       generateCode: ({ resolveInput, varName }) => `    float ${varName} = fbm2D(${resolveInput('uv')} * ${resolveInput('scale')});`
-    }
+    },
+    canHavePreview: true,
   },
 
   RIDGE_NOISE_3D: {
@@ -63,7 +67,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     strategy: {
       globalFunctions: GLSL_RIDGE_3D,
       generateCode: ({ resolveInput, varName }) => `    float ${varName} = ridge3D(${resolveInput('pos')});`
-    }
+    },
+    canHavePreview: true,
   },
 
   MULTIPLY: {
@@ -454,7 +459,8 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
          const px = p.x ?? p.r ?? 0;
          return Math.sin(px * 10.0) * 0.5; 
       }
-    }
+    },
+    canHavePreview: true,
   },
 
   DOT_PRODUCT: {

@@ -6,7 +6,17 @@ export interface IDEConfig {
         boxSelect: string;
         multiSelect: string;
     };
-    // Future config sections can be added here, e.g. editor: { theme: 'dark' | 'light' }
+    previews: {
+        enabled: boolean;          
+        resolution: number;        
+        fps: number;              
+        showAxes: boolean;        
+    };
+    editor: {
+        snapToGrid: boolean;
+        autoSave: boolean;
+    };
+
 }
 
 const DEFAULT_CONFIG: IDEConfig = {
@@ -14,6 +24,16 @@ const DEFAULT_CONFIG: IDEConfig = {
         delete: 'Backspace',
         boxSelect: 'Shift',
         multiSelect: 'Control'
+    },
+    previews: {
+        enabled: true,
+        resolution: 128,
+        fps: 15,
+        showAxes: false
+    },
+    editor: {
+        snapToGrid: true,
+        autoSave: true
     }
 };
 

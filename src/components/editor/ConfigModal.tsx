@@ -1,6 +1,6 @@
+// src/components/editor/ConfigModal.tsx
 import React, { useState } from 'react';
 import type { IDEConfig } from '../../core/hooks/useIDEConfig';
-import { ShortcutCaptureRow } from './config/ShortcutCaptureRow';
 import { ConfigLayout } from './config/ConfigLayout';
 
 interface ConfigModalProps {
@@ -23,8 +23,17 @@ const modalStyle: React.CSSProperties = {
     fontFamily: 'sans-serif'
 };
 
+
+const TABS = [
+    { id: 'shortcuts', label: 'Shortcuts' },
+    { id: 'editor', label: 'Editor Behavior' },
+    { id: 'previews', label: 'Port Previews' }
+] as const;
+
+type TabId = typeof TABS[number]['id'];
+
 export function ConfigModal({ isOpen, onClose, config, updateConfig }: ConfigModalProps) {
-    const [activeTab, setActiveTab] = useState<'shortcuts' | 'editor'>('shortcuts');
+    const [activeTab, setActiveTab] = useState<TabId>('shortcuts');
 
     if (!isOpen) return null;
 
@@ -40,32 +49,36 @@ export function ConfigModal({ isOpen, onClose, config, updateConfig }: ConfigMod
                     <button onClick={onClose} style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', fontSize: '16px' }}>✕</button>
                 </div>
 
-                {/* 2-Column Body */}
+                {/* Column Body */}
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
                     
                     {/* Left Sidebar */}
                     <div style={{ width: '160px', background: '#111', borderRight: '1px solid #333', display: 'flex', flexDirection: 'column' }}>
-                        <button 
-                            onClick={() => setActiveTab('shortcuts')}
-                            style={{ 
-                                background: activeTab === 'shortcuts' ? '#222' : 'transparent',
-                                color: activeTab === 'shortcuts' ? '#4dabf7' : '#aaa',
-                                border: 'none',
-                                borderLeft: activeTab === 'shortcuts' ? '3px solid #4dabf7' : '3px solid transparent',
-                                padding: '12px 16px',
-                                textAlign: 'left',
-                                cursor: 'pointer',
-                                fontSize: '13px',
-                                transition: 'all 0.2s ease'
-                            }}
-                        >
-                            Shortcuts
-                        </button>
-                        {/* Future tabs go here */}
+                        
+                        {TABS.map(tab => (
+                            <button 
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                style={{ 
+                                    background: activeTab === tab.id ? '#222' : 'transparent',
+                                    color: activeTab === tab.id ? '#4dabf7' : '#aaa',
+                                    border: 'none',
+                                    borderLeft: activeTab === tab.id ? '3px solid #4dabf7' : '3px solid transparent',
+                                    padding: '12px 16px',
+                                    textAlign: 'left',
+                                    cursor: 'pointer',
+                                    fontSize: '13px',
+                                    transition: 'all 0.2s ease'
+                                }}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+
                     </div>
 
                     {/* Right Content Area */}
-                   < ConfigLayout activeTab={activeTab} config={config} updateConfig={updateConfig} />
+                    <ConfigLayout activeTab={activeTab} config={config} updateConfig={updateConfig} />
                     
                 </div>
             </div>

@@ -25,4 +25,5 @@ export interface NodeDefinition {
   }[];
   outputs: { id: string; type: GLSLType }[];
   strategy: NodeStrategy;
+  canHavePreview?: boolean;
 }

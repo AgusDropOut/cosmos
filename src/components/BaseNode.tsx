@@ -157,6 +157,23 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
                   ))}
                 </div>
               )}
+
+              {/* Select Control */}
+              {defInput.control?.type === 'select' && (
+                <div style={{ opacity: controlOpacity }}>
+                  <select 
+                    className="nodrag" 
+                    value={currentVal} 
+                    onChange={e => handleValueChange(defInput.id, e.target.value)} 
+                    disabled={isConnected} 
+                    style={{ background: '#0a0a0a', color: 'white', border: '1px solid #444', borderRadius: '4px', fontSize: '11px', padding: '4px', width: '100%', outline: 'none' }}
+                  >
+                    {defInput.control.options?.map((opt: string) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           );
         })}

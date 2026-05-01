@@ -2,6 +2,7 @@
 import type { ShaderGraph } from '../../types/ast';
 import type { IWorkspaceExporter, ExportResult } from '../../types/export';
 import { compileShader } from '../compiler';
+import JSZip from 'jszip';
 
 export class MaterialExporter implements IWorkspaceExporter {
     async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]> {
@@ -29,6 +30,7 @@ export class MaterialExporter implements IWorkspaceExporter {
             }
         }, null, 4);
 
+        
         return [
             {
                 fileName: `cosmos_data/${safeName}.mat.csm.json`,
@@ -46,5 +48,33 @@ export class MaterialExporter implements IWorkspaceExporter {
                 mimeType: 'text/plain'
             }
         ];
+    }
+
+    async exportComposite(
+        graph: ShaderGraph, 
+        settings: any, 
+        _materialGraph: ShaderGraph | null,
+        globalSettings: { namespace: string; projectName: string }
+    ): Promise<ExportResult> {
+        
+        const zip = new JSZip();
+        const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
+        
+       
+        const rawFiles = await this.export(graph, settings, globalSettings);
+        
+       
+        for (const file of rawFiles) {
+            zip.file(file.fileName, file.fileContent);
+        }
+
+        
+        const content = await zip.generateAsync({ type: 'blob' });
+
+        return {
+            fileName: `${safeName}_material.csm.zip`,
+            fileContent: content,
+            mimeType: 'application/zip'
+        };
     }
 }

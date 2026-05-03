@@ -4,33 +4,40 @@ import * as THREE from 'three';
 import type { ShaderGraph } from './types/ast';
 import type { IProjectContext, IPreviewStrategy } from './types/context';
 import { CompilerService } from './core/workers/CompilerService';
+import { applyRenderStateToMaterial } from './core/utils/materialUtils';
 
 interface Canvas3DProps {
   graph: ShaderGraph;
   contextSettings: Record<string, any>;
   activeContext: IProjectContext;
   globalMaterial: ShaderGraph;
+  globalMaterialSettings: Record<string, any>;
 }
 
-export default function Canvas3D({ graph, contextSettings, activeContext, globalMaterial }: Canvas3DProps) {
+export default function Canvas3D({ graph, contextSettings, activeContext, globalMaterial, globalMaterialSettings }: Canvas3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
   
   const settingsRef = useRef(contextSettings);
+  const globalMatSettingsRef = useRef(globalMaterialSettings);
   const strategyRef = useRef<IPreviewStrategy | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
 
-  
   const graphRef = useRef(graph);
 
   useEffect(() => {
     settingsRef.current = contextSettings;
+    globalMatSettingsRef.current = globalMaterialSettings;
+    
+    if (materialRef.current) {
+        applyRenderStateToMaterial(materialRef.current, globalMaterialSettings);
+    }
+
     if (strategyRef.current && strategyRef.current.onSettingsChange) {
         strategyRef.current.onSettingsChange(contextSettings);
     }
-  }, [contextSettings]);
+  }, [contextSettings, globalMaterialSettings]);
 
-  // Update the ref every time the user connects a wire or moves a slider
   useEffect(() => {
       graphRef.current = graph;
   }, [graph]);
@@ -62,7 +69,10 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
         transparent: true,
         depthWrite: false
     });
+    
     materialRef.current = material;
+
+    applyRenderStateToMaterial(material, globalMatSettingsRef.current);
 
     strategyRef.current = activeContext.createPreviewStrategy();
     
@@ -107,7 +117,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     };
   }, [activeContext]); 
 
-  // Shader Injection
   useEffect(() => {
     let targetGraph = graph;
     if (activeContext.id !== 'MATERIAL') {
@@ -116,7 +125,6 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
 
     if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
-    
     const timeoutId = setTimeout(() => {
         CompilerService.requestCompile(targetGraph, (result) => {
             if (!materialRef.current) return;
@@ -125,37 +133,28 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
                 materialRef.current.vertexShader = result.vertexShader;
                 materialRef.current.fragmentShader = result.fragmentShader;
                 
-                console.log("--- STARTING UNIFORM INJECTION ---");
-                
-                //  Iterate over result.uniforms, not result!
                 Object.entries(result.uniforms || {}).forEach(([name, data]: [string, any]) => {
-                    
-                    //  Calculate the safe value
                     let safeValue = data.value !== undefined ? data.value : 1.0;
                     if (data.type === 'vec3' && typeof safeValue === 'object') {
                         safeValue = new THREE.Color(safeValue.r, safeValue.g, safeValue.b);
                     }
 
-                    //  Inject or Update
                     if (!materialRef.current!.uniforms[name]) {
-                        // Create it if it doesn't exist
                         materialRef.current!.uniforms[name] = { value: safeValue };
                     } else {
-                        // UPDATE it if it already exists! 
                         materialRef.current!.uniforms[name].value = safeValue;
                     }
                 });
                 
-                console.log("--- FINISHED UNIFORM INJECTION ---");
                 materialRef.current.needsUpdate = true;
 
             } else {
                 console.error("Cosmos: Shader compilation failed:", result.error);
             }
         });
-    }, 150); // Wait 150ms before compiling
+    }, 150); 
 
-    return () => clearTimeout(timeoutId); // Cancel the compile if the slider moves again
+    return () => clearTimeout(timeoutId); 
 
   }, [graph, globalMaterial, activeContext.id]);
 
@@ -165,12 +164,11 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
     const targetGraph = activeContext.id !== 'MATERIAL' ? globalMaterial : graph;
 
     targetGraph.nodes.forEach(node => {
-       
+        
         if (node.isUniform && node.uniformName) {
             const safeName = `u_${node.uniformName.replace(/[^a-zA-Z0-9_]/g, '_')}`;
             const uniform = materialRef.current!.uniforms[safeName];
             
-          
             if (uniform && node.inputs && node.inputs[0]) {
                 const val = node.inputs[0].value;
                 if (typeof val === 'object' && val.r !== undefined) {

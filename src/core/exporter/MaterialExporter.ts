@@ -7,7 +7,7 @@ import JSZip from 'jszip';
 export class MaterialExporter implements IWorkspaceExporter {
     async export(graph: ShaderGraph, settings: Record<string, any>, globalSettings: { namespace: string; projectName: string }): Promise<ExportResult[]> {
         
-       const { vertexShader, fragmentShader, uniforms } = compileShader(graph, 'minecraft');
+        const { vertexShader, fragmentShader, uniforms } = compileShader(graph, 'minecraft');
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
 
         const exposedParameters: Record<string, string> = {};
@@ -24,8 +24,11 @@ export class MaterialExporter implements IWorkspaceExporter {
             config: {
                 exposed_parameters: exposedParameters,
                 render_state: {
-                    transparency: settings.isTranslucent ? 'TRANSLUCENT' : 'OPAQUE',
-                    depth_test: 'LEQUAL'
+                    blend_mode: settings.blend_mode || 'OPAQUE',
+                    cull_mode: settings.cull_mode || 'BACK',
+                    depth_test: settings.depth_test || 'LEQUAL',
+                    depth_write: settings.depth_write !== undefined ? settings.depth_write : true,
+                    alpha_cutoff: settings.alpha_cutoff || 0.0
                 }
             }
         }, null, 4);

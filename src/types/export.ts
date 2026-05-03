@@ -9,10 +9,11 @@ export interface UniformMeta {
 }
 
 export interface RenderState {
-    transparency: 'OPAQUE' | 'TRANSLUCENT';
-    cull: boolean;
-    depth_test: 'LEQUAL' | 'ALWAYS';
-    write_mask: 'COLOR_DEPTH' | 'COLOR';
+    blend_mode: 'OPAQUE' | 'TRANSLUCENT' | 'ADDITIVE' | 'MULTIPLY';
+    cull_mode: 'BACK' | 'FRONT' | 'NONE';
+    depth_test: 'LEQUAL' | 'ALWAYS' | 'NEVER';
+    depth_write: boolean;
+    alpha_cutoff: number; 
 }
 
 export interface CosmosMetadata {

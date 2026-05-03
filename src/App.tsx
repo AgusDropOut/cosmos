@@ -165,6 +165,7 @@ function App({ storage }: AppProps) {
               contextSettings={workspaces[activeContextId].settings} 
               activeContext={activeContext} 
               globalMaterial={workspaces['MATERIAL'].graph} 
+              globalMaterialSettings={workspaces['MATERIAL'].settings}
           />
         </div>
       </div>

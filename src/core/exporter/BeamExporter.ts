@@ -24,7 +24,8 @@ export class BeamExporter implements IWorkspaceExporter {
         beamGraph: ShaderGraph, 
         beamSettings: any, 
         materialGraph: ShaderGraph, 
-        globalSettings: { namespace: string; projectName: string }
+        globalSettings: { namespace: string; projectName: string },
+        materialSettings?: Record<string, any>
     ): Promise<ExportResult> {
         const zip = new JSZip();
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
@@ -33,7 +34,7 @@ export class BeamExporter implements IWorkspaceExporter {
         const beamJson = this.generateBeamJson(beamGraph, beamSettings, safeName, materialId, globalSettings);
         zip.file(`cosmos_data/${safeName}.beam.csm.json`, beamJson);
 
-        const matResults = await this.matExporter.export(materialGraph, {}, globalSettings);
+        const matResults = await this.matExporter.export(materialGraph, materialSettings || {}, globalSettings);
         
         for (const matFile of matResults) {
             zip.file(matFile.fileName, matFile.fileContent);

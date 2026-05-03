@@ -1,3 +1,4 @@
+// src/core/hooks/useWorkSpaceIO.ts
 import { useRef } from 'react';
 import type { Node, Edge } from 'reactflow';
 import type { ShaderGraph, NodeType } from '../../types/ast';
@@ -70,11 +71,14 @@ export function useWorkspaceIO({
         try {
             let result;
 
-
             if ('exportComposite' in exporter) {
                 const materialData = allWorkspaces['MATERIAL'];
                 result = await (exporter as any).exportComposite(
-                    currentGraph, contextSettings, materialData.graph, globalSettings
+                    currentGraph, 
+                    contextSettings, 
+                    materialData.graph, 
+                    globalSettings,
+                    materialData.settings 
                 );
             } else {
                 result = await exporter.export(currentGraph, contextSettings, globalSettings);

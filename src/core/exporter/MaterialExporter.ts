@@ -57,14 +57,17 @@ export class MaterialExporter implements IWorkspaceExporter {
         graph: ShaderGraph, 
         settings: any, 
         _materialGraph: ShaderGraph | null,
-        globalSettings: { namespace: string; projectName: string }
+        globalSettings: { namespace: string; projectName: string },
+        materialSettings?: Record<string, any>
     ): Promise<ExportResult> {
         
         const zip = new JSZip();
         const safeName = globalSettings.projectName.toLowerCase().replace(/\s+/g, '_');
         
        
-        const rawFiles = await this.export(graph, settings, globalSettings);
+        const activeSettings = materialSettings || settings;
+
+        const rawFiles = await this.export(graph, activeSettings, globalSettings);
         
        
         for (const file of rawFiles) {

@@ -254,12 +254,16 @@ in vec4 vertexColor;
 out vec4 fragColor;
 
 uniform float CosmosTime;
+uniform float u_alphaCutoff;
 ${uniformStrings}
 
 ${globalsString}
 
 void main() {
 ${mainString}
+if (fragColor.a <= u_alphaCutoff && u_alphaCutoff > 0.0) {
+        discard;
+    }
 }
             `.trim();
         }

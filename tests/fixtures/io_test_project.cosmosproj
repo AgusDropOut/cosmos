@@ -1,0 +1,6739 @@
+{
+  "version": "2.0",
+  "globalSettings": {
+    "namespace": "cosmos",
+    "projectName": "io_test_project"
+  },
+  "activeContextId": "MATERIAL",
+  "workspaces": {
+    "MATERIAL": {
+      "graph": {
+        "nodes": [
+          {
+            "id": "uv",
+            "type": "UV_COORDS",
+            "inputs": [],
+            "outputs": [
+              {
+                "id": "uv",
+                "type": "vec2"
+              }
+            ],
+            "position": {
+              "x": 0,
+              "y": 1225
+            }
+          },
+          {
+            "id": "split",
+            "type": "SPLIT_VEC2",
+            "inputs": [
+              {
+                "id": "vec",
+                "type": "vec2"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "x",
+                "type": "float"
+              },
+              {
+                "id": "y",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 680,
+              "y": 1225
+            }
+          },
+          {
+            "id": "time",
+            "type": "TIME",
+            "inputs": [
+              {
+                "id": "speed",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 680,
+              "y": 1005
+            }
+          },
+          {
+            "id": "uv_y_25",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 2.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 392.5
+            }
+          },
+          {
+            "id": "t_5",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 602.5
+            }
+          },
+          {
+            "id": "sub_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1360,
+              "y": 497.5
+            }
+          },
+          {
+            "id": "sin_1",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "sin"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1700,
+              "y": 497.5
+            }
+          },
+          {
+            "id": "mac1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.15
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2040,
+              "y": 497.5
+            }
+          },
+          {
+            "id": "uv_y_15",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 1.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 1022.5
+            }
+          },
+          {
+            "id": "t_3",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 1232.5
+            }
+          },
+          {
+            "id": "add_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1360,
+              "y": 1127.5
+            }
+          },
+          {
+            "id": "cos_1",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "cos"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1700,
+              "y": 1127.5
+            }
+          },
+          {
+            "id": "mac2",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.1
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2040,
+              "y": 1127.5
+            }
+          },
+          {
+            "id": "macro",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2380,
+              "y": 812.5
+            }
+          },
+          {
+            "id": "uv_y_5",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 1462.5
+            }
+          },
+          {
+            "id": "t_15",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 15
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 812.5
+            }
+          },
+          {
+            "id": "pack_1",
+            "type": "PACK_VEC2",
+            "inputs": [
+              {
+                "id": "x",
+                "type": "float"
+              },
+              {
+                "id": "y",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec2"
+              }
+            ],
+            "position": {
+              "x": 1360,
+              "y": 1472.5
+            }
+          },
+          {
+            "id": "fbm_1",
+            "type": "FBM_NOISE_2D",
+            "inputs": [
+              {
+                "id": "uv",
+                "type": "vec2"
+              },
+              {
+                "id": "scale",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1700,
+              "y": 1472.5
+            }
+          },
+          {
+            "id": "sub_2",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2040,
+              "y": 1472.5
+            }
+          },
+          {
+            "id": "micro",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.2
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2380,
+              "y": 1472.5
+            }
+          },
+          {
+            "id": "lx_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 2720,
+              "y": 880
+            }
+          },
+          {
+            "id": "local_x",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 3060,
+              "y": 1015
+            }
+          },
+          {
+            "id": "local_dist",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "abs"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 3740,
+              "y": 1015
+            }
+          },
+          {
+            "id": "bc_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": -22
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4080,
+              "y": 527.5
+            }
+          },
+          {
+            "id": "beam_core",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "exp"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4420,
+              "y": 527.5
+            }
+          },
+          {
+            "id": "np_x",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 7
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 3400,
+              "y": 0
+            }
+          },
+          {
+            "id": "np_y",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1360,
+              "y": 115
+            }
+          },
+          {
+            "id": "np_z",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 1.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 3400,
+              "y": 230
+            }
+          },
+          {
+            "id": "pack_2",
+            "type": "PACK_VEC3",
+            "inputs": [
+              {
+                "id": "x",
+                "type": "float"
+              },
+              {
+                "id": "y",
+                "type": "float"
+              },
+              {
+                "id": "z",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 3740,
+              "y": 115
+            }
+          },
+          {
+            "id": "ridge",
+            "type": "RIDGE_NOISE_3D",
+            "inputs": [
+              {
+                "id": "pos",
+                "type": "vec3"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4080,
+              "y": 947.5
+            }
+          },
+          {
+            "id": "ridge_pow",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 2.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "pow"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4420,
+              "y": 947.5
+            }
+          },
+          {
+            "id": "int_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4760,
+              "y": 632.5
+            }
+          },
+          {
+            "id": "int_2",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 4.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5100,
+              "y": 632.5
+            }
+          },
+          {
+            "id": "en_x",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 3400,
+              "y": 1702.5
+            }
+          },
+          {
+            "id": "t_8",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 8
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1020,
+              "y": 1827.5
+            }
+          },
+          {
+            "id": "en_y",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 1360,
+              "y": 1817.5
+            }
+          },
+          {
+            "id": "pack_3",
+            "type": "PACK_VEC2",
+            "inputs": [
+              {
+                "id": "x",
+                "type": "float"
+              },
+              {
+                "id": "y",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec2"
+              }
+            ],
+            "position": {
+              "x": 3740,
+              "y": 1760
+            }
+          },
+          {
+            "id": "fbm_2",
+            "type": "FBM_NOISE_2D",
+            "inputs": [
+              {
+                "id": "uv",
+                "type": "vec2"
+              },
+              {
+                "id": "scale",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4080,
+              "y": 1760
+            }
+          },
+          {
+            "id": "erosion",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0.35
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.8
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 4760,
+              "y": 1760
+            }
+          },
+          {
+            "id": "ero_25",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 2.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5100,
+              "y": 1225
+            }
+          },
+          {
+            "id": "int_3",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5440,
+              "y": 660
+            }
+          },
+          {
+            "id": "int_4",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "max"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5780,
+              "y": 660
+            }
+          },
+          {
+            "id": "vy_abs",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "abs"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5100,
+              "y": 1587.5
+            }
+          },
+          {
+            "id": "v_fade",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.6
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5440,
+              "y": 1587.5
+            }
+          },
+          {
+            "id": "int_fin",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6120,
+              "y": 1052.5
+            }
+          },
+          {
+            "id": "c_blk",
+            "type": "COLOR",
+            "inputs": [
+              {
+                "id": "rgb",
+                "type": "vec3",
+                "value": {
+                  "r": 1,
+                  "g": 0,
+                  "b": 0
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 6460,
+              "y": 20
+            }
+          },
+          {
+            "id": "c_red",
+            "type": "COLOR",
+            "inputs": [
+              {
+                "id": "rgb",
+                "type": "vec3",
+                "value": {
+                  "r": 0.23,
+                  "g": 0.88,
+                  "b": 0
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 6460,
+              "y": 230
+            }
+          },
+          {
+            "id": "c_org",
+            "type": "COLOR",
+            "inputs": [
+              {
+                "id": "rgb",
+                "type": "vec3",
+                "value": {
+                  "r": 0.62,
+                  "g": 1,
+                  "b": 0.1
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 6800,
+              "y": 832.5
+            }
+          },
+          {
+            "id": "c_yel",
+            "type": "COLOR",
+            "inputs": [
+              {
+                "id": "rgb",
+                "type": "vec3",
+                "value": {
+                  "r": 0.43,
+                  "g": 0.73,
+                  "b": 0.48
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7140,
+              "y": 842.5
+            }
+          },
+          {
+            "id": "c_wht",
+            "type": "COLOR",
+            "inputs": [
+              {
+                "id": "rgb",
+                "type": "vec3",
+                "value": {
+                  "r": 0,
+                  "g": 1,
+                  "b": 0.9
+                }
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7480,
+              "y": 1435
+            }
+          },
+          {
+            "id": "t1",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.1
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6460,
+              "y": 440
+            }
+          },
+          {
+            "id": "m1",
+            "type": "MIX_COLORS",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "vec3"
+              },
+              {
+                "id": "b",
+                "type": "vec3"
+              },
+              {
+                "id": "t",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 6800,
+              "y": 287.5
+            }
+          },
+          {
+            "id": "t2",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0.1
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.3
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6800,
+              "y": 622.5
+            }
+          },
+          {
+            "id": "m2",
+            "type": "MIX_COLORS",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "vec3"
+              },
+              {
+                "id": "b",
+                "type": "vec3"
+              },
+              {
+                "id": "t",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7140,
+              "y": 585
+            }
+          },
+          {
+            "id": "t3",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0.3
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.7
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 7140,
+              "y": 1110
+            }
+          },
+          {
+            "id": "m3",
+            "type": "MIX_COLORS",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "vec3"
+              },
+              {
+                "id": "b",
+                "type": "vec3"
+              },
+              {
+                "id": "t",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7480,
+              "y": 890
+            }
+          },
+          {
+            "id": "t4",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0.7
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 7480,
+              "y": 1645
+            }
+          },
+          {
+            "id": "m4",
+            "type": "MIX_COLORS",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "vec3"
+              },
+              {
+                "id": "b",
+                "type": "vec3"
+              },
+              {
+                "id": "t",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7820,
+              "y": 1100
+            }
+          },
+          {
+            "id": "bm_1",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": -6
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5100,
+              "y": 1875
+            }
+          },
+          {
+            "id": "bm_2",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float"
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "exp"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5440,
+              "y": 1875
+            }
+          },
+          {
+            "id": "bm_3",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5440,
+              "y": 2142.5
+            }
+          },
+          {
+            "id": "bm_4",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "subtract"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5780,
+              "y": 2142.5
+            }
+          },
+          {
+            "id": "bm_5",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 5780,
+              "y": 1732.5
+            }
+          },
+          {
+            "id": "bm_fin",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6120,
+              "y": 2142.5
+            }
+          },
+          {
+            "id": "al_1",
+            "type": "SMOOTHSTEP",
+            "inputs": [
+              {
+                "id": "edge0",
+                "type": "float",
+                "value": 0.01
+              },
+              {
+                "id": "edge1",
+                "type": "float",
+                "value": 0.15
+              },
+              {
+                "id": "x",
+                "type": "float"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6460,
+              "y": 1980
+            }
+          },
+          {
+            "id": "al_2",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 0.4
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "divide"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6460,
+              "y": 2190
+            }
+          },
+          {
+            "id": "al_3",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 6800,
+              "y": 2142.5
+            }
+          },
+          {
+            "id": "al_fin",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float"
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "min"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 8500,
+              "y": 2142.5
+            }
+          },
+          {
+            "id": "fe_1",
+            "type": "VECTOR_SCALAR_MATH",
+            "inputs": [
+              {
+                "id": "vec",
+                "type": "vec3"
+              },
+              {
+                "id": "scalar",
+                "type": "float",
+                "value": 3.5
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 8160,
+              "y": 1100
+            }
+          },
+          {
+            "id": "bc_col_1",
+            "type": "VECTOR_SCALAR_MATH",
+            "inputs": [
+              {
+                "id": "vec",
+                "type": "vec3"
+              },
+              {
+                "id": "scalar",
+                "type": "float"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7140,
+              "y": 1855
+            }
+          },
+          {
+            "id": "bc_col_2",
+            "type": "VECTOR_SCALAR_MATH",
+            "inputs": [
+              {
+                "id": "vec",
+                "type": "vec3"
+              },
+              {
+                "id": "scalar",
+                "type": "float",
+                "value": 0.7
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "divide"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 7480,
+              "y": 1855
+            }
+          },
+          {
+            "id": "fe_fin",
+            "type": "VECTOR_MATH",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "vec3"
+              },
+              {
+                "id": "b",
+                "type": "vec3"
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "add"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 8500,
+              "y": 1367.5
+            }
+          },
+          {
+            "id": "out",
+            "type": "OUTPUT_FRAG",
+            "inputs": [
+              {
+                "id": "color",
+                "type": "vec3"
+              },
+              {
+                "id": "alpha",
+                "type": "float"
+              }
+            ],
+            "outputs": [],
+            "position": {
+              "x": 8840,
+              "y": 1760
+            }
+          },
+          {
+            "id": "mapping_2d-1776636386216",
+            "type": "MAPPING_2D",
+            "inputs": [
+              {
+                "id": "uv",
+                "type": "vec2",
+                "value": {
+                  "x": 0,
+                  "y": 0
+                }
+              },
+              {
+                "id": "scale_x",
+                "type": "float",
+                "value": 0.3
+              },
+              {
+                "id": "scale_y",
+                "type": "float",
+                "value": 1.6
+              },
+              {
+                "id": "offset_x",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "offset_y",
+                "type": "float",
+                "value": -0.5
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec2"
+              }
+            ],
+            "position": {
+              "x": 340,
+              "y": 1225
+            }
+          },
+          {
+            "id": "output_vert-1776639258472",
+            "type": "OUTPUT_VERT",
+            "inputs": [
+              {
+                "id": "position_offset",
+                "type": "vec3",
+                "value": {
+                  "r": 0,
+                  "g": 0,
+                  "b": 0
+                }
+              },
+              {
+                "id": "scale",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [],
+            "position": {
+              "x": 0,
+              "y": 1435
+            }
+          }
+        ],
+        "connections": [
+          {
+            "id": "e_3",
+            "sourceNodeId": "split",
+            "sourcePortId": "y",
+            "targetNodeId": "uv_y_25",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_4",
+            "sourceNodeId": "time",
+            "sourcePortId": "out",
+            "targetNodeId": "t_5",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_5",
+            "sourceNodeId": "uv_y_25",
+            "sourcePortId": "out",
+            "targetNodeId": "sub_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_6",
+            "sourceNodeId": "t_5",
+            "sourcePortId": "out",
+            "targetNodeId": "sub_1",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_7",
+            "sourceNodeId": "sub_1",
+            "sourcePortId": "out",
+            "targetNodeId": "sin_1",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_8",
+            "sourceNodeId": "sin_1",
+            "sourcePortId": "out",
+            "targetNodeId": "mac1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_9",
+            "sourceNodeId": "split",
+            "sourcePortId": "y",
+            "targetNodeId": "uv_y_15",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_10",
+            "sourceNodeId": "time",
+            "sourcePortId": "out",
+            "targetNodeId": "t_3",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_11",
+            "sourceNodeId": "uv_y_15",
+            "sourcePortId": "out",
+            "targetNodeId": "add_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_12",
+            "sourceNodeId": "t_3",
+            "sourcePortId": "out",
+            "targetNodeId": "add_1",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_13",
+            "sourceNodeId": "add_1",
+            "sourcePortId": "out",
+            "targetNodeId": "cos_1",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_14",
+            "sourceNodeId": "cos_1",
+            "sourcePortId": "out",
+            "targetNodeId": "mac2",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_15",
+            "sourceNodeId": "mac1",
+            "sourcePortId": "out",
+            "targetNodeId": "macro",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_16",
+            "sourceNodeId": "mac2",
+            "sourcePortId": "out",
+            "targetNodeId": "macro",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_17",
+            "sourceNodeId": "split",
+            "sourcePortId": "y",
+            "targetNodeId": "uv_y_5",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_18",
+            "sourceNodeId": "time",
+            "sourcePortId": "out",
+            "targetNodeId": "t_15",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_19",
+            "sourceNodeId": "uv_y_5",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_1",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_20",
+            "sourceNodeId": "t_15",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_1",
+            "targetPortId": "y"
+          },
+          {
+            "id": "e_21",
+            "sourceNodeId": "pack_1",
+            "sourcePortId": "out",
+            "targetNodeId": "fbm_1",
+            "targetPortId": "uv"
+          },
+          {
+            "id": "e_22",
+            "sourceNodeId": "fbm_1",
+            "sourcePortId": "out",
+            "targetNodeId": "sub_2",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_23",
+            "sourceNodeId": "sub_2",
+            "sourcePortId": "out",
+            "targetNodeId": "micro",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_25",
+            "sourceNodeId": "macro",
+            "sourcePortId": "out",
+            "targetNodeId": "lx_1",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_26",
+            "sourceNodeId": "lx_1",
+            "sourcePortId": "out",
+            "targetNodeId": "local_x",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_27",
+            "sourceNodeId": "micro",
+            "sourcePortId": "out",
+            "targetNodeId": "local_x",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_28",
+            "sourceNodeId": "local_x",
+            "sourcePortId": "out",
+            "targetNodeId": "local_dist",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_29",
+            "sourceNodeId": "local_dist",
+            "sourcePortId": "out",
+            "targetNodeId": "bc_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_30",
+            "sourceNodeId": "bc_1",
+            "sourcePortId": "out",
+            "targetNodeId": "beam_core",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_31",
+            "sourceNodeId": "local_x",
+            "sourcePortId": "out",
+            "targetNodeId": "np_x",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_32",
+            "sourceNodeId": "uv_y_15",
+            "sourcePortId": "out",
+            "targetNodeId": "np_y",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_33",
+            "sourceNodeId": "t_15",
+            "sourcePortId": "out",
+            "targetNodeId": "np_y",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_34",
+            "sourceNodeId": "time",
+            "sourcePortId": "out",
+            "targetNodeId": "np_z",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_35",
+            "sourceNodeId": "np_x",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_2",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_36",
+            "sourceNodeId": "np_y",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_2",
+            "targetPortId": "y"
+          },
+          {
+            "id": "e_37",
+            "sourceNodeId": "np_z",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_2",
+            "targetPortId": "z"
+          },
+          {
+            "id": "e_38",
+            "sourceNodeId": "pack_2",
+            "sourcePortId": "out",
+            "targetNodeId": "ridge",
+            "targetPortId": "pos"
+          },
+          {
+            "id": "e_39",
+            "sourceNodeId": "ridge",
+            "sourcePortId": "out",
+            "targetNodeId": "ridge_pow",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_40",
+            "sourceNodeId": "beam_core",
+            "sourcePortId": "out",
+            "targetNodeId": "int_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_41",
+            "sourceNodeId": "ridge_pow",
+            "sourcePortId": "out",
+            "targetNodeId": "int_1",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_42",
+            "sourceNodeId": "int_1",
+            "sourcePortId": "out",
+            "targetNodeId": "int_2",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_43",
+            "sourceNodeId": "local_x",
+            "sourcePortId": "out",
+            "targetNodeId": "en_x",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_44",
+            "sourceNodeId": "time",
+            "sourcePortId": "out",
+            "targetNodeId": "t_8",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_45",
+            "sourceNodeId": "uv_y_15",
+            "sourcePortId": "out",
+            "targetNodeId": "en_y",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_46",
+            "sourceNodeId": "t_8",
+            "sourcePortId": "out",
+            "targetNodeId": "en_y",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_47",
+            "sourceNodeId": "en_x",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_3",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_48",
+            "sourceNodeId": "en_y",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_3",
+            "targetPortId": "y"
+          },
+          {
+            "id": "e_49",
+            "sourceNodeId": "pack_3",
+            "sourcePortId": "out",
+            "targetNodeId": "fbm_2",
+            "targetPortId": "uv"
+          },
+          {
+            "id": "e_50",
+            "sourceNodeId": "fbm_2",
+            "sourcePortId": "out",
+            "targetNodeId": "erosion",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_51",
+            "sourceNodeId": "erosion",
+            "sourcePortId": "out",
+            "targetNodeId": "ero_25",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_52",
+            "sourceNodeId": "int_2",
+            "sourcePortId": "out",
+            "targetNodeId": "int_3",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_53",
+            "sourceNodeId": "ero_25",
+            "sourcePortId": "out",
+            "targetNodeId": "int_3",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_54",
+            "sourceNodeId": "int_3",
+            "sourcePortId": "out",
+            "targetNodeId": "int_4",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_55",
+            "sourceNodeId": "split",
+            "sourcePortId": "y",
+            "targetNodeId": "vy_abs",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_56",
+            "sourceNodeId": "vy_abs",
+            "sourcePortId": "out",
+            "targetNodeId": "v_fade",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_57",
+            "sourceNodeId": "int_4",
+            "sourcePortId": "out",
+            "targetNodeId": "int_fin",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_58",
+            "sourceNodeId": "v_fade",
+            "sourcePortId": "out",
+            "targetNodeId": "int_fin",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_59",
+            "sourceNodeId": "int_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "t1",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_60",
+            "sourceNodeId": "int_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "t2",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_61",
+            "sourceNodeId": "int_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "t3",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_62",
+            "sourceNodeId": "int_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "t4",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_63",
+            "sourceNodeId": "c_blk",
+            "sourcePortId": "out",
+            "targetNodeId": "m1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_64",
+            "sourceNodeId": "c_red",
+            "sourcePortId": "out",
+            "targetNodeId": "m1",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_65",
+            "sourceNodeId": "t1",
+            "sourcePortId": "out",
+            "targetNodeId": "m1",
+            "targetPortId": "t"
+          },
+          {
+            "id": "e_66",
+            "sourceNodeId": "m1",
+            "sourcePortId": "out",
+            "targetNodeId": "m2",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_67",
+            "sourceNodeId": "c_org",
+            "sourcePortId": "out",
+            "targetNodeId": "m2",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_68",
+            "sourceNodeId": "t2",
+            "sourcePortId": "out",
+            "targetNodeId": "m2",
+            "targetPortId": "t"
+          },
+          {
+            "id": "e_69",
+            "sourceNodeId": "m2",
+            "sourcePortId": "out",
+            "targetNodeId": "m3",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_70",
+            "sourceNodeId": "c_yel",
+            "sourcePortId": "out",
+            "targetNodeId": "m3",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_71",
+            "sourceNodeId": "t3",
+            "sourcePortId": "out",
+            "targetNodeId": "m3",
+            "targetPortId": "t"
+          },
+          {
+            "id": "e_72",
+            "sourceNodeId": "m3",
+            "sourcePortId": "out",
+            "targetNodeId": "m4",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_73",
+            "sourceNodeId": "c_wht",
+            "sourcePortId": "out",
+            "targetNodeId": "m4",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_74",
+            "sourceNodeId": "t4",
+            "sourcePortId": "out",
+            "targetNodeId": "m4",
+            "targetPortId": "t"
+          },
+          {
+            "id": "e_75",
+            "sourceNodeId": "local_dist",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_76",
+            "sourceNodeId": "bm_1",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_2",
+            "targetPortId": "value"
+          },
+          {
+            "id": "e_77",
+            "sourceNodeId": "erosion",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_3",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_78",
+            "sourceNodeId": "bm_3",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_4",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_79",
+            "sourceNodeId": "bm_2",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_5",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_80",
+            "sourceNodeId": "v_fade",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_5",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_81",
+            "sourceNodeId": "bm_5",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_fin",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_82",
+            "sourceNodeId": "bm_4",
+            "sourcePortId": "out",
+            "targetNodeId": "bm_fin",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_83",
+            "sourceNodeId": "int_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "al_1",
+            "targetPortId": "x"
+          },
+          {
+            "id": "e_84",
+            "sourceNodeId": "bm_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "al_2",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_85",
+            "sourceNodeId": "al_1",
+            "sourcePortId": "out",
+            "targetNodeId": "al_3",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_86",
+            "sourceNodeId": "al_2",
+            "sourcePortId": "out",
+            "targetNodeId": "al_3",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_87",
+            "sourceNodeId": "al_3",
+            "sourcePortId": "out",
+            "targetNodeId": "al_fin",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_88",
+            "sourceNodeId": "m4",
+            "sourcePortId": "out",
+            "targetNodeId": "fe_1",
+            "targetPortId": "vec"
+          },
+          {
+            "id": "e_89",
+            "sourceNodeId": "c_org",
+            "sourcePortId": "out",
+            "targetNodeId": "bc_col_1",
+            "targetPortId": "vec"
+          },
+          {
+            "id": "e_90",
+            "sourceNodeId": "bm_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "bc_col_1",
+            "targetPortId": "scalar"
+          },
+          {
+            "id": "e_91",
+            "sourceNodeId": "bc_col_1",
+            "sourcePortId": "out",
+            "targetNodeId": "bc_col_2",
+            "targetPortId": "vec"
+          },
+          {
+            "id": "e_92",
+            "sourceNodeId": "fe_1",
+            "sourcePortId": "out",
+            "targetNodeId": "fe_fin",
+            "targetPortId": "a"
+          },
+          {
+            "id": "e_93",
+            "sourceNodeId": "bc_col_2",
+            "sourcePortId": "out",
+            "targetNodeId": "fe_fin",
+            "targetPortId": "b"
+          },
+          {
+            "id": "e_94",
+            "sourceNodeId": "fe_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "out",
+            "targetPortId": "color"
+          },
+          {
+            "id": "e_95",
+            "sourceNodeId": "al_fin",
+            "sourcePortId": "out",
+            "targetNodeId": "out",
+            "targetPortId": "alpha"
+          },
+          {
+            "id": "reactflow__edge-splitx-lx_1a",
+            "sourceNodeId": "split",
+            "sourcePortId": "x",
+            "targetNodeId": "lx_1",
+            "targetPortId": "a"
+          },
+          {
+            "id": "reactflow__edge-uvuv-mapping_2d-1776636386216uv",
+            "sourceNodeId": "uv",
+            "sourcePortId": "uv",
+            "targetNodeId": "mapping_2d-1776636386216",
+            "targetPortId": "uv"
+          },
+          {
+            "id": "reactflow__edge-mapping_2d-1776636386216out-splitvec",
+            "sourceNodeId": "mapping_2d-1776636386216",
+            "sourcePortId": "out",
+            "targetNodeId": "split",
+            "targetPortId": "vec"
+          }
+        ]
+      },
+      "settings": {
+        "shape": "2D_QUAD",
+        "blend_mode": "TRANSLUCENT"
+      }
+    },
+    "TRAIL": {
+      "rfNodes": [
+        {
+          "id": "trail-out-1",
+          "type": "TRAIL_ENDPOINT",
+          "position": {
+            "x": 600,
+            "y": 150
+          },
+          "data": {
+            "astType": "TRAIL_ENDPOINT",
+            "inputs": [
+              {
+                "id": "width",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "orbit_offset",
+                "type": "vec3",
+                "value": {
+                  "r": 0,
+                  "g": 0,
+                  "b": 0
+                }
+              }
+            ],
+            "outputs": []
+          },
+          "width": 206,
+          "height": 137
+        },
+        {
+          "id": "time-1777924545650",
+          "type": "TIME",
+          "position": {
+            "x": -453.19623347763155,
+            "y": 269.3476482804009
+          },
+          "data": {
+            "astType": "TIME",
+            "inputs": [
+              {
+                "id": "speed",
+                "type": "float",
+                "value": 5.8
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 142
+        },
+        {
+          "id": "pack_vec3-1777924554420",
+          "type": "PACK_VEC3",
+          "position": {
+            "x": 351.4052784049012,
+            "y": 293.10276508014925
+          },
+          "data": {
+            "astType": "PACK_VEC3",
+            "inputs": [
+              {
+                "id": "x",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "y",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "z",
+                "type": "float",
+                "value": 0
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 167
+        },
+        {
+          "id": "math_unary-1777924560012",
+          "type": "MATH_UNARY",
+          "position": {
+            "x": -182.4364853336918,
+            "y": 425.4231834034278
+          },
+          "data": {
+            "astType": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "cos"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 185
+        },
+        {
+          "id": "math_unary-1777924562726",
+          "type": "MATH_UNARY",
+          "position": {
+            "x": -181.194215676146,
+            "y": 91.4765426070513
+          },
+          "data": {
+            "astType": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "sin"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 185
+        },
+        {
+          "id": "math_binary-1777924612128",
+          "type": "MATH_BINARY",
+          "position": {
+            "x": 73.42825192671586,
+            "y": 397.43458361755216
+          },
+          "data": {
+            "astType": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 235
+        },
+        {
+          "id": "math_binary-1777924615472",
+          "type": "MATH_BINARY",
+          "position": {
+            "x": 80.78166928147655,
+            "y": 90.6503916160355
+          },
+          "data": {
+            "astType": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 235
+        }
+      ],
+      "rfEdges": [
+        {
+          "id": "reactflow__edge-time-1777924545650out-math_unary-1777924562726value",
+          "source": "time-1777924545650",
+          "sourceHandle": "out",
+          "target": "math_unary-1777924562726",
+          "targetHandle": "value"
+        },
+        {
+          "id": "reactflow__edge-time-1777924545650out-math_unary-1777924560012value",
+          "source": "time-1777924545650",
+          "sourceHandle": "out",
+          "target": "math_unary-1777924560012",
+          "targetHandle": "value"
+        },
+        {
+          "id": "reactflow__edge-pack_vec3-1777924554420out-trail-out-1orbit_offset",
+          "source": "pack_vec3-1777924554420",
+          "sourceHandle": "out",
+          "target": "trail-out-1",
+          "targetHandle": "orbit_offset"
+        },
+        {
+          "id": "reactflow__edge-math_unary-1777924562726out-math_binary-1777924615472a",
+          "source": "math_unary-1777924562726",
+          "sourceHandle": "out",
+          "target": "math_binary-1777924615472",
+          "targetHandle": "a"
+        },
+        {
+          "id": "reactflow__edge-math_unary-1777924560012out-math_binary-1777924612128a",
+          "source": "math_unary-1777924560012",
+          "sourceHandle": "out",
+          "target": "math_binary-1777924612128",
+          "targetHandle": "a"
+        },
+        {
+          "id": "reactflow__edge-math_binary-1777924612128out-pack_vec3-1777924554420z",
+          "source": "math_binary-1777924612128",
+          "sourceHandle": "out",
+          "target": "pack_vec3-1777924554420",
+          "targetHandle": "z"
+        },
+        {
+          "id": "reactflow__edge-math_binary-1777924615472out-pack_vec3-1777924554420x",
+          "source": "math_binary-1777924615472",
+          "sourceHandle": "out",
+          "target": "pack_vec3-1777924554420",
+          "targetHandle": "x"
+        }
+      ],
+      "graph": {
+        "nodes": [
+          {
+            "id": "trail-out-1",
+            "type": "TRAIL_ENDPOINT",
+            "inputs": [
+              {
+                "id": "width",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "orbit_offset",
+                "type": "vec3",
+                "value": {
+                  "r": 0,
+                  "g": 0,
+                  "b": 0
+                }
+              }
+            ],
+            "outputs": [],
+            "position": {
+              "x": 600,
+              "y": 150
+            }
+          },
+          {
+            "id": "time-1777924545650",
+            "type": "TIME",
+            "inputs": [
+              {
+                "id": "speed",
+                "type": "float",
+                "value": 5.8
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": -453.19623347763155,
+              "y": 269.3476482804009
+            }
+          },
+          {
+            "id": "pack_vec3-1777924554420",
+            "type": "PACK_VEC3",
+            "inputs": [
+              {
+                "id": "x",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "y",
+                "type": "float",
+                "value": 0
+              },
+              {
+                "id": "z",
+                "type": "float",
+                "value": 0
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "vec3"
+              }
+            ],
+            "position": {
+              "x": 351.4052784049012,
+              "y": 293.10276508014925
+            }
+          },
+          {
+            "id": "math_unary-1777924560012",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "cos"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": -182.4364853336918,
+              "y": 425.4231834034278
+            }
+          },
+          {
+            "id": "math_unary-1777924562726",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "sin"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": -181.194215676146,
+              "y": 91.4765426070513
+            }
+          },
+          {
+            "id": "math_binary-1777924612128",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 73.42825192671586,
+              "y": 397.43458361755216
+            }
+          },
+          {
+            "id": "math_binary-1777924615472",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 3
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 80.78166928147655,
+              "y": 90.6503916160355
+            }
+          }
+        ],
+        "connections": [
+          {
+            "id": "reactflow__edge-time-1777924545650out-math_unary-1777924562726value",
+            "sourceNodeId": "time-1777924545650",
+            "sourcePortId": "out",
+            "targetNodeId": "math_unary-1777924562726",
+            "targetPortId": "value"
+          },
+          {
+            "id": "reactflow__edge-time-1777924545650out-math_unary-1777924560012value",
+            "sourceNodeId": "time-1777924545650",
+            "sourcePortId": "out",
+            "targetNodeId": "math_unary-1777924560012",
+            "targetPortId": "value"
+          },
+          {
+            "id": "reactflow__edge-pack_vec3-1777924554420out-trail-out-1orbit_offset",
+            "sourceNodeId": "pack_vec3-1777924554420",
+            "sourcePortId": "out",
+            "targetNodeId": "trail-out-1",
+            "targetPortId": "orbit_offset"
+          },
+          {
+            "id": "reactflow__edge-math_unary-1777924562726out-math_binary-1777924615472a",
+            "sourceNodeId": "math_unary-1777924562726",
+            "sourcePortId": "out",
+            "targetNodeId": "math_binary-1777924615472",
+            "targetPortId": "a"
+          },
+          {
+            "id": "reactflow__edge-math_unary-1777924560012out-math_binary-1777924612128a",
+            "sourceNodeId": "math_unary-1777924560012",
+            "sourcePortId": "out",
+            "targetNodeId": "math_binary-1777924612128",
+            "targetPortId": "a"
+          },
+          {
+            "id": "reactflow__edge-math_binary-1777924612128out-pack_vec3-1777924554420z",
+            "sourceNodeId": "math_binary-1777924612128",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_vec3-1777924554420",
+            "targetPortId": "z"
+          },
+          {
+            "id": "reactflow__edge-math_binary-1777924615472out-pack_vec3-1777924554420x",
+            "sourceNodeId": "math_binary-1777924615472",
+            "sourcePortId": "out",
+            "targetNodeId": "pack_vec3-1777924554420",
+            "targetPortId": "x"
+          }
+        ]
+      },
+      "settings": {
+        "segments": 50
+      },
+      "historyPast": [],
+      "historyFuture": []
+    },
+    "BEAM": {
+      "rfNodes": [
+        {
+          "id": "beam-out-1",
+          "type": "BEAM_ENDPOINT",
+          "position": {
+            "x": 735,
+            "y": 147
+          },
+          "data": {
+            "astType": "BEAM_ENDPOINT",
+            "inputs": [
+              {
+                "id": "radius_curve",
+                "type": "float",
+                "value": 0.5
+              }
+            ],
+            "outputs": []
+          },
+          "width": 206,
+          "height": 193,
+          "selected": false,
+          "positionAbsolute": {
+            "x": 735,
+            "y": 147
+          },
+          "dragging": false
+        },
+        {
+          "id": "time-1777932559716",
+          "type": "TIME",
+          "position": {
+            "x": -146.24218750000014,
+            "y": 211.25
+          },
+          "data": {
+            "astType": "TIME",
+            "inputs": [
+              {
+                "id": "speed",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 142,
+          "selected": false,
+          "positionAbsolute": {
+            "x": -146.24218750000014,
+            "y": 211.25
+          },
+          "dragging": false
+        },
+        {
+          "id": "math_unary-1777932562154",
+          "type": "MATH_UNARY",
+          "position": {
+            "x": 130.56025013736144,
+            "y": 199.5671573228496
+          },
+          "data": {
+            "astType": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "cos"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 185,
+          "selected": false,
+          "positionAbsolute": {
+            "x": 130.56025013736144,
+            "y": 199.5671573228496
+          },
+          "dragging": false
+        },
+        {
+          "id": "math_binary-1777932565550",
+          "type": "MATH_BINARY",
+          "position": {
+            "x": 423.0275335327203,
+            "y": 161.27548488219693
+          },
+          "data": {
+            "astType": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 2
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ]
+          },
+          "width": 206,
+          "height": 235,
+          "selected": false,
+          "positionAbsolute": {
+            "x": 423.0275335327203,
+            "y": 161.27548488219693
+          },
+          "dragging": false
+        }
+      ],
+      "rfEdges": [
+        {
+          "source": "time-1777932559716",
+          "sourceHandle": "out",
+          "target": "math_unary-1777932562154",
+          "targetHandle": "value",
+          "id": "reactflow__edge-time-1777932559716out-math_unary-1777932562154value"
+        },
+        {
+          "source": "math_unary-1777932562154",
+          "sourceHandle": "out",
+          "target": "math_binary-1777932565550",
+          "targetHandle": "a",
+          "id": "reactflow__edge-math_unary-1777932562154out-math_binary-1777932565550a"
+        },
+        {
+          "source": "math_binary-1777932565550",
+          "sourceHandle": "out",
+          "target": "beam-out-1",
+          "targetHandle": "radius_curve",
+          "id": "reactflow__edge-math_binary-1777932565550out-beam-out-1radius_curve"
+        }
+      ],
+      "graph": {
+        "nodes": [
+          {
+            "id": "beam-out-1",
+            "type": "BEAM_ENDPOINT",
+            "inputs": [
+              {
+                "id": "radius_curve",
+                "type": "float",
+                "value": 0.5
+              }
+            ],
+            "outputs": [],
+            "position": {
+              "x": 735,
+              "y": 147
+            }
+          },
+          {
+            "id": "time-1777932559716",
+            "type": "TIME",
+            "inputs": [
+              {
+                "id": "speed",
+                "type": "float",
+                "value": 1
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": -146.24218750000014,
+              "y": 211.25
+            }
+          },
+          {
+            "id": "math_unary-1777932562154",
+            "type": "MATH_UNARY",
+            "inputs": [
+              {
+                "id": "value",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "func",
+                "type": "string",
+                "value": "cos"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 130.56025013736144,
+              "y": 199.5671573228496
+            }
+          },
+          {
+            "id": "math_binary-1777932565550",
+            "type": "MATH_BINARY",
+            "inputs": [
+              {
+                "id": "a",
+                "type": "float",
+                "value": 1
+              },
+              {
+                "id": "b",
+                "type": "float",
+                "value": 2
+              },
+              {
+                "id": "op",
+                "type": "string",
+                "value": "multiply"
+              }
+            ],
+            "outputs": [
+              {
+                "id": "out",
+                "type": "float"
+              }
+            ],
+            "position": {
+              "x": 423.0275335327203,
+              "y": 161.27548488219693
+            }
+          }
+        ],
+        "connections": [
+          {
+            "id": "reactflow__edge-time-1777932559716out-math_unary-1777932562154value",
+            "sourceNodeId": "time-1777932559716",
+            "sourcePortId": "out",
+            "targetNodeId": "math_unary-1777932562154",
+            "targetPortId": "value"
+          },
+          {
+            "id": "reactflow__edge-math_unary-1777932562154out-math_binary-1777932565550a",
+            "sourceNodeId": "math_unary-1777932562154",
+            "sourcePortId": "out",
+            "targetNodeId": "math_binary-1777932565550",
+            "targetPortId": "a"
+          },
+          {
+            "id": "reactflow__edge-math_binary-1777932565550out-beam-out-1radius_curve",
+            "sourceNodeId": "math_binary-1777932565550",
+            "sourcePortId": "out",
+            "targetNodeId": "beam-out-1",
+            "targetPortId": "radius_curve"
+          }
+        ]
+      },
+      "settings": {
+        "segments": 20,
+        "lengthSegments": 1,
+        "radialSegments": 19
+      },
+      "historyPast": [
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 510.75781249999994,
+                "y": 352.25000000000006
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 172.7578124999999,
+                "y": 219.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 708.7578125,
+                "y": 533.2500000000001
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 289.7578124999999,
+                "y": 279.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 289.7578124999999,
+                "y": 279.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 528.7578125,
+                "y": 307.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 528.7578125,
+                "y": 307.25000000000006
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 289.7578124999999,
+                "y": 279.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 289.7578124999999,
+                "y": 279.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 528.7578125,
+                "y": 307.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 528.7578125,
+                "y": 307.25000000000006
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 600,
+                "y": 150
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 348.75781249999994,
+                "y": 190.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 348.75781249999994,
+                "y": 190.25000000000006
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 348.75781249999994,
+                "y": 190.25000000000006
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 348.75781249999994,
+                "y": 190.25000000000006
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 177.7578124999999,
+                "y": 357.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 117.75781249999986,
+                "y": 57.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 194.7578124999999,
+                "y": 265.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 194.7578124999999,
+                "y": 265.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": true,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 194.7578124999999,
+                "y": 265.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 194.7578124999999,
+                "y": 265.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": [
+            {
+              "source": "time-1777932559716",
+              "sourceHandle": "out",
+              "target": "math_binary-1777932565550",
+              "targetHandle": "a",
+              "id": "reactflow__edge-time-1777932559716out-math_binary-1777932565550a",
+              "selected": true
+            }
+          ]
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 140.7578124999999,
+                "y": 157.25000000000006
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 458.7578125,
+                "y": 188.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 336.63168924162767,
+                "y": -64.56628352785225
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 336.63168924162767,
+                "y": -64.56628352785225
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 336.63168924162767,
+                "y": -64.56628352785225
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 336.63168924162767,
+                "y": -64.56628352785225
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "abs"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "dragging": false
+            }
+          ],
+          "edges": []
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "cos"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "dragging": false
+            }
+          ],
+          "edges": [
+            {
+              "source": "time-1777932559716",
+              "sourceHandle": "out",
+              "target": "math_unary-1777932562154",
+              "targetHandle": "value",
+              "id": "reactflow__edge-time-1777932559716out-math_unary-1777932562154value"
+            }
+          ]
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "cos"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "dragging": false
+            }
+          ],
+          "edges": [
+            {
+              "source": "time-1777932559716",
+              "sourceHandle": "out",
+              "target": "math_unary-1777932562154",
+              "targetHandle": "value",
+              "id": "reactflow__edge-time-1777932559716out-math_unary-1777932562154value"
+            }
+          ]
+        },
+        {
+          "nodes": [
+            {
+              "id": "beam-out-1",
+              "type": "BEAM_ENDPOINT",
+              "position": {
+                "x": 735,
+                "y": 147
+              },
+              "data": {
+                "astType": "BEAM_ENDPOINT",
+                "inputs": [
+                  {
+                    "id": "radius_curve",
+                    "type": "float",
+                    "value": 0.5
+                  }
+                ],
+                "outputs": []
+              },
+              "width": 206,
+              "height": 193,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 735,
+                "y": 147
+              },
+              "dragging": false
+            },
+            {
+              "id": "time-1777932559716",
+              "type": "TIME",
+              "position": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "data": {
+                "astType": "TIME",
+                "inputs": [
+                  {
+                    "id": "speed",
+                    "type": "float",
+                    "value": 1
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 142,
+              "selected": false,
+              "positionAbsolute": {
+                "x": -146.24218750000014,
+                "y": 211.25
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_unary-1777932562154",
+              "type": "MATH_UNARY",
+              "position": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "data": {
+                "astType": "MATH_UNARY",
+                "inputs": [
+                  {
+                    "id": "value",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "func",
+                    "type": "string",
+                    "value": "cos"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 185,
+              "selected": true,
+              "positionAbsolute": {
+                "x": 130.56025013736144,
+                "y": 199.5671573228496
+              },
+              "dragging": false
+            },
+            {
+              "id": "math_binary-1777932565550",
+              "type": "MATH_BINARY",
+              "position": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "data": {
+                "astType": "MATH_BINARY",
+                "inputs": [
+                  {
+                    "id": "a",
+                    "type": "float",
+                    "value": 1
+                  },
+                  {
+                    "id": "b",
+                    "type": "float",
+                    "value": 2
+                  },
+                  {
+                    "id": "op",
+                    "type": "string",
+                    "value": "multiply"
+                  }
+                ],
+                "outputs": [
+                  {
+                    "id": "out",
+                    "type": "float"
+                  }
+                ]
+              },
+              "width": 206,
+              "height": 235,
+              "selected": false,
+              "positionAbsolute": {
+                "x": 423.0275335327203,
+                "y": 161.27548488219693
+              },
+              "dragging": false
+            }
+          ],
+          "edges": [
+            {
+              "source": "time-1777932559716",
+              "sourceHandle": "out",
+              "target": "math_unary-1777932562154",
+              "targetHandle": "value",
+              "id": "reactflow__edge-time-1777932559716out-math_unary-1777932562154value"
+            },
+            {
+              "source": "math_unary-1777932562154",
+              "sourceHandle": "out",
+              "target": "math_binary-1777932565550",
+              "targetHandle": "a",
+              "id": "reactflow__edge-math_unary-1777932562154out-math_binary-1777932565550a"
+            }
+          ]
+        }
+      ],
+      "historyFuture": []
+    }
+  }
+}

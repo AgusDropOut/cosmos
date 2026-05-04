@@ -87,9 +87,17 @@ export function EditorToolbar({
                         <div style={dropdownStyle}>
                             <button style={menuButtonStyle} onClick={() => { handleSave(true); setActiveMenu(null); }}><Save size={14} color="#e0e0e0" /> Save Project</button>
                             <button style={menuButtonStyle} onClick={() => { fileInputRef.current?.click();  }}><FolderOpen size={14} color="#e0e0e0" /> Load Project</button>
-                            <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={(e) => { console.log("Cosmos: File selected, calling handleFileUpload"); handleFileUpload(e); setActiveMenu(null); }} style={{ display: 'none' }} />
                         </div>
                     )}
+                    <input 
+                        type="file" 
+                        accept=".cosmosproj" 
+                        ref={fileInputRef} 
+                        onChange={(e) => handleFileUpload(e)} 
+                        onClick={(e) => { (e.target as HTMLInputElement).value = ''; }}
+                        style={{ display: 'none' }} 
+                        data-testid="file-upload-input" 
+                    />
                 </div>
 
                 {/* ADD NODE */}

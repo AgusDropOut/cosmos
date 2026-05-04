@@ -8,6 +8,12 @@ export default defineConfig({
     react(),
     electron({
       entry: 'electron/main.ts',
+      onstart(options) {
+       
+        if (!process.env.CI) {
+          options.startup();
+        }
+      },
     })
   ],
 })

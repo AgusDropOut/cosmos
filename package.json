@@ -9,8 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:preview": "vite --port 5173 --strictPort"
-  },
+    "test:ci": "vite --port 5173 --strictPort"
+},
   "dependencies": {
     "dagre": "^0.8.5",
     "jszip": "^3.10.1",

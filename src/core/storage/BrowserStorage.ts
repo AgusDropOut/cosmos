@@ -36,7 +36,7 @@ export class BrowserStorage implements IWorkspaceStorage {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${workspace.name.replace(/\s+/g, '_').toLowerCase()}.cosmosproj`;
+            a.download = `${workspace.globalSettings.projectName.replace(/\s+/g, '_').toLowerCase()}.cosmosproj`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

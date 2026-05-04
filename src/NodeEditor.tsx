@@ -94,21 +94,25 @@ export default function NodeEditor({
   });
 
 
-  // Restore Local Nodes when Context Swaps
+ 
   useEffect(() => {
-
+    setNodes(rfNodes);
+    setEdges(rfEdges);
     history.setHistory(initialPast, initialFuture);
+    
+  
+}, [rfNodes, rfEdges]); 
 
-    if (loadedWorkspace && loadedWorkspace.contextId === activeContext.id) {
-      setNodes(loadedWorkspace.nodes);
-      setEdges(loadedWorkspace.edges);
-    } else {
-      // Pull strictly from the RAM state passed via props
-      setNodes(rfNodes);
-      setEdges(rfEdges);
+useEffect(() => {
+    if (rfNodes.length > 0) {
+
+        setTimeout(() => {
+            fitView({ duration: 400, padding: 0.2 });
+        }, 50);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeContext.id, loadedWorkspace]); 
+    
+    console.log("Cosmos: Camera focused for context", activeContext.id);
+}, [activeContext.id, loadedWorkspace]);
 
   const { fileInputRef, handleSave, handleGameExport, handleFileUpload } = useWorkspaceIO({
       activeContext, nodes, edges, contextSettings, globalSettings, allWorkspaces, storage, onLoadWorkspace

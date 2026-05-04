@@ -69,9 +69,27 @@ function App({ storage }: AppProps) {
     nodes: Node[], edges: Edge[], graph: ShaderGraph , 
     past: {nodes: Node[], edges: Edge[]}[], 
     future: {nodes: Node[], edges: Edge[]}[]) => {
+    const enrichedGraph: ShaderGraph = {
+        ...graph,
+        nodes: graph.nodes.map(sn => {
+            const rfNode = nodes.find(n => n.id === sn.id);
+            return {
+                ...sn,
+                position: rfNode ? rfNode.position : { x: 0, y: 0 }
+            };
+        })
+    };
+
     setWorkspaces(prev => ({
         ...prev,
-        [activeContextId]: { ...prev[activeContextId], rfNodes: nodes, rfEdges: edges, graph, historyPast: past, historyFuture: future }
+        [activeContextId]: { 
+            ...prev[activeContextId], 
+            rfNodes: nodes, 
+            rfEdges: edges, 
+            graph: enrichedGraph, 
+            historyPast: past, 
+            historyFuture: future 
+        }
     }));
   }, [activeContextId]);
 
@@ -86,43 +104,68 @@ function App({ storage }: AppProps) {
   }, [activeContextId]);
 
   const handleLoadWorkspace = useCallback((workspace: SavedWorkspace) => {
-    const ctx = AVAILABLE_CONTEXTS.find(c => c.id === workspace.contextId) || MaterialContext;
+    try {
+        console.log("Cosmos: Loading v2.0 Workspace...", workspace);
 
-    if (workspace.globalSettings) {
-      setGlobalSettings(workspace.globalSettings);
-    }
-    
-    const mappedGraph: ShaderGraph = {
-        nodes: workspace.nodes.map(n => ({
-            id: n.id,
-            type: n.data.astType as NodeType,
-            inputs: n.data.inputs || [],
-            outputs: n.data.outputs || [],
-            isUniform: n.data.isUniform,
-            uniformName: n.data.uniformName
-        })),
-        connections: workspace.edges.map(e => ({
-            id: e.id,
-            sourceNodeId: e.source,
-            sourcePortId: e.sourceHandle || 'out',
-            targetNodeId: e.target,
-            targetPortId: e.targetHandle || 'in'
-        }))
-    };
-
-    setActiveContextId(ctx.id);
-    setWorkspaces(prev => ({
-        ...prev,
-        [ctx.id]: { 
-            rfNodes: workspace.nodes, 
-            rfEdges: workspace.edges, 
-            graph: mappedGraph, 
-            settings: workspace.settings,
-            historyPast: [],
-            historyFuture: [] 
+        // Restore Global Settings
+        if (workspace.globalSettings) {
+            setGlobalSettings(workspace.globalSettings);
         }
-    }));
-    setLoadedWorkspace(workspace);
+
+        // Set the active tab to whatever they were looking at when they saved
+        const targetContextId = workspace.activeContextId || 'MATERIAL';
+        setActiveContextId(targetContextId);
+
+        // Reconstruct the React Flow state for EVERY tab in the save file
+        const reconstructedWorkspaces: Record<string, any> = {};
+
+        Object.keys(workspace.workspaces).forEach(ctxId => {
+            const savedTabData = workspace.workspaces[ctxId];
+
+            reconstructedWorkspaces[ctxId] = {
+                // Map the saved mathematical nodes back into physical React Flow UI boxes
+                rfNodes: savedTabData.graph.nodes.map(n => ({
+                    id: n.id,
+                    type: n.type,
+                    position: n.position || { x: Math.random() * 200, y: Math.random() * 200 },
+                    data: {
+                        astType: n.type,
+                        inputs: n.inputs,
+                        outputs: n.outputs,
+                        isUniform: n.isUniform, 
+                        uniformName: n.uniformName
+                    }
+                } as Node)),
+                
+                // Map the saved mathematical connections back into physical React Flow wires
+                rfEdges: savedTabData.graph.connections.map(e => ({
+                    id: e.id,
+                    source: e.sourceNodeId,
+                    sourceHandle: e.sourcePortId,
+                    target: e.targetNodeId,
+                    targetHandle: e.targetPortId
+                } as Edge)),
+                
+                graph: savedTabData.graph,
+                settings: savedTabData.settings,
+                historyPast: [],
+                historyFuture: []
+            };
+        });
+
+        //  Inject the reconstructed data into the central React state
+        setWorkspaces(prev => ({
+            ...prev,
+            ...reconstructedWorkspaces
+        }));
+        
+        setLoadedWorkspace(workspace);
+        console.log("Cosmos: Load Complete!");
+
+    } catch (error) {
+        console.error("Cosmos CRITICAL: Failed to unpack workspace data!", error);
+        alert("Failed to load project data. Check the console for details.");
+    }
   }, []);
 
   // Debounced session persistence

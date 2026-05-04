@@ -1,17 +1,20 @@
 import type { Node, Edge } from 'reactflow';
+import type { ShaderGraph } from './ast';
 
 export interface SavedWorkspace {
-    version: string;     // future-proofing 
-    name: string;        // E.g., "Magical Fire"
-    contextId: string;   // E.g., "MATERIAL"
-    settings: Record<string, any>; // E.g., { shape: 'STAR_LAMP' }
-    globalSettings?: { namespace: string; projectName: string }; // Optional global settings
-    nodes: Node[];       // The exact React Flow visual layout & values
-    edges: Edge[];       // The exact React Flow wire connections
+    version: string;                                        
+    globalSettings: { namespace: string; projectName: string }; 
+    activeContextId: string;                                 
+    workspaces: Record<string, {                              
+        graph: ShaderGraph; 
+        settings: Record<string, any>;
+    }>;
 }
 
-//  THE RAM STATE 
+
 export interface EditorWorkspaceState extends SavedWorkspace {
-    historyPast: any[];  
+    nodes: Node[];        
+    edges: Edge[];        
+    historyPast: any[];   
     historyFuture: any[]; 
 }

@@ -43,6 +43,7 @@ export interface ShaderNode {
     data?: Record<string, any>; 
     isUniform?: boolean;
     uniformName?: string;
+    position?: { x: number; y: number };
 }
 
 export interface ShaderConnection {

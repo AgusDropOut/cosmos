@@ -32,14 +32,30 @@ export function useWorkspaceIO({
 
     const handleSave = async (download: boolean) => {
         if (!storage) return;
-        const workspace: SavedWorkspace = {
-            version: "1.0",
-            name: globalSettings.projectName, 
-            contextId: activeContext.id,
-            settings: contextSettings,
-            nodes,
-            edges
+
+        
+        const currentGraph = getCurrentGraph();
+
+        
+        const safeGlobalSettings = {
+            namespace: globalSettings?.namespace || "default_namespace",
+            projectName: globalSettings?.projectName || "untitled_project"
         };
+
+        
+        const workspace: SavedWorkspace = {
+            version: "2.0",
+            globalSettings: safeGlobalSettings, 
+            activeContextId: activeContext.id || 'MATERIAL',
+            workspaces: {
+                ...allWorkspaces,
+                [activeContext.id]: {
+                    graph: currentGraph,
+                    settings: contextSettings
+                }
+            }
+        };
+
         try {
             await storage.save(workspace); 
             if (download) await storage.exportFile(workspace);
@@ -48,25 +64,28 @@ export function useWorkspaceIO({
         }
     };
 
+    const getCurrentGraph = (): ShaderGraph => ({
+        nodes: nodes.map(n => ({
+            id: n.id,
+            type: n.data.astType as NodeType,
+            inputs: n.data.inputs || [],
+            outputs: n.data.outputs || [],
+            position: n.position
+        })),
+        connections: edges.map(e => ({
+            id: e.id,
+            sourceNodeId: e.source,
+            sourcePortId: e.sourceHandle || 'out',
+            targetNodeId: e.target,
+            targetPortId: e.targetHandle || 'in'
+        }))
+    });
+
     const handleGameExport = async () => {
         const exporter = activeContext.getExporter();
         if (!exporter) return;
 
-        const currentGraph: ShaderGraph = {
-            nodes: nodes.map(n => ({
-                id: n.id,
-                type: n.data.astType as NodeType,
-                inputs: n.data.inputs || [],
-                outputs: n.data.outputs || []
-            })),
-            connections: edges.map(e => ({
-                id: e.id,
-                sourceNodeId: e.source,
-                sourcePortId: e.sourceHandle || 'out',
-                targetNodeId: e.target,
-                targetPortId: e.targetHandle || 'in'
-            }))
-        };
+        const currentGraph: ShaderGraph = getCurrentGraph();
 
         try {
             let result;
@@ -95,7 +114,7 @@ export function useWorkspaceIO({
             document.body.appendChild(a); a.click();
             document.body.removeChild(a); URL.revokeObjectURL(url);
         } catch (e) {
-            alert("Failed to export: " + e);
+            console.error("Failed to export: " + e);
         }
     };
 
@@ -103,11 +122,12 @@ export function useWorkspaceIO({
         if (!storage) return;
         const file = e.target.files?.[0];
         if (!file) return;
+        console.log("Cosmos: Importing workspace from file", file.name);
         try {
             const workspace = await storage.importFile(file);
             onLoadWorkspace?.(workspace);
         } catch (err) {
-            alert("Failed to load project: " + err);
+            console.error("Failed to load project: " + err);
         }
     };
 

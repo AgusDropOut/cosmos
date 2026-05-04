@@ -79,15 +79,15 @@ export function EditorToolbar({
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }} ref={menuRef}>
                 
                 {/* FILE MENU */}
-                <div style={{ position: 'relative' }}>
+                 <div style={{ position: 'relative' }}>
                     <button style={{ ...menuButtonStyle, background: activeMenu === 'file' ? '#333' : 'transparent' }} onClick={() => toggleMenu('file')}>
                         File
                     </button>
                     {activeMenu === 'file' && (
                         <div style={dropdownStyle}>
                             <button style={menuButtonStyle} onClick={() => { handleSave(true); setActiveMenu(null); }}><Save size={14} color="#e0e0e0" /> Save Project</button>
-                            <button style={menuButtonStyle} onClick={() => { fileInputRef.current?.click(); setActiveMenu(null); }}><FolderOpen size={14} color="#e0e0e0" /> Load Project</button>
-                            <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={(e) => { handleFileUpload(e); setActiveMenu(null); }} style={{ display: 'none' }} />
+                            <button style={menuButtonStyle} onClick={() => { fileInputRef.current?.click();  }}><FolderOpen size={14} color="#e0e0e0" /> Load Project</button>
+                            <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={(e) => { console.log("Cosmos: File selected, calling handleFileUpload"); handleFileUpload(e); setActiveMenu(null); }} style={{ display: 'none' }} />
                         </div>
                     )}
                 </div>

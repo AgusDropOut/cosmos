@@ -2,6 +2,7 @@
 import type { IProjectContext } from '../../types/context';
 import type { ShaderGraph } from '../../types/ast';
 import type { Node, Edge } from 'reactflow';
+import { Save, FolderOpen, Download } from 'lucide-react';
 
 import { useState, useRef, useEffect } from 'react';
 
@@ -84,8 +85,8 @@ export function EditorToolbar({
                     </button>
                     {activeMenu === 'file' && (
                         <div style={dropdownStyle}>
-                            <button style={menuButtonStyle} onClick={() => { handleSave(true); setActiveMenu(null); }}>💾 Save Project</button>
-                            <button style={menuButtonStyle} onClick={() => { fileInputRef.current?.click(); setActiveMenu(null); }}>📂 Load Project</button>
+                            <button style={menuButtonStyle} onClick={() => { handleSave(true); setActiveMenu(null); }}><Save size={14} color="#e0e0e0" /> Save Project</button>
+                            <button style={menuButtonStyle} onClick={() => { fileInputRef.current?.click(); setActiveMenu(null); }}><FolderOpen size={14} color="#e0e0e0" /> Load Project</button>
                             <input type="file" accept=".cosmosproj" ref={fileInputRef} onChange={(e) => { handleFileUpload(e); setActiveMenu(null); }} style={{ display: 'none' }} />
                         </div>
                     )}
@@ -140,9 +141,28 @@ export function EditorToolbar({
                 >
                     {availableContexts.map(ctx => <option key={ctx.id} value={ctx.id}>{ctx.name}</option>)}
                 </select>
-                <button onClick={handleGameExport} style={{ ...menuButtonStyle, background: '#194225', color: '#40c057', border: '1px solid #2b8a3e', fontWeight: 'bold' }}>
-                    🚀 Export to Minecraft
-                </button>
+               <button 
+                onClick={handleGameExport} 
+                style={{ 
+                    ...menuButtonStyle, 
+                    background: '#194225', 
+                    color: '#40c057', 
+                    border: '1px solid #2b8a3e', 
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px' 
+                }}
+            >
+                <img 
+                    src="/minecraft.svg" 
+                    alt="Minecraft" 
+                    width={16} 
+                    height={16} 
+                    style={{ imageRendering: 'pixelated' }} 
+                />
+                Export to Minecraft
+            </button>
             </div>
         </div>
     );

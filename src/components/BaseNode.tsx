@@ -3,6 +3,7 @@ import { Handle, Position, useEdges } from 'reactflow';
 import type { NodeDefinition } from '../types/node-def';
 import { useState } from 'react';
 import { PortPreviewCanvas } from './editor/PortPreviewCanvas';
+import { Eye, EyeOff } from 'lucide-react';
 
 const nodeStyle = {
   backgroundColor: '#1e1e1e',
@@ -70,7 +71,7 @@ export function BaseNode({ id, data, definition }: BaseNodeProps) {
               padding: '4px', borderRadius: '4px', zIndex: 10 
           }}
         >
-          👁️
+          <Eye size={14} color="#e0e0e0" style={{justifyContent: 'center'}} />
         </button>
       )}
 

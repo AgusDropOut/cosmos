@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel, useReactFlow } from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
+import { Wand2 } from 'lucide-react';
 
 import type { ShaderGraph, ShaderNode, ShaderConnection, NodeType } from './types/ast';
 import { NODE_DEFINITIONS } from './core/NodeDefinitions';
@@ -292,7 +293,8 @@ return (
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#3a3a3a'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2a2a2a'}
                     >
-                        🪄 Auto Sort
+                        <Wand2 size={14} color="#e0e0e0" />
+                         Auto Sort
                     </button>
                 </Panel>
 

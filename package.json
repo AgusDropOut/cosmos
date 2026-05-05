@@ -6,11 +6,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:web": "cross-env CI=true vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:ci": "vite --port 5173 --strictPort"
-},
+    "test:ci": "cross-env CI=true vite --port 5173 --strictPort",
+    "app:build": "npm run build && electron-builder",
+    "app:preview": "electron ."
+  },
   "dependencies": {
     "dagre": "^0.8.5",
     "jszip": "^3.10.1",
@@ -29,6 +32,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.183.1",
     "@vitejs/plugin-react": "^6.0.1",
+    "cross-env": "^10.1.0",
     "electron": "^41.5.0",
     "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",

@@ -6,31 +6,37 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/* Test suite for project persistence and file handling */
 test.describe('Cosmos Workspace IO', () => {
+    
+    // Gives the cloud runner more time to boot the React Flow canvas
+    test.slow(); 
 
     test('export process generates a valid .cosmosproj file', async ({ page }) => {
         await page.goto('/');
 
-        /* Triggers the download event */
+        // Use getByRole instead of text=File for better reliability across engines
+        const fileMenu = page.getByRole('button', { name: /file/i });
+        await expect(fileMenu).toBeVisible({ timeout: 15000 });
+        await fileMenu.click();
+
         const downloadPromise = page.waitForEvent('download');
-        await page.click('text=File');
-        await page.click('text=Save Project');
+        // Selecting "Save Project" via role
+        await page.getByRole('button', { name: /save project/i }).click();
         const download = await downloadPromise;
 
-        /* Validates file metadata */
         expect(download.suggestedFilename()).toContain('.cosmosproj');
     });
 
     test('import process restores node state to the canvas', async ({ page }) => {
         await page.goto('/');
 
-        /* Uploads a test fixture to the hidden input */
         const filePath = path.resolve(__dirname, './fixtures/io_test_project.cosmosproj');
+        
+        // Target the file input directly
         await page.setInputFiles('input[type="file"]', filePath);
 
-        /* Checks for the existence of nodes in the React Flow renderer */
-        const nodes = page.locator('.react-flow__node');
-        await expect(nodes.first()).toBeVisible();
+        // Wait specifically for a React Flow node to be rendered
+        const node = page.locator('.react-flow__node');
+        await expect(node.first()).toBeVisible({ timeout: 20000 });
     });
 });

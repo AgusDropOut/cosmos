@@ -22,9 +22,11 @@ export default defineConfig({
   /* --- FIX START --- */
   webServer: {
     command: 'npm run test:ci',             
-    url: 'http://localhost:5173',        // Must match baseURL
+    url: 'http://localhost:5173',       
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,                 // 120 seconds for cold starts
+    timeout: 120 * 1000,       
+    stdout: 'pipe', 
+    stderr: 'pipe',
   },
   /* --- FIX END --- */
 });

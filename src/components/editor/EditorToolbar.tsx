@@ -111,8 +111,8 @@ export function EditorToolbar({
                     />
                 </div>
 
-                <button style={menuButtonStyle} onClick={onOpenNodeMenu}>Add Node</button>
-                <button style={menuButtonStyle} onClick={onOpenPresetMenu}>Presets</button>
+                <button style={menuButtonStyle} onClick={onOpenNodeMenu} data-testid="add-node-btn">Add Node</button>
+                <button style={menuButtonStyle} onClick={onOpenPresetMenu} data-testid="preset-menu-btn">Presets</button>
 
                 <div style={{ position: 'relative' }}>
                     <button 

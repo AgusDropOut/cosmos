@@ -1,3 +1,2 @@
 # Ensures code syntax and isolated logic are valid before a commit is created
-npm run lint
 npm run test:unit

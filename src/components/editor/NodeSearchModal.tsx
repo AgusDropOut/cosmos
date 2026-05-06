@@ -64,6 +64,7 @@ export function NodeSearchModal({ isOpen, onClose, activeContext, addNode }: Nod
                             <button 
                                 key={def.type} 
                                 onClick={() => { addNode(def.type); onClose(); }} 
+                                data-testid="node-search-item"
                                 style={{ 
                                     display: 'flex', alignItems: 'center', gap: '12px', background: 'transparent',
                                     color: '#ccc', border: 'none', padding: '8px 12px', borderRadius: '4px',

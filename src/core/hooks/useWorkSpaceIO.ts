@@ -17,6 +17,22 @@ interface UseWorkspaceIOProps {
     onLoadWorkspace?: (workspace: SavedWorkspace) => void;
 }
 
+/**
+ * Core IO hook responsible for managing workspace serialization, storage synchronization, 
+ * local file system imports/exports, and engine-specific shader compilation.
+ * 
+ * @param props - The configuration and state properties required for IO operations.
+ * @param props.activeContext - The currently active execution context (e.g., MATERIAL, BEAM).
+ * @param props.nodes - The active abstract syntax tree nodes currently on the canvas.
+ * @param props.edges - The active connections mapping the AST nodes together.
+ * @param props.contextSettings - Configuration values specific to the active context.
+ * @param props.globalSettings - Project-wide namespace and naming configurations.
+ * @param props.allWorkspaces - The cached state of all background workspaces.
+ * @param props.storage - The persistence layer implementation for saving/loading workspaces and handling file IO.
+ * @param props.onLoadWorkspace - Callback triggered when a serialized project file is successfully parsed.
+ * 
+ * @returns An object containing the hidden DOM reference and the execution handlers for IO tasks.
+ */
 export function useWorkspaceIO({
     activeContext,
     nodes,
@@ -30,18 +46,38 @@ export function useWorkspaceIO({
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    /**
+     * Translates the current canvas state into an abstract syntax tree representation.
+     */
+    const getCurrentGraph = (): ShaderGraph => ({
+        nodes: nodes.map(n => ({
+            id: n.id,
+            type: n.data.astType as NodeType,
+            inputs: n.data.inputs || [],
+            outputs: n.data.outputs || [],
+            position: n.position
+        })),
+        connections: edges.map(e => ({
+            id: e.id,
+            sourceNodeId: e.source,
+            sourcePortId: e.sourceHandle || 'out',
+            targetNodeId: e.target,
+            targetPortId: e.targetHandle || 'in'
+        }))
+    });
+
+    /**
+     * Serializes the current graph and context state to storage, optionally triggering a file download.
+     */
     const handleSave = async (download: boolean) => {
         if (!storage) return;
-
         
         const currentGraph = getCurrentGraph();
-
         
         const safeGlobalSettings = {
             namespace: globalSettings?.namespace || "default_namespace",
             projectName: globalSettings?.projectName || "untitled_project"
         };
-
         
         const workspace: SavedWorkspace = {
             version: "2.0",
@@ -64,23 +100,9 @@ export function useWorkspaceIO({
         }
     };
 
-    const getCurrentGraph = (): ShaderGraph => ({
-        nodes: nodes.map(n => ({
-            id: n.id,
-            type: n.data.astType as NodeType,
-            inputs: n.data.inputs || [],
-            outputs: n.data.outputs || [],
-            position: n.position
-        })),
-        connections: edges.map(e => ({
-            id: e.id,
-            sourceNodeId: e.source,
-            sourcePortId: e.sourceHandle || 'out',
-            targetNodeId: e.target,
-            targetPortId: e.targetHandle || 'in'
-        }))
-    });
-
+    /**
+     * Compiles the current graph utilizing the active context exporter and triggers a browser download.
+     */
     const handleGameExport = async () => {
         const exporter = activeContext.getExporter();
         if (!exporter) return;
@@ -118,11 +140,14 @@ export function useWorkspaceIO({
         }
     };
 
+    /**
+     * Parses an uploaded file and hydrates the workspace state.
+     */
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!storage) return;
         const file = e.target.files?.[0];
         if (!file) return;
-        console.log("Cosmos: Importing workspace from file", file.name);
+        
         try {
             const workspace = await storage.importFile(file);
             onLoadWorkspace?.(workspace);

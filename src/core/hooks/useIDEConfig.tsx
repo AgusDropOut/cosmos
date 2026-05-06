@@ -1,4 +1,4 @@
-// src/core/hooks/useIDEConfig.tsx (Note: Change extension to .tsx since we are returning JSX)
+// src/core/hooks/useIDEConfig.tsx
 import { useState, useCallback, createContext, useContext } from 'react';
 import type { ReactNode } from 'react';
 
@@ -15,7 +15,7 @@ export interface IDEConfig {
     editor: { snapToGrid: boolean; autoSave: boolean; };
 }
 
-const DEFAULT_CONFIG: IDEConfig = {
+export const DEFAULT_CONFIG: IDEConfig = {
     shortcuts: { delete: 'Backspace', boxSelect: 'Shift', multiSelect: 'Control' },
     previews: { enabled: true, resolution: 128, fps: 15, showAxes: false, showFps: false, fpsColor: '#00ff00' },
     editor: { snapToGrid: true, autoSave: true }
@@ -23,19 +23,23 @@ const DEFAULT_CONFIG: IDEConfig = {
 
 const STORAGE_KEY = 'cosmos-ide-config';
 
-
 const IDEConfigContext = createContext<{
     config: IDEConfig;
     updateConfig: <K extends keyof IDEConfig>(section: K, updates: Partial<IDEConfig[K]>) => void;
 } | null>(null);
 
-
+/**
+ * Provides the IDE configuration context to the component tree.
+ * Initializes state from local storage, falling back to defaults if empty or corrupted.
+ * * @param props.children - The React component tree to be wrapped by the provider.
+ */
 export function IDEConfigProvider({ children }: { children: ReactNode }) {
     const [config, setConfig] = useState<IDEConfig>(() => {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 const parsed = JSON.parse(stored);
+                /* Performs a deep merge to ensure partial stored configs do not overwrite defaults with undefined. */
                 return {
                     ...DEFAULT_CONFIG,
                     ...parsed,
@@ -65,7 +69,6 @@ export function IDEConfigProvider({ children }: { children: ReactNode }) {
         });
     }, []);
 
-    
     return (
         <IDEConfigContext.Provider value={{ config, updateConfig }}>
             {children}
@@ -73,7 +76,11 @@ export function IDEConfigProvider({ children }: { children: ReactNode }) {
     );
 }
 
-
+/**
+ * Retrieves the current IDE configuration and the update handler.
+ * Must be used within an IDEConfigProvider.
+ * * @throws {Error} If called outside of the IDEConfigProvider tree.
+ */
 export function useIDEConfig() {
     const context = useContext(IDEConfigContext);
     if (!context) {

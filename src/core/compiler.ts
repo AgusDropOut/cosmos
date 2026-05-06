@@ -3,7 +3,12 @@ import type { ShaderGraph, GLSLType, NodeType } from '../types/ast';
 import { NODE_DEFINITIONS } from './NodeDefinitions';
 import { NodeRegistry } from './registry';
 
-
+/**
+ * Serializes raw JavaScript values into valid GLSL string literals based on their designated type.
+ * @param value - The raw JavaScript value (number, object, string).
+ * @param type - The target GLSL type (e.g., 'float', 'vec2', 'vec3', 'string').
+ * @returns A formatted GLSL string (e.g., 'vec3(1.0, 0.0, 0.0)').
+ */
 export function serializeValue(value: any, type: GLSLType): string {
     if (value === undefined || value === null) {
         if (type === 'vec3') return 'vec3(0.0)';
@@ -49,6 +54,13 @@ class TreeCompiler {
         this.graph = graph;
     }
     
+    /**
+     * Executes the tree traversal and returns the fully assembled shader code.
+     * @param endpointType - The AST node type acting as the root (e.g., 'OUTPUT_VERT').
+     * @param isVertex - True if generating a vertex shader, false for a fragment shader.
+     * @param target - The execution environment ('web' or 'minecraft').
+     * @returns The compiled GLSL string.
+     */
     public compileTree(endpointType: NodeType, isVertex: boolean, target: CompilerTarget): string {
         const endpointNode = this.graph.nodes.find(n => n.type === endpointType);
         
@@ -108,11 +120,26 @@ class TreeCompiler {
                     sourceVarName = `${sourceVarName}_${connection.sourcePortId}`;
                 }
 
-                if (expectedType === 'vec3' && actualType === 'float') {
-                    return `vec3(${sourceVarName})`;
+                // GLSL Type Casting Logic
+                if (expectedType !== actualType) {
+                    if (actualType === 'float') {
+                        if (expectedType === 'vec2') return `vec2(${sourceVarName})`;
+                        if (expectedType === 'vec3') return `vec3(${sourceVarName})`;
+                        if (expectedType === 'vec4') return `vec4(${sourceVarName})`;
+                    } else if (expectedType === 'float') {
+                        if (actualType === 'vec2' || actualType === 'vec3' || actualType === 'vec4') {
+                            return `${sourceVarName}.x`; // Safely downcast vectors to floats
+                        }
+                    } else if (expectedType === 'vec3' && actualType === 'vec2') {
+                        return `vec3(${sourceVarName}, 0.0)`;
+                    } else if (expectedType === 'vec2' && actualType === 'vec3') {
+                        return `${sourceVarName}.xy`;
+                    }
                 }
+
                 return sourceVarName;
             }
+            
             if (node.isUniform && node.uniformName) {
                 const safeName = `u_${node.uniformName.replace(/[^a-zA-Z0-9_]/g, '_')}`;
                 
@@ -272,7 +299,10 @@ if (fragColor.a <= u_alphaCutoff && u_alphaCutoff > 0.0) {
 
 /**
  * Master Entry Point. Spawns two independent tree traversals. 
- * One for the webgl previewer and the other for minecraft.
+ * One for the WebGL previewer and the other for Minecraft.
+ * @param graph - The full AST graph to compile.
+ * @param target - The execution environment target.
+ * @returns An object containing the compiled vertex and fragment strings, plus extracted uniforms.
  */
 export function compileShader(graph: ShaderGraph, target: CompilerTarget = 'web') {
     const vertexCompiler = new TreeCompiler(graph);
@@ -296,6 +326,12 @@ export class MathCompiler {
         this.graph = graph;
     }
 
+    /**
+     * Traverses the AST connected to a specific port and returns a single mathematical string.
+     * @param targetNodeId - The ID of the node requesting the expression.
+     * @param portId - The specific input port to evaluate.
+     * @returns A serialized math expression string.
+     */
     public compilePort(targetNodeId: string, portId: string): string {
         return this.resolveInput(targetNodeId, portId);
     }
@@ -313,7 +349,6 @@ export class MathCompiler {
             return this.compileNode(connection.sourceNodeId);
         }
 
-        
         return serializeValue(inputDef?.value, expectedType as GLSLType);
     }
 
@@ -333,8 +368,6 @@ export class MathCompiler {
         console.warn(`Cosmos MathCompiler: Node type ${node.type} does not support math generation. Returning 0.0`);
         return '0.0'; 
     }
-
-    
 }
 
 /**
@@ -351,10 +384,20 @@ export class AstEvaluator {
         this.time = time;
     }
 
+    /**
+     * Injects variables into the evaluator's global scope (e.g., UV coordinates).
+     * @param globals - A dictionary of variables and their current values.
+     */
     public setGlobals(globals: Record<string, any>) {
         this.globals = globals;
     }
 
+    /**
+     * Computes the numerical result of a specific port on the AST.
+     * @param targetNodeId - The node ID requesting the evaluation.
+     * @param portId - The specific input port to calculate.
+     * @returns The raw numeric or object value resulting from the evaluation.
+     */
     public evaluatePort(targetNodeId: string, portId: string): any {
         return this.resolveInput(targetNodeId, portId);
     }
@@ -378,7 +421,6 @@ export class AstEvaluator {
             return rawValue;
         }
 
-       
         return inputDef?.value;
     }
 

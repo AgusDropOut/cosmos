@@ -1,3 +1,4 @@
+// src/core/hooks/useShaderCompiler.ts
 import { useEffect, useMemo } from 'react';
 import type { Node, Edge } from 'reactflow';
 import type { ShaderNode, NodeType, ShaderConnection } from '../../types/ast';
@@ -10,12 +11,18 @@ interface UseShaderCompilerProps {
     onFlowChange: (nodes: Node[], edges: Edge[], graph: any, past: any[], future: any[]) => void;
 }
 
-/* This hook listens to changes in the logical structure of the graph (nodes and edges) and triggers the compilation process. 
-*  It computes a "logical hash" of the graph that only considers the relevant properties for compilation (no x and y positions, no UI state), 
-*  and uses that as a dependency to trigger the compilation effect. 
-*  If an attributte of the relevant ones changes, the hash changes and the effect runs, recompiling the shader.
-*  This way, we avoid unnecessary recompilations when irrelevant properties change. */
-
+/**
+ * Listens to changes in the logical structure of the graph (nodes and edges) and triggers the compilation process.
+ * * Computes a "logical hash" of the graph that only considers the relevant properties for compilation 
+ * (ignoring UI states like x/y coordinate positions) to act as a dependency for the compilation effect.
+ * This prevents unnecessary recompilations when irrelevant visual properties change.
+ * @param props - Hook configuration properties.
+ * @param props.nodes - The current array of React Flow nodes on the canvas.
+ * @param props.edges - The current array of React Flow edges connecting the nodes.
+ * @param props.past - The history stack of previous graph states for undo functionality.
+ * @param props.future - The history stack of reverted graph states for redo functionality.
+ * @param props.onFlowChange - Callback executed when a logical change is detected, receiving the newly compiled AST.
+ */
 export function useShaderCompiler({ nodes, edges, past, future, onFlowChange }: UseShaderCompilerProps) {
     
     // THE LOGICAL HASH
@@ -64,8 +71,6 @@ export function useShaderCompiler({ nodes, edges, past, future, onFlowChange }: 
         }));
 
         onFlowChange(nodes, edges, { nodes: astNodes, connections: astConnections }, past, future);
-        
-    
 
     }, [compilerHash]); 
 }

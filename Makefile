@@ -20,10 +20,9 @@ lint:
 run:
 	npm run dev
 
-# Integrity check: Relies on Playwright config to manage the server lifecycle
-check:
-	npx playwright test
-	@echo "Cosmos: Integrity check passed."
+# Comprehensive integrity check: Executes linter, unit tests, and E2E tests in sequence
+check: test-unit test-e2e
+	@echo "Cosmos: Comprehensive integrity check passed."
 
 debug-e2e:
 	npx playwright test --ui

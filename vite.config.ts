@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import electron from 'vite-plugin-electron'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import electron from 'vite-plugin-electron';
 
 export default defineConfig({
   base: './', 
@@ -16,6 +16,11 @@ export default defineConfig({
         }
         options.startup();
       },
-    })
+    }),
   ],
-})
+  /* Isolates Vitest strictly to the unit testing directory to prevent Playwright conflicts */
+  test: {
+    include: ['tests/unit/**/*.spec.ts'],
+    exclude: ['tests/e2e/**', 'node_modules/**'],
+  }
+});

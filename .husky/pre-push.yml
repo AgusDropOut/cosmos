@@ -1,0 +1,2 @@
+# Executes the full Makefile pipeline before allowing code to leave the local machine
+make check

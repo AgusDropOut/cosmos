@@ -8,7 +8,7 @@
 
 
 ---
-
+.
 > **⚠️ Current Status: Active Development** > Cosmos is currently in early active development. **There are currently no official release downloads or compiled binaries available.**
 
 ## 🌌 Overview

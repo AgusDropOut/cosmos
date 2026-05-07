@@ -184,7 +184,7 @@ export function EditorToolbar({
                     }}
                 >
                     <img 
-                        src="/minecraft.svg" 
+                        src="./minecraft.svg" 
                         alt="Minecraft" 
                         width={16} 
                         height={16} 

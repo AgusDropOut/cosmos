@@ -15,7 +15,7 @@ function createWindow() {
         minWidth: 800,
         minHeight: 600,
         title: "Cosmos Engine",
-        icon: path.join(__dirname, '../build/cosmos.png'),
+        icon: path.join(__dirname, '../dist/cosmos.png'),
         backgroundColor: '#121212', 
         autoHideMenuBar: true,
         webPreferences: {

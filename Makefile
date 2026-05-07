@@ -1,5 +1,5 @@
 # Consistently list all task-based targets as phony
-.PHONY: all install test-e2e test-unit lint run check debug-e2e
+.PHONY: all install test-e2e test-unit build-exe lint run check debug-e2e 
 
 all: check
 
@@ -12,6 +12,14 @@ test-e2e:
 
 test-unit:
 	npm run test:unit
+
+build-exe:
+	npm run build:exe
+	@echo "Cosmos: Executable generated in the /release folder."
+
+build-linux:
+	npm run build:linux
+	@echo "Cosmos: Linux AppImage generated in the /release folder."
 
 lint:
 	npm run lint

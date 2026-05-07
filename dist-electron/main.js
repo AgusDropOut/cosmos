@@ -1,33 +1,28 @@
-import { BrowserWindow, app } from "electron";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { BrowserWindow as e, app as t } from "electron";
+import n from "node:path";
+import { fileURLToPath as r } from "node:url";
 //#region electron/main.ts
-var __dirname = path.dirname(fileURLToPath(import.meta.url));
-var mainWindow;
-function createWindow() {
-	mainWindow = new BrowserWindow({
+var i = n.dirname(r(import.meta.url)), a;
+function o() {
+	a = new e({
 		width: 1280,
 		height: 720,
 		minWidth: 800,
 		minHeight: 600,
 		title: "Cosmos Engine",
-		icon: path.join(__dirname, "../build/cosmos.png"),
+		icon: n.join(i, "../dist/cosmos.png"),
 		backgroundColor: "#121212",
-		autoHideMenuBar: true,
+		autoHideMenuBar: !0,
 		webPreferences: {
-			nodeIntegration: true,
-			contextIsolation: false,
-			webSecurity: false
+			nodeIntegration: !0,
+			contextIsolation: !1,
+			webSecurity: !1
 		}
-	});
-	if (process.env.VITE_DEV_SERVER_URL) mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
-	else mainWindow.loadFile(path.join(__dirname, "../dist/index.html"));
+	}), process.env.VITE_DEV_SERVER_URL ? a.loadURL(process.env.VITE_DEV_SERVER_URL) : a.loadFile(n.join(i, "../dist/index.html"));
 }
-app.whenReady().then(createWindow);
-app.on("window-all-closed", () => {
-	if (process.platform !== "darwin") app.quit();
-});
-app.on("activate", () => {
-	if (BrowserWindow.getAllWindows().length === 0) createWindow();
+t.whenReady().then(o), t.on("window-all-closed", () => {
+	process.platform !== "darwin" && t.quit();
+}), t.on("activate", () => {
+	e.getAllWindows().length === 0 && o();
 });
 //#endregion

@@ -1,4 +1,3 @@
-// src/core/contexts/BeamContext.tsx
 import React from 'react';
 import * as THREE from 'three';
 import type { IProjectContext, IPreviewStrategy, RenderContext } from '../../types/context';
@@ -11,8 +10,9 @@ import { BeamExporter } from '../exporter/BeamExporter';
 export const BeamContext: IProjectContext = {
     id: 'BEAM',
     name: 'Magic Beam',
+    requiresGlobalMaterial: true,
     
-     getExporter: () => new BeamExporter(),
+    getExporter: () => new BeamExporter(),
 
     getInitialNodes: (): Node[] => [
         { 
@@ -85,38 +85,32 @@ export const BeamContext: IProjectContext = {
 
         return {
             init: ({ scene, material, camera }: RenderContext) => {
-                //  Setup the Beam
                 material.side = THREE.DoubleSide;
                 beamMesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
                 scene.add(beamMesh);
 
-                //  Setup the Environment
                 grid = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
                 grid.position.y = -2;
                 scene.add(grid);
 
-                //  Setup Caster (Where beam starts)
                 const casterGeo = new THREE.OctahedronGeometry(0.5);
                 const casterMat = new THREE.MeshBasicMaterial({ color: 0x4dabf7, wireframe: true });
                 casterMesh = new THREE.Mesh(casterGeo, casterMat);
                 casterMesh.position.set(-4, 0, 0);
                 scene.add(casterMesh);
 
-                // 4. Setup Target 
                 const targetGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
                 const targetMat = new THREE.MeshBasicMaterial({ color: 0xff6b6b, wireframe: true });
                 targetMesh = new THREE.Mesh(targetGeo, targetMat);
                 scene.add(targetMesh);
 
-                // Camera positioning for a cinematic side-view
                 camera.position.set(0, 3, 10);
                 camera.lookAt(0, 0, 0);
             },
             update: (time: number, settings: Record<string, any>, graph?: ShaderGraph) => {
                 if (beamMesh && casterMesh && targetMesh) {
-                    const t = time * 0.001; // Match u_time scaling
+                    const t = time * 0.001; 
 
-                    //  Animate the Caster and Target to prove the beam tracks dynamically
                     casterMesh.position.y = Math.sin(t * 2.0) * 1.5;
                     casterMesh.rotation.y += 0.05;
 
@@ -124,7 +118,6 @@ export const BeamContext: IProjectContext = {
                     targetMesh.rotation.x += 0.05;
                     targetMesh.rotation.y += 0.05;
 
-                    //  Setup the AST Evaluator for this exact frame
                     let evaluator: AstEvaluator | null = null;
                     let endpointId: string | null = null;
 
@@ -136,25 +129,22 @@ export const BeamContext: IProjectContext = {
                         }
                     }
 
-                    // Generate the geometry using our callback!
                     const oldGeo = beamMesh.geometry;
                     beamMesh.geometry = beamGenerator.update(
                        casterMesh.position,
                         targetMesh.position,
                         settings.radialSegments || 6,
                         settings.lengthSegments || 20,
-                        (v: number) => { // Removed 'u' here!
+                        (v: number) => { 
                             let radius = 0.5;
                             let offset = new THREE.Vector3(0, 0, 0);
 
                             if (evaluator && endpointId) {
-                                // Inject 'v' into the evaluator
                                 evaluator.setGlobals({ u: 0, v: v }); 
 
                                 const evaluatedRadius = evaluator.evaluatePort(endpointId, 'radius_curve');
                                 if (typeof evaluatedRadius === 'number') radius = evaluatedRadius;
 
-                                
                                 const ox = evaluator.evaluatePort(endpointId, 'offset_x');
                                 const oy = evaluator.evaluatePort(endpointId, 'offset_y');
                                 const oz = evaluator.evaluatePort(endpointId, 'offset_z');
@@ -179,5 +169,6 @@ export const BeamContext: IProjectContext = {
                 if (grid) { grid.geometry.dispose(); grid.removeFromParent(); }
             }
         };
-    }
+    },
+    getDefaultSettings: () => ({ radialSegments: 6, lengthSegments: 20 })
 };

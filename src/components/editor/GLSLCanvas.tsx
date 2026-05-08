@@ -101,7 +101,8 @@ export function GLSLCanvas({
                     strategy.update(time, settings || { shape: 'CUBE' }, graph);
                 }
 
-                const activeCamera = (context && settings?.shape !== '2D_QUAD') ? perspCamera : orthoCamera;
+                const useOrtho = (context && context.isOrthographic) ? context.isOrthographic(settings || {}) : false;
+                const activeCamera = useOrtho ? orthoCamera : perspCamera;
                 renderer.render(scene, activeCamera);
                 
                 lastRenderTime = time;

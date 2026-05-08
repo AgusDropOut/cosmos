@@ -1,4 +1,3 @@
-// src/core/contexts/TrailContext.tsx
 import React from 'react';
 import * as THREE from 'three';
 import type { IProjectContext, IPreviewStrategy, RenderContext } from '../../types/context';
@@ -11,6 +10,7 @@ import type { ShaderGraph } from '../../types/ast';
 export const TrailContext: IProjectContext = {
     id: 'TRAIL',
     name: 'Trail Projectile',
+    requiresGlobalMaterial: true,
     
     getExporter: () => new TrailExporter(),
 
@@ -71,7 +71,6 @@ export const TrailContext: IProjectContext = {
         let trailGenerator = new TrailGeometryGenerator();
         let camRef: THREE.PerspectiveCamera | null = null;
         
-        //  Track the loop iterations to prevent "teleportation streaks"
         let lastLoop = 0; 
 
         return {
@@ -83,7 +82,7 @@ export const TrailContext: IProjectContext = {
                 scene.add(mesh);
 
                 grid = new THREE.GridHelper(20, 20, 0x444444, 0x222222);
-                grid.position.y = -2; // Ground level
+                grid.position.y = -2; 
                 scene.add(grid);
 
                 const entityGeo = new THREE.BoxGeometry(0.25, 0.25, 0.25);
@@ -91,39 +90,34 @@ export const TrailContext: IProjectContext = {
                 entityMesh = new THREE.Mesh(entityGeo, entityMat);
                 scene.add(entityMesh);
 
-                camera.position.set(0, 3, 10); // Pulled back slightly for a better view of the arc
+                camera.position.set(0, 3, 10); 
                 camera.lookAt(0, 0, 0);
             },
             update: (time: number, settings: Record<string, any>, graph?: ShaderGraph) => {
                 if (mesh && camRef && entityMesh) {
                     
-                    // --- THE PHYSICS LOOP ---
-                    const LOOP_DURATION = 1500; // 1.5 seconds per throw
+                    const LOOP_DURATION = 1500; 
                     const currentLoop = Math.floor(time / LOOP_DURATION);
-                    const p = (time % LOOP_DURATION) / LOOP_DURATION; // Normalized progress: 0.0 to 1.0
+                    const p = (time % LOOP_DURATION) / LOOP_DURATION; 
 
-                   
                     if (currentLoop > lastLoop) {
                         lastLoop = currentLoop;
                         trailGenerator = new TrailGeometryGenerator(); 
                     }
 
-                    //  THE PARABOLIC ARC 
                     const startX = -5, endX = 5;
                     const startZ = -2, endZ = 2;
                     
                     const currentX = startX + (endX - startX) * p;
                     const currentZ = startZ + (endZ - startZ) * p;
                     
-                    // Y travels in a mathematically perfect parabola.
-                    const ground = -2; // Matches grid.position.y
-                    const peak = 5;    // Max height of the throw
+                    const ground = -2; 
+                    const peak = 5;    
                     const currentY = ground + 4 * peak * p * (1 - p);
 
                     let currentTarget = new THREE.Vector3(currentX, currentY, currentZ);
                     let currentWidth = 0.2;
 
-                    //  EVALUATE AST OFFSETS 
                     if (graph) {
                         const endpoint = graph.nodes.find(n => n.type === 'TRAIL_ENDPOINT');
                         if (endpoint) {
@@ -144,7 +138,6 @@ export const TrailContext: IProjectContext = {
                         }
                     }
 
-                    // UPDATE ENTITY & TRAIL
                     entityMesh.position.copy(currentTarget);
                     entityMesh.rotation.x += 0.1; 
                     entityMesh.rotation.y += 0.1;
@@ -166,5 +159,6 @@ export const TrailContext: IProjectContext = {
                 if (entityMesh) { entityMesh.geometry.dispose(); entityMesh.removeFromParent(); }
             }
         };
-    }
+    },
+    getDefaultSettings: () => ({ segments: 20 })
 };

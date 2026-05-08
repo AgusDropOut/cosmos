@@ -89,7 +89,8 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
             strategyRef.current.update(time, settingsRef.current, graphRef.current);
         }
 
-        const activeCamera = settingsRef.current.shape === '2D_QUAD' ? orthoCamera : perspCamera;
+        const useOrtho = activeContext.isOrthographic ? activeContext.isOrthographic(settingsRef.current) : false;
+        const activeCamera = useOrtho ? orthoCamera : perspCamera;
         renderer.render(scene, activeCamera);
     };
     
@@ -118,10 +119,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
   }, [activeContext]); 
 
   useEffect(() => {
-    let targetGraph = graph;
-    if (activeContext.id !== 'MATERIAL') {
-        targetGraph = globalMaterial;
-    }
+    let targetGraph = activeContext.requiresGlobalMaterial ? globalMaterial : graph;
 
     if (!materialRef.current || !targetGraph.nodes || targetGraph.nodes.length === 0) return;
 
@@ -161,7 +159,7 @@ export default function Canvas3D({ graph, contextSettings, activeContext, global
   useEffect(() => {
     if (!materialRef.current) return;
 
-    const targetGraph = activeContext.id !== 'MATERIAL' ? globalMaterial : graph;
+    const targetGraph = activeContext.requiresGlobalMaterial ? globalMaterial : graph;
 
     targetGraph.nodes.forEach(node => {
         

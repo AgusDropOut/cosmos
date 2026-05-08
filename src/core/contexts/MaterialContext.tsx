@@ -45,6 +45,7 @@ export const MaterialContext: IProjectContext = {
         ];
         return !forbiddenForMaterial.includes(nodeType);
     }, 
+    isOrthographic: (settings) => settings.shape === '2D_QUAD',
 
     SettingsPanel: ({ settings, onSettingChange }) => {
         const selectedShape = settings.shape || 'CUBE';
@@ -150,5 +151,6 @@ export const MaterialContext: IProjectContext = {
             }
         };
     },
+    getDefaultSettings: () => ({ shape: 'CUBE' }), 
     getExporter: () => new MaterialExporter()
 };

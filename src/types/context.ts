@@ -21,6 +21,8 @@ export interface IPreviewStrategy {
 export interface IProjectContext {
     id: string;
     name: string;
+    requiresGlobalMaterial?: boolean;
+    isOrthographic?: (settings: Record<string, any>) => boolean;
     getInitialNodes: () => Node[];
     isNodeAllowed: (nodeType: string) => boolean;
     SettingsPanel: React.FC<{
@@ -28,7 +30,6 @@ export interface IProjectContext {
         onSettingChange: (key: string, value: any) => void;
     }>;
     createPreviewStrategy: () => IPreviewStrategy;
-    
-  
+    getDefaultSettings: () => Record<string, any>; 
     getExporter: () => IWorkspaceExporter | null; 
 }

@@ -8,7 +8,6 @@ import type { ShaderGraph, NodeType } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import { type Node, type Edge, ReactFlowProvider } from 'reactflow';
-import type { useHistory } from './core/hooks/useHistory';
 import { BeamContext } from './core/contexts/BeamContext';
 import { IDEConfigProvider } from './core/hooks/useIDEConfig';
 
@@ -34,12 +33,21 @@ const getInitialState = () => {
 function App({ storage }: AppProps) {
   const initialState = getInitialState();
 
-  // Initialize state with stored data or fallback to defaults
-  const defaultWorkspaces = {
-      'MATERIAL': { rfNodes: MaterialContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { shape: 'CUBE' }, historyPast: [], historyFuture: [] },
-      'TRAIL': { rfNodes: TrailContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] },
-      'BEAM': { rfNodes: BeamContext.getInitialNodes(), rfEdges: [], graph: { nodes: [], connections: [] }, settings: { segments: 20 }, historyPast: [], historyFuture: [] }
-  };
+
+const defaultWorkspaces = AVAILABLE_CONTEXTS.reduce((acc, ctx) => {
+    acc[ctx.id] = { 
+        rfNodes: ctx.getInitialNodes(), 
+        rfEdges: [], 
+        graph: { nodes: [], connections: [] }, 
+        settings: ctx.getDefaultSettings ? ctx.getDefaultSettings() : {}, 
+        historyPast: [], 
+        historyFuture: [] 
+    };
+    return acc;
+}, {} as Record<string, any>);
+
+
+const [activeContextId, setActiveContextId] = useState(initialState?.activeContextId || AVAILABLE_CONTEXTS[0].id);
 
   
   const [workspaces, setWorkspaces] = useState<Record<string, any>>({
@@ -48,8 +56,6 @@ function App({ storage }: AppProps) {
   });
 
 
-  
-  const [activeContextId, setActiveContextId] = useState(initialState?.activeContextId || 'MATERIAL');
   const [loadedWorkspace, setLoadedWorkspace] = useState<SavedWorkspace | null>(null);
 
   const [globalSettings, setGlobalSettings] = useState<{namespace: string, projectName: string}>(
@@ -64,6 +70,11 @@ function App({ storage }: AppProps) {
   const activeContext = useMemo(() => 
     AVAILABLE_CONTEXTS.find(c => c.id === activeContextId) || MaterialContext, 
   [activeContextId]);
+
+  const globalContextId = useMemo(() => {
+      const provider = AVAILABLE_CONTEXTS.find(ctx => !ctx.requiresGlobalMaterial);
+      return provider ? provider.id : AVAILABLE_CONTEXTS[0].id;
+  }, []);
 
   const handleFlowChange = useCallback((
     nodes: Node[], edges: Edge[], graph: ShaderGraph , 
@@ -113,7 +124,7 @@ function App({ storage }: AppProps) {
         }
 
         // Set the active tab to whatever they were looking at when they saved
-        const targetContextId = workspace.activeContextId || 'MATERIAL';
+        const targetContextId = workspace.activeContextId || AVAILABLE_CONTEXTS[0].id;
         setActiveContextId(targetContextId);
 
         // Reconstruct the React Flow state for EVERY tab in the save file
@@ -207,8 +218,8 @@ function App({ storage }: AppProps) {
               graph={workspaces[activeContextId].graph} 
               contextSettings={workspaces[activeContextId].settings} 
               activeContext={activeContext} 
-              globalMaterial={workspaces['MATERIAL'].graph} 
-              globalMaterialSettings={workspaces['MATERIAL'].settings}
+              globalMaterial={workspaces[globalContextId].graph} 
+              globalMaterialSettings={workspaces[globalContextId].settings}
           />
         </div>
       </div>

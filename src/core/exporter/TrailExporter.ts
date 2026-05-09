@@ -3,7 +3,6 @@ import JSZip from 'jszip';
 import type { ShaderGraph } from '../../types/ast';
 import type { IWorkspaceExporter, ExportResult } from '../../types/export';
 import { MaterialExporter } from './MaterialExporter';
-import { serializeValue } from '../compiler';
 import { MathCompiler } from '../compiler';
 
 export class TrailExporter implements IWorkspaceExporter {

@@ -4,7 +4,7 @@ import NodeEditor from './NodeEditor';
 import Canvas3D from './Canvas3D';
 import { MaterialContext } from './core/contexts/MaterialContext';
 import { TrailContext } from './core/contexts/TrailContext';
-import type { ShaderGraph, NodeType } from './types/ast';
+import type { ShaderGraph } from './types/ast';
 import type { IWorkspaceStorage } from './core/storage/IWorkspaceStorage';
 import type { SavedWorkspace } from './types/workspace';
 import { type Node, type Edge, ReactFlowProvider } from 'reactflow';

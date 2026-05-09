@@ -3,7 +3,7 @@ import { Handle, Position, useEdges } from 'reactflow';
 import type { NodeDefinition } from '../types/node-def';
 import { useState } from 'react';
 import { PortPreviewCanvas } from './editor/PortPreviewCanvas';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye } from 'lucide-react';
 
 const nodeStyle = {
   backgroundColor: '#1e1e1e',

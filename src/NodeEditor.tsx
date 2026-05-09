@@ -1,11 +1,11 @@
 // src/NodeEditor.tsx
-import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import ReactFlow, { Background, Controls, applyNodeChanges, applyEdgeChanges, addEdge, Panel, useReactFlow } from 'reactflow';
 import type { NodeChange, EdgeChange, Node, Edge, Connection } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { Wand2 } from 'lucide-react';
 
-import type { ShaderGraph, ShaderNode, ShaderConnection, NodeType } from './types/ast';
+import type { ShaderGraph } from './types/ast';
 import { NODE_DEFINITIONS } from './core/NodeDefinitions';
 import { BaseNode } from './components/BaseNode';
 import type { IProjectContext } from './types/context';

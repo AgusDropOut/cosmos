@@ -2,7 +2,6 @@
 import { useMemo, useCallback } from 'react';
 import type { Node, Edge } from 'reactflow';
 import { BUILT_IN_PRESETS } from '../presets/PresetRegistry';
-import type { IPreset } from '../../types/preset';
 
 /**
  * Manages the retrieval and application of predefined graph templates (presets) 

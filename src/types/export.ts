@@ -42,7 +42,7 @@ export interface CosmosMetadata {
  */
 export interface ExportConfig {
     name: string;
-    isTranslucent: boolean;
+    settings: Record<string, any>;
 }
 
 /**

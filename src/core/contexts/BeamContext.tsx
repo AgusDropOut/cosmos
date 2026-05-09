@@ -1,4 +1,4 @@
-import React from 'react';
+
 import * as THREE from 'three';
 import type { IProjectContext, IPreviewStrategy, RenderContext } from '../../types/context';
 import type { Node } from 'reactflow';

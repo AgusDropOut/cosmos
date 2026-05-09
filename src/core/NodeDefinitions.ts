@@ -321,7 +321,7 @@ export const NODE_DEFINITIONS: Record<string, NodeDefinition> = {
     outputs: [{ id: 'uv', type: 'vec2' }],
     strategy: {
       generateCode: ({ varName }) => `    vec2 ${varName} = vUv;`,
-      evaluate: ({ node, time, globals }) => ({ x: globals?.u ?? 0, y: globals?.v ?? 0 })
+      evaluate: ({ globals }) => ({ x: globals?.u ?? 0, y: globals?.v ?? 0 })
     }
   },
 

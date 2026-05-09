@@ -1,5 +1,4 @@
 // src/core/contexts/MaterialContext.tsx
-import React from 'react';
 import * as THREE from 'three';
 import type { IProjectContext, IPreviewStrategy } from '../../types/context';
 import { ShapeRegistry } from '../shapes/ShapeRegistry';
@@ -122,7 +121,7 @@ export const MaterialContext: IProjectContext = {
                 mesh = new THREE.Mesh(generator.generate(), material);
                 scene.add(mesh);
             },
-            update: (time, settings) => {
+            update: () => {
                 // Only spin the mesh if we are NOT in 2D mode
                 if (mesh && currentShape !== '2D_QUAD') {
                     mesh.rotation.x += 0.005;

@@ -2,7 +2,7 @@
 import type { IProjectContext } from '../../types/context';
 import type { ShaderGraph } from '../../types/ast';
 import type { Node, Edge } from 'reactflow';
-import { Save, FolderOpen, Download } from 'lucide-react';
+import { Save, FolderOpen } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 interface EditorToolbarProps {

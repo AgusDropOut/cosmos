@@ -8,8 +8,8 @@
 
 
 ---
-.
-> **⚠️ Current Status: Active Development** > Cosmos is currently in early active development. **There are currently no official release downloads or compiled binaries available.**
+
+> **☄️ Current Status: Public Demo Available** > Cosmos is in active development, but you can now download the first playable demo (**v0.1.0-demo**) for Windows, macOS, and Linux directly from our [Releases Page](https://github.com/AgusDropOut/cosmos/releases).
 
 ## 🌌 Overview
 

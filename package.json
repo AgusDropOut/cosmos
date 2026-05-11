@@ -1,7 +1,7 @@
 {
   "name": "cosmos",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0-demo",
   "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
